@@ -1,0 +1,654 @@
+site:
+  title:
+    he: Katya Alon — אסטרטגיה שיווקית ותוכן
+    en: Katya Alon — Marketing Strategy & Content
+    ru: Катя Алон — Маркетинговая стратегия и контент
+
+nav:
+  about:
+    he: אודות
+    en: About
+    ru: Обо мне
+  services:
+    he: שירותים
+    en: Services
+    ru: Услуги
+  process:
+    he: תהליך
+    en: Process
+    ru: Процесс
+  contact:
+    he: צור קשר
+    en: Contact
+    ru: Контакты
+
+hero:
+  title:
+    he: קטיה אלון
+    en: Katya Alon
+    ru: Катя Алон
+  subtitle:
+    he: שיווק נכון הוא לא ניחוש ,אלא מערכת מדויקת שמביאה תוצאות.
+    en: Marketing is not guessing, but a precise system that brings results.
+    ru: Правильный маркетинг, это не гадание на кофейной гуще, а точная система, приносящая результаты.
+  description:
+    he: אני עוזרת לעסקים לבנות אסטרטגיה ברורה, למשוך את הקהל הנכון ולהפוך פעילות ברשתות למנוע יציב של לקוחות ומכירות.
+    en: I help businesses build a clear strategy, attract the right audience, and turn online activity into a stable engine of customers and sales.
+    ru: Я помогаю компаниям разрабатывать четкую стратегию, привлекать целевую аудиторию и превращать онлайн-активность в стабильный источник клиентов и продаж.
+  cta_primary:
+    he: לקביעת פגישת ייעוץ
+    en: Book a Consultation
+    ru: Записаться на консультацию
+  cta_secondary:
+    he: מעבר לוואטסאפ
+    en: Chat on WhatsApp
+    ru: Перейти в WhatsApp
+  portrait_placeholder:
+    he: תמונה מקצועית של קטיה
+    en: Katya professional portrait
+    ru: Профессиональное фото Кати
+
+clients:
+  title:
+    he: עסקים, חברות וארגונים שכבר בחרו לעבוד עם קטיה
+    en: Businesses, companies, and organizations that have already chosen to work
+      with Katya
+    ru: Бизнесы, компании и организации, которые уже выбрали работать с Катей
+  subtitle:
+    he: ניסיון אמיתי עם מגוון לקוחות, תחומים וצרכים שיווקיים — מתוך עבודה בפועל, ליווי,
+      בניית מסרים, יצירת תוכן ופיתוח נוכחות מקצועית.
+    en: Real experience with a wide range of clients, industries, and marketing needs
+      — through hands-on work, guidance, message development, content creation, and
+      building a professional presence.
+    ru: Реальный опыт работы с самыми разными клиентами, сферами и маркетинговыми
+      задачами — через практическую работу, сопровождение, разработку сообщений, создание
+      контента и построение профессионального присутствия.
+  items:
+  - name:
+      he: 'עו״ד דניאל לרין'
+      en: "Adv. Daniel Larin"
+      ru: "Адвокат Даниэль Ларин"
+    logo: "/assets/clients/Adv_daniel_Larin.png"
+  - name:
+      he: "עדי שני רביב"
+      en: "Adi Shani Revive"
+      ru: "Ади Шани Ревайв"
+    logo: "/assets/clients/Adi_Shani_Revive.png"
+  - name:
+      he: "בוטיק קלין"
+      en: "Boutique Clean"
+      ru: "Бутик Клин"
+    logo: "/assets/clients/boutique_clean.png"
+  - name:
+      he: "ז'אנה רייכמן עיצוב פנים"
+      en: "Janna Raihman Interior Design"
+      ru: "Джанна Райхман Дизайн Интерьера"
+    logo: "/assets/clients/Janna_Raihman_Interior_design.png"
+  - name:
+      he: "לב ניורוספייס"
+      en: "Lev NeuroSpace"
+      ru: "Лев Нейроспейс"
+    logo: "/assets/clients/LevNeuroSpace.png"
+  - name:
+      he: "נייאקס"
+      en: "Nayax"
+      ru: "Найакс"
+    logo: "/assets/clients/Nayax.png"
+  - name:
+      he: "רנר אדוקיישן"
+      en: "Rener education"
+      ru: "Ренер образование"
+    logo: "/assets/clients/Rener_Education.png"
+  - name:
+      he: "סקטצ' איט"
+      en: "Sketch It"
+      ru: "Скетч Ит"
+    logo: "/assets/clients/sketch_it.png"
+  - name:
+      he: "טרידאה"
+      en: "TRIDEA"
+      ru: "ТРИДЕА"
+    logo: "/assets/clients/TRIDEA.png"
+  - name:
+      he: 'ד"ר עומר וולף'
+      en: "Dr. Omer Wolf"
+      ru: "Доктор Омер Вольф"
+    logo: "/assets/clients/דר_עומר_וולף.png"
+  - name:
+      he: 'ד"ר עלא מלחם'
+      en: "Dr. Alaa Makhoul"
+      ru: "Доктор Алаа Махул"
+    logo: "/assets/clients/דר_עלא_מלחם.png"
+  - name:
+      he: "מעדנה סדנאות שף"
+      en: "Madana Chef Workshops"
+      ru: "Мадана Кулинарные Мастерские"
+    logo: "/assets/clients/סדנאות_שף.png"
+  - name:
+      he: "אגסטה סוכנות לביטוח"
+      en: "Agasta Insurance Agency"
+      ru: "Агаста Страховое Агентство"
+    logo: "/assets/clients/סוכנות_ביטוח.png"
+  - name:
+      he: 'עו"ד צביקה שכטר'
+      en: "Adv. Tzvika Shechter"
+      ru: "Адвокат Цвика Шехтер"
+    logo: "/assets/clients/עוד_צביקה_שכטר.png"
+
+about:
+  title:
+    he: נעים מאוד, אני קטיה אלון
+    en: Nice to meet you, I'm Katya Alon
+    ru: Рада знакомству, я Катя Алон
+  photo_placeholder:
+    he: תמונה נוספת של קטיה
+    en: Second photo of Katya
+    ru: Второе фото Кати
+  paragraphs:
+  - he: יועצת אסטרטגית ומומחית לשיווק דיגיטלי, עם ניסיון בעבודה עם עסקים במגוון תחומים ובניית מערכות שיווק שמביאות תוצאות בפועל.
+      הגישה שלי משלבת חשיבה אסטרטגית, הבנה עמוקה של קהל והתמקדות בתהליכים שמייצרים צמיחה יציבה לאורך זמן.
+      מעבר לליווי, אני מכשירה בעלי עסקים לנהל שיווק נכון בעצמם דרך קורס מעשי ומובנה, המבוסס על שיטות עבודה מדויקות וכלים שעובדים בשטח.
+
+    en: A strategic consultant and digital marketing expert, with experience working with businesses in a variety of fields and building marketing systems that bring results in practice.
+      My approach combines strategic thinking, a deep understanding of the audience, and a focus on processes that produce stable growth over time.
+      Beyond coaching, I train business owners to manage their own marketing properly through a practical and structured course, based on precise working methods and tools that work in the field.
+    ru: я стратегический консультант и эксперт по цифровому маркетингу, имею опыт работы с компаниями в различных областях и создания маркетинговых систем, приносящих результаты на практике.
+      Мой подход сочетает в себе стратегическое мышление, глубокое понимание целевой аудитории и ориентацию на процессы, обеспечивающие стабильный рост в долгосрочной перспективе.
+      Помимо коучинга, я обучаю владельцев бизнеса правильному управлению собственным маркетингом с помощью практического и структурированного курса, основанного на точных методах работы и инструментах, которые эффективны на практике.
+  - he: אני מאמינה ששיווק טוב הוא לא רק פרסום או נראות יפה. שיווק טוב מתחיל מהבנה
+      אמיתית של העסק, של הערך שלו, ושל הדרך הנכונה לדבר אל האנשים שהוא רוצה להגיע
+      אליהם.
+    en: I believe good marketing is not just about promotion or attractive visuals.
+      Good marketing starts with a real understanding of the business, its value,
+      and the right way to speak to the people it wants to reach.
+    ru: Я уверена, что хороший маркетинг — это не только реклама или красивая визуальная
+      подача. Хороший маркетинг начинается с настоящего понимания бизнеса, его ценности
+      и того, как правильно говорить с людьми, до которых он хочет дойти.
+
+services:
+  title:
+    he: מה אני עושה
+    en: What I Do
+    ru: Что я делаю
+  items:
+  - title:
+      he: בניית אסטרטגיה שיווקית
+      en: Marketing Strategy
+      ru: Маркетинговая стратегия
+    description:
+      he: יצירת כיוון ברור שמחבר בין מטרות העסק, הקהל והמסר, והופך את הרשתות החברתיות לכלי שמוביל לצמיחה ומכירות.
+      en: Creating a clear direction that connects the business goals, the audience, and the message, and turns social media into a tool that drives growth and sales.
+      ru: Создание чёткого направления, которое соединяет цели бизнеса, аудиторию и сообщение, и превращает социальные сети в инструмент роста и продаж.
+    details:
+      summary:
+        he: 'אם אתם פועלים ברשתות החברתיות אבל לא רואים תוצאות, הבעיה היא לא בתוכן, אלא בהיעדר אסטרטגיה ברורה.'
+        en: 'If you are active on social media but do not see results, the problem is not the content, but the lack of a clear strategy.'
+        ru: 'Если вы работаете в социальных сетях, но не видите результатов, проблема не в контенте, а в отсутствии чёткой стратегии.'
+      tech_points:
+      - he: ניתוח העסק, המוצר והשוק
+        en: Analysis of the business, product, and market
+        ru: Анализ бизнеса, продукта и рынка
+      - he: הגדרת קהל יעד מדויק
+        en: Defining a precise target audience
+        ru: Определение точной целевой аудитории
+      - he: בניית מסרים שיווקיים שמבדלים אתכם
+        en: Building marketing messages that differentiate you
+        ru: Формирование маркетинговых сообщений, которые выделяют вас
+      - he: בחירת כיוון תוכן ברור
+        en: Choosing a clear content direction
+        ru: Выбор чёткого направления контента
+      - he: תכנון משפך שיווקי שמוביל למכירות
+        en: Planning a marketing funnel that leads to sales
+        ru: Планирование маркетинговой воронки, ведущей к продажам
+      - he: המלצות לפעילות אורגנית וממומנת
+        en: Recommendations for organic and paid activity
+        ru: Рекомендации по органическому и платному продвижению
+      second_tech_points:
+      - he: 'אסטרטגיה ברורה ומותאמת לעסק שלכם'
+        en: 'A clear strategy tailored to your business'
+        ru: 'Чёткую стратегию, адаптированную под ваш бизнес'
+      - he: 'תוכנית פעולה מסודרת'
+        en: 'A structured action plan'
+        ru: 'Чёткий план действий'
+      - he: 'הבנה מדויקת מה עובד ומה לא'
+        en: 'A precise understanding of what works and what does not'
+        ru: 'Точное понимание того, что работает, а что нет'
+      - he: 'כיוון ברור לתוכן ולשיווק'
+        en: 'A clear direction for content and marketing'
+        ru: 'Чёткое направление для контента и маркетинга'
+      body:
+      - he: רוצים לבנות אסטרטגיה שמביאה תוצאות?
+        en: Want to build a strategy that delivers results?
+        ru: Хотите выстроить стратегию, которая приносит результаты?
+      contact_cta:
+        label:
+          he: צרו קשר
+          en: Contact me
+          ru: Связаться с нами
+        href:
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
+  - title:
+      he: יצירת תוכן
+      en: Content Creation
+      ru: Создание контента
+    description:
+      he: כתיבה ובניית תוכן מדויק שמייצג את העסק בצורה מקצועית.
+      en: Writing and developing precise content that represents the business professionally.
+      ru: Создание и написание точного контента, который профессионально представляет бизнес.
+    details:
+      summary:
+        he: 'תוכן הוא לא רק נראות, הוא הכלי שמושך את הקהל הנכון והופך אותו ללקוחות.'
+        en: 'Content is not just about appearance, it is the tool that attracts the right audience and turns them into customers.'
+        ru: 'Контент, это не только внешний вид, это инструмент, который привлекает нужную аудиторию и превращает её в клиентов.'
+      tech_points:
+      - he: בניית שפת תוכן שמתאימה למותג
+        en: Building a content language that matches the brand
+        ru: Формирование языка контента, соответствующего бренду
+      - he: כתיבת פוסטים, כותרות וטקסטים שיווקיים
+        en: Writing posts, headlines, and marketing texts
+        ru: Написание постов, заголовков и маркетинговых текстов
+      - he: התאמת המסר לקהל היעד
+        en: Adapting the message to the target audience
+        ru: Адаптация сообщения под целевую аудиторию
+      - he: יצירת רעיונות לתוכן שמייצר מעורבות
+        en: Creating content ideas that generate engagement
+        ru: Создание идей для контента, который вызывает вовлечённость
+      - he: חיבור בין תוכן למטרות עסקיות
+        en: Connecting content to business goals
+        ru: Связь контента с бизнес-целями
+      - he: הנחיות ליצירת תוכן באופן שוטף
+        en: Guidelines for ongoing content creation
+        ru: Рекомендации по регулярному созданию контента
+      second_tech_points:
+      - he: 'כיוון תוכן ברור ואחיד'
+        en: 'A clear and consistent content direction'
+        ru: 'Чёткое и единое направление контента'
+      - he: 'מסרים מדויקים שמדברים לקהל שלכם'
+        en: 'Precise messages that speak to your audience'
+        ru: 'Точные сообщения, которые говорят с вашей аудиторией'
+      - he: 'תוכן שמייצר עניין ומעורבות'
+        en: 'Content that creates interest and engagement'
+        ru: 'Контент, который вызывает интерес и вовлечённость'
+      - he: 'בסיס יציב להמשך פעילות שיווקית'
+        en: 'A solid foundation for continued marketing activity'
+        ru: 'Прочная основа для дальнейшей маркетинговой деятельности'
+      body:
+      - he: רוצים תוכן שמייצר תוצאות ולא רק נראות?
+        en: Want to build a strategy that delivers results?
+        ru: Хотите выстроить стратегию, которая приносит результаты?
+      contact_cta:
+        label:
+          he: צרו קשר
+          en: Contact me
+          ru: Связаться с нами
+        href:
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
+  - title:
+      he: פרסום ממומן שמביא תוצאות
+      en: Paid Advertising
+      ru: Платная реклама
+    description:
+      he: לא עוד קמפיינים שמבזבזים תקציב, אלא מהלכים מדויקים שמביאים פניות ומכירות.
+      en: No more campaigns that waste budget, only precise moves that generate leads and sales.
+      ru: Больше никаких кампаний, которые сливают бюджет, только точные действия, которые приводят обращения и продажи.
+    details:
+      summary:
+        he: 'המטרה היא לא רק חשיפה, אלא להביא את הקהל הנכון ולהפוך אותו ללקוחות.'
+        en: 'The goal is not just exposure, but bringing the right audience and turning them into customers.'
+        ru: 'Цель, не просто охват, а привлечение нужной аудитории и превращение её в клиентов.'
+      tech_points:
+      - he: בניית אסטרטגיית קמפיינים מותאמת לעסק
+        en: Building a campaign strategy tailored to the business
+        ru: Разработка стратегии рекламных кампаний, адаптированной под бизнес
+      - he: הגדרת קהלים מדויקים
+        en: Defining precise audiences
+        ru: Определение точных аудиторий
+      - he: כתיבה ובניית קריאייטיב שמושך תשומת לב
+        en: Writing and creating attention-grabbing creatives
+        ru: Создание текстов и креативов, которые привлекают внимание
+      - he: הקמה וניהול קמפיינים בפלטפורמות השונות
+        en: Setting up and managing campaigns across platforms
+        ru: Запуск и ведение кампаний на разных платформах
+      - he: אופטימיזציה ושיפור ביצועים באופן שוטף
+        en: Ongoing optimization and performance improvement
+        ru: Постоянная оптимизация и улучшение результатов
+      - he: ניתוח נתונים והתמקדות במה שעובד
+        en: Data analysis and focus on what works
+        ru: Анализ данных и фокус на том, что действительно работает
+      second_tech_points:
+      - he: 'קמפיינים מדויקים שמביאים תוצאות'
+        en: 'Precise campaigns that deliver results'
+        ru: 'Точные кампании, которые приносят результаты'
+      - he: 'שימוש נכון וחכם בתקציב'
+        en: 'Smart and efficient use of budget'
+        ru: 'Грамотное и эффективное использование бюджета'
+      - he: 'פניות איכותיות יותר'
+        en: 'Higher-quality leads'
+        ru: 'Более качественные обращения'
+      - he: 'מערכת פרסום שעובדת לאורך זמן'
+        en: 'An advertising system that works over time'
+        ru: 'Рекламная система, которая работает в долгосрочной перспективе'
+      body:
+      - he: רוצים לבנות אסטרטגיה שמביאה תוצאות?
+        en: Want to build a strategy that delivers results?
+        ru: Хотите выстроить стратегию, которая приносит результаты?
+      contact_cta:
+        label:
+          he: צרו קשר
+          en: Contact me
+          ru: Связаться с нами
+        href:
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
+  - title:
+      he: ניהול דפי סושיאל
+      en: Social Media Management
+      ru: Ведение социальных сетей
+    description:
+      he: ניהול סושיאל שמייצר נוכחות ותוצאות
+      en: Social Media Management That Builds Presence and Results
+      ru: Ведение соцсетей, которое создаёт присутствие и приносит результаты
+    details:
+      summary:
+        he: 'ניהול נכון של רשתות חברתיות הוא לא רק פרסום, אלא בניית נוכחות שמביאה קהל, אמון ומכירות..'
+        en: 'Proper social media management is not just posting, it is building a presence that brings audience, trust, and sales..'
+        ru: 'Правильное ведение социальных сетей, это не просто публикации, а создание присутствия, которое приносит аудиторию, доверие и продажи.'
+      tech_points:
+      - he: בניית קו תוכן ברור ואחיד
+        en: Building a clear and consistent content direction
+        ru: Построение чёткой и единой контент-линии
+      - he: תכנון חודשי של פוסטים ותכנים
+        en: Monthly planning of posts and content
+        ru: Ежемесячное планирование постов и контента
+      - he: כתיבה וניהול שוטף של התוכן
+        en: Writing and ongoing management of content
+        ru: Написание и регулярное ведение контента
+      - he: התאמת המסרים לקהל היעד
+        en: Adjusting messages to the target audience
+        ru: Адаптация сообщений под целевую аудиторию
+      - he: שילוב בין תוכן לערך שיווקי
+        en: Combining content with marketing value
+        ru: Сочетание контента с маркетинговой ценностью
+      - he: מעקב ושיפור ביצועים לאורך זמן
+        en: Monitoring and improving performance over time
+        ru: Отслеживание и улучшение результатов со временем
+      second_tech_points:
+      - he: 'נוכחות עקבית ומדויקת ברשתות'
+        en: 'A consistent and precise presence on social media'
+        ru: 'Последовательное и точное присутствие в социальных сетях'
+      - he: 'תוכן שמחזק את המותג'
+        en: 'Content that strengthens the brand'
+        ru: 'Контент, который усиливает бренд'
+      - he: 'חיבור נכון עם הקהל'
+        en: 'The right connection with the audience'
+        ru: 'Правильную связь с аудиторией'
+      - he: 'בסיס יציב לצמיחה ומכירות'
+        en: 'A solid foundation for growth and sales'
+        ru: 'Прочную основу для роста и продаж'
+      body:
+      - he: רוצים לבנות אסטרטגיה שמביאה תוצאות?
+        en: Want to build a strategy that delivers results?
+        ru: Хотите выстроить стратегию, которая приносит результаты?
+      contact_cta:
+        label:
+          he: צרו קשר
+          en: Contact me
+          ru: Связаться с нами
+        href:
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
+  - title:
+      he: ייעוץ אישי
+      en: Personal Consulting
+      ru: Личные консультации
+    description:
+      he: ייעוץ שיווקי ממוקד לעסקים
+      en: Focused Marketing Consulting for Businesses
+      ru: Точечный маркетинговый консалтинг для бизнеса
+    details:
+      summary:
+        he: 'אם אתם מרגישים בלבול, חוסר כיוון או תקיעות, ייעוץ נכון יכול לעשות סדר ולהראות בדיוק מה צריך לעשות.'
+        en: 'If you feel confused, stuck, or lacking direction, the right consulting can create clarity and show exactly what needs to be done.'
+        ru: 'Если вы чувствуете растерянность, отсутствие направления или застой, правильная консультация поможет навести порядок и точно покажет, что нужно делать.'
+      tech_points:
+      - he: ניתוח מצב קיים של העסק והשיווק
+        en: Analysis of the current state of the business and its marketing
+        ru: Анализ текущего состояния бизнеса и маркетинга
+      - he: זיהוי בעיות שמעכבות תוצאות
+        en: Identifying issues that hold back results
+        ru: Выявление проблем, которые мешают результатам
+      - he: דיוק קהל היעד והמסרים
+        en: Refining the target audience and messaging
+        ru: Уточнение целевой аудитории и сообщений
+      - he: המלצות פרקטיות לשיפור מיידי
+        en: Practical recommendations for immediate improvement
+        ru: Практические рекомендации для немедленного улучшения
+      - he: בניית כיוון שיווקי ברור להמשך
+        en: Building a clear marketing direction for the future
+        ru: Формирование чёткого маркетингового направления на будущее
+      - he: מענה לשאלות והכוונה אישית
+        en: Answering questions and providing personal guidance
+        ru: Ответы на вопросы и персональные рекомендации
+      second_tech_points:
+      - he: 'בהירות מלאה לגבי השיווק שלכם'
+        en: 'Full clarity regarding your marketing'
+        ru: 'Полную ясность в отношении вашего маркетинга'
+      - he: 'כיוון ברור לפעולה'
+        en: 'A clear direction for action'
+        ru: 'Чёткое направление для действий'
+      - he: 'צעדים פרקטיים ליישום מיידי'
+        en: 'Practical steps for immediate implementation'
+        ru: 'Практические шаги для немедленного внедрения'
+      - he: 'ביטחון בהחלטות שיווקיות'
+        en: 'Confidence in marketing decisions'
+        ru: 'Уверенность в маркетинговых решениях'
+
+      video:
+        title:
+          he: סרטון הסבר על הייעוץ האישי
+          en: Short video about the personal consultation
+          ru: Короткое видео о личной консультации
+        description:
+          he: החלף את הקישור הזה בסרטון אמיתי מתוך YouTube, Vimeo או Google Drive
+            משותף.
+          en: Replace this link with a real video from YouTube, Vimeo, or a shared
+            Google Drive file.
+          ru: Замените эту ссылку на реальное видео из YouTube, Vimeo или общего файла
+            Google Drive.
+        link_label:
+          he: פתיחת הסרטון
+          en: Open video
+          ru: Открыть видео
+        url: https://example.com/katya-consulting-video
+      body:
+      - he: רוצים לבנות אסטרטגיה שמביאה תוצאות?
+        en: Want to build a strategy that delivers results?
+        ru: Хотите выстроить стратегию, которая приносит результаты?
+      contact_cta:
+        label:
+          he: צרו קשר
+          en: Contact me
+          ru: Связаться с нами
+        href:
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
+
+
+  modal_kicker:
+    he: פרטים נוספים על השירות
+    en: More details about the service
+    ru: Подробности об услуге
+  modal_points_title:
+    he: דוגמאות לנושאים ותוצרים
+    en: Examples of topics and deliverables
+    ru: Примеры задач и результатов
+  modal_video_link_label:
+    he: לצפייה בסרטון
+    en: Watch video
+    ru: Смотреть видео
+
+audience:
+  title:
+    he: למי הליווי מתאים
+    en: Who This Guidance Is For
+    ru: Для кого подходит сопровождение
+  subtitle:
+    he: הליווי מתאים לבעלי עסקים, יזמים, חברות וארגונים שרוצים לחדד את הדרך שבה הם
+      מציגים את עצמם, לתקשר נכון יותר עם הקהל שלהם, ולבנות נוכחות שיווקית מקצועית,
+      ברורה ומדויקת יותר.
+    en: This guidance is designed for business owners, entrepreneurs, companies, and
+      organizations who want to sharpen the way they present themselves, communicate
+      more effectively with their audience, and build a professional, clear, and more
+      precise marketing presence.
+    ru: Сопровождение подходит владельцам бизнеса, предпринимателям, компаниям и организациям,
+      которые хотят точнее представить себя, лучше коммуницировать со своей аудиторией
+      и выстроить профессиональное, понятное и более точное маркетинговое присутствие.
+  items:
+  - he: עסקים שרוצים להיראות מקצועיים וברורים יותר
+    en: Businesses that want to look more professional and clear
+    ru: Бизнесам, которые хотят выглядеть профессиональнее и понятнее
+  - he: חברות שצריכות שיווק עם חשיבה אסטרטגית
+    en: Companies that need marketing with strategic thinking
+    ru: Компаниям, которым нужен маркетинг со стратегическим мышлением
+  - he: ארגונים שמחפשים מסר, תוכן ונוכחות עקבית
+    en: Organizations looking for message, content, and a consistent presence
+    ru: Организациям, которым нужны сообщение, контент и стабильное присутствие
+  - he: מותגים שרוצים שפה שיווקית מדויקת יותר
+    en: Brands that want more accurate marketing language
+    ru: Брендам, которым нужен более точный маркетинговый язык
+  - he: עסקים שמרגישים שהם עושים שיווק, אבל בלי כיוון מסודר
+    en: Businesses that feel they are doing marketing, but without a clear direction
+    ru: Бизнесам, которые вроде бы занимаются маркетингом, но без четкого направления
+  - he: מי שמחפש ליווי אמיתי, ולא רק ביצוע טכני
+    en: Anyone looking for real guidance, not just technical execution
+    ru: Тем, кто ищет настоящее сопровождение, а не только техническое выполнение
+
+why:
+  title:
+    he: למה לעבוד איתי
+    en: Why Work With Me
+    ru: Почему стоит работать со мной
+  text:
+    he: אני לא מסתכלת רק על מה לפרסם, אלא על מה נכון לעסק שלך, איך נכון להציג אותו,
+      ואיך לגרום לכל השיווק לעבוד יחד בצורה ברורה, מקצועית ומשכנעת.
+    en: I don't only look at what to publish, but at what is right for your business,
+      how it should be presented, and how to make all of your marketing work together
+      in a clear, professional, and convincing way.
+    ru: Я смотрю не только на то, что публиковать, а на то, что правильно именно для
+      вашего бизнеса, как его правильно представить и как сделать так, чтобы весь
+      маркетинг работал вместе — ясно, профессионально и убедительно.
+
+process:
+  title:
+    he: איך נראה תהליך העבודה
+    en: How the Process Works
+    ru: Как выглядит процесс работы
+  steps:
+  - number: 1
+    title:
+      he: היכרות והבנת הצרכים
+      en: Introduction and understanding your needs
+      ru: Знакомство и понимание потребностей
+    description:
+      he: שיחה ראשונית שבה נבין את העסק, המטרות, האתגרים והכיוון הרצוי.
+      en: An initial conversation to understand the business, goals, challenges, and
+        the direction you want to take.
+      ru: Первая встреча, на которой мы понимаем бизнес, цели, задачи и желаемое направление.
+  - number: 2
+    title:
+      he: ניתוח וחידוד
+      en: Analysis and refinement
+      ru: Анализ и уточнение
+    description:
+      he: מחדדים את הקהל, המסרים, הבידול והדרך שבה נכון להציג את העסק.
+      en: We sharpen the audience, messaging, differentiation, and the right way to
+        present the business.
+      ru: Уточняем аудиторию, сообщения, отличие от конкурентов и правильный способ
+        представить бизнес.
+  - number: 3
+    title:
+      he: בניית כיוון שיווקי
+      en: Building a marketing direction
+      ru: Формирование маркетингового направления
+    description:
+      he: יוצרים בסיס ברור לפעילות — אסטרטגיה, מסרים, שפה ודרך עבודה.
+      en: We create a clear foundation for activity — strategy, messaging, tone, and
+        way of working.
+      ru: Создаем понятную основу для дальнейшей работы — стратегию, сообщения, стиль
+        и подход.
+  - number: 4
+    title:
+      he: יצירת תוכן ונוכחות
+      en: Content and presence creation
+      ru: Создание контента и присутствия
+    description:
+      he: עובדים על התוכן, הנראות והתקשורת השיווקית בפועל.
+      en: We work on the content, visibility, and practical marketing communication.
+      ru: Работаем над контентом, визуальным присутствием и практической маркетинговой
+        коммуникацией.
+  - number: 5
+    title:
+      he: ליווי והתקדמות
+      en: Guidance and progress
+      ru: Сопровождение и развитие
+    description:
+      he: ממשיכים לחדד, לשפר ולהתאים את הפעילות לפי הצרכים והמטרות.
+      en: We continue refining, improving, and adapting the activity according to
+        your needs and goals.
+      ru: Продолжаем уточнять, улучшать и адаптировать работу под ваши задачи и цели.
+
+trust:
+  title:
+    he: ניסיון שמבוסס על עבודה אמיתית בשטח
+    en: Experience built on real work in the field
+    ru: Опыт, основанный на реальной работе на практике
+  text:
+    he: העבודה שלי כוללת ליווי של עסקים, חברות וארגונים ממגוון תחומים, תוך התאמה לצרכים,
+      לקהל ולמטרות של כל לקוח. אני מאמינה שאין פתרון אחד שמתאים לכולם — ולכן כל תהליך
+      מתחיל בהבנה אמיתית של מי עומד מולי ומה נכון עבורו.
+    en: My work includes guiding businesses, companies, and organizations from a variety
+      of industries, while adapting to the needs, audience, and goals of each client.
+      I believe there is no single solution that fits everyone — which is why every
+      process starts with a real understanding of who is in front of me and what is
+      right for them.
+    ru: Моя работа включает сопровождение бизнесов, компаний и организаций из разных
+      сфер, с учетом потребностей, аудитории и целей каждого клиента. Я убеждена,
+      что не существует одного решения, которое подходит всем, поэтому каждый процесс
+      начинается с настоящего понимания того, кто передо мной и что действительно
+      подходит именно ему.
+
+final_cta:
+  title:
+    he: אם גם העסק שלך צריך שיווק עם כיוון ברור
+    en: If your business also needs marketing with a clear direction
+    ru: Если вашему бизнесу тоже нужен маркетинг с четким направлением
+  text:
+    he: אם אתה מחפש ליווי שיווקי מקצועי, חשיבה אסטרטגית ותוכן שמחובר באמת לעסק שלך,
+      אני מזמינה אותך לקבוע פגישת ייעוץ או לשלוח לי הודעה בוואטסאפ.
+    en: If you are looking for professional marketing guidance, strategic thinking,
+      and content that truly connects to your business, I invite you to book a consultation
+      or send me a message on WhatsApp.
+    ru: Если вы ищете профессиональное маркетинговое сопровождение, стратегическое
+      мышление и контент, который действительно связан с вашим бизнесом, я приглашаю
+      вас записаться на консультацию или написать мне в WhatsApp.
+  cta_primary:
+    he: לקביעת פגישת ייעוץ
+    en: Book a Consultation
+    ru: Записаться на консультацию
+  cta_secondary:
+    he: מעבר לוואטסאפ
+    en: Chat on WhatsApp
+    ru: Перейти в WhatsApp
+
+footer:
+  rights:
+    he: כל הזכויות שמורות
+    en: All rights reserved
+    ru: Все права защищены

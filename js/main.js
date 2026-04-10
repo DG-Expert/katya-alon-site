@@ -128,14 +128,187 @@ function renderServices(items, lang) {
   const container = document.getElementById('services-list');
   if (!container || !items) return;
 
-  container.innerHTML = items.map((item, index) =>
-    `<button type="button" class="service-row fade-up visible service-card-theme p-6 w-full text-start cursor-pointer"
-      onclick="openServiceModal(${index})">
-      <h3 class="font-semibold text-lg mb-2 service-card-title-theme">${t(item.title, lang)}</h3>
-      <p class="text-sm font-light leading-relaxed service-card-description-theme">${t(item.description, lang)}</p>
-    </button>`
-  ).join('');
+  container.innerHTML = items.map((item, index) => {
+    const positionClass = `service-card-pos-${index + 1}`;
+    return `
+      <button
+        type="button"
+        class="service-row fade-up visible service-card-theme text-start cursor-pointer ${positionClass}"
+        data-service-index="${index}"
+        onclick="openServiceModal(${index})"
+      >
+        <span class="service-card-shell">
+          <span class="service-card-base" aria-hidden="true"></span>
+          <span class="service-card-circles" aria-hidden="true"></span>
+          <span class="service-card-holo-bg" aria-hidden="true"></span>
+          <span class="service-card-holo-lines" aria-hidden="true"></span>
+
+          <span class="service-card-content">
+            <span class="service-card-title service-card-title-theme">${t(item.title, lang)}</span>
+            <span class="service-card-description service-card-description-theme">${t(item.description, lang)}</span>
+          </span>
+        </span>
+      </button>
+    `;
+  }).join('');
+
+  setupServicesDiagram();
 }
+
+const SERVICES_RADIAL_BREAKPOINT = 900;
+let servicesResizeBound = false;
+
+function setupServicesDiagram() {
+  const section = document.getElementById('services');
+  const list = document.getElementById('services-list');
+  if (!section || !list) return;
+
+  const cards = Array.from(list.querySelectorAll('.service-row'));
+  const isRadial = window.innerWidth >= SERVICES_RADIAL_BREAKPOINT && cards.length === 6;
+
+  section.classList.toggle('services-layout-radial', isRadial);
+  clearServicesDiagramEffect();
+
+  cards.forEach((card, index) => {
+    card.dataset.serviceIndex = String(index);
+    bindServiceCardHolographic(card);
+  });
+
+  if (!servicesResizeBound) {
+    window.addEventListener('resize', handleServicesDiagramResize, { passive: true });
+    servicesResizeBound = true;
+  }
+}
+
+function bindServiceCardHolographic(card) {
+  if (card.dataset.holoBound === 'true') return;
+
+  card.addEventListener('pointermove', handleServiceCardPointerMove);
+  card.addEventListener('pointerleave', handleServiceCardPointerLeave);
+  card.addEventListener('pointercancel', handleServiceCardPointerLeave);
+  card.dataset.holoBound = 'true';
+
+  resetServiceCardHolographic(card);
+}
+
+function handleServicesDiagramResize() {
+  const section = document.getElementById('services');
+  const list = document.getElementById('services-list');
+  if (!section || !list) return;
+
+  const cards = Array.from(list.querySelectorAll('.service-row'));
+  const isRadial = window.innerWidth >= SERVICES_RADIAL_BREAKPOINT && cards.length === 6;
+
+  section.classList.toggle('services-layout-radial', isRadial);
+  clearServicesDiagramEffect();
+}
+
+function handleServiceCardPointerMove(event) {
+  const card = event.currentTarget;
+  const section = document.getElementById('services');
+  const list = document.getElementById('services-list');
+
+  if (!card || !section || !list || !section.classList.contains('services-layout-radial')) {
+    clearServicesDiagramEffect();
+    return;
+  }
+
+  if (window.innerWidth < SERVICES_RADIAL_BREAKPOINT) {
+    clearServicesDiagramEffect();
+    return;
+  }
+
+  const rect = card.getBoundingClientRect();
+  const halfWidth = rect.width / 2;
+  const halfHeight = rect.height / 2;
+  if (!halfWidth || !halfHeight) return;
+
+  const ratioX = clamp((event.clientX - (rect.left + halfWidth)) / halfWidth, -1, 1);
+  const ratioY = clamp((event.clientY - (rect.top + halfHeight)) / halfHeight, -1, 1);
+  const activeIndex = Number(card.dataset.serviceIndex);
+
+  applyServicesGroupEffect(list, activeIndex, ratioX, ratioY);
+}
+
+function handleServiceCardPointerLeave() {
+  clearServicesDiagramEffect();
+}
+
+function applyServicesGroupEffect(list, activeIndex, ratioX, ratioY) {
+  const cards = Array.from(list.querySelectorAll('.service-row'));
+  if (!cards.length || Number.isNaN(activeIndex)) return;
+
+  const positionMap = [
+    { x: -1, y: -1 },
+    { x: 1, y: -1 },
+    { x: -1, y: 0 },
+    { x: 1, y: 0 },
+    { x: -1, y: 1 },
+    { x: 1, y: 1 }
+  ];
+
+  const activePos = positionMap[activeIndex] || { x: 0, y: 0 };
+
+  cards.forEach((card, index) => {
+    const pos = positionMap[index] || { x: 0, y: 0 };
+
+    if (index === activeIndex) {
+      const sinkX = (-activePos.x * 6) + (ratioX * 5);
+      const sinkY = (-activePos.y * 5) + (ratioY * 4) + 5;
+
+      card.style.setProperty('--service-ratio-x', ratioX.toFixed(3));
+      card.style.setProperty('--service-ratio-y', ratioY.toFixed(3));
+      card.style.setProperty('--service-hover', '1');
+
+      card.style.setProperty('--service-group-x', `${sinkX.toFixed(2)}px`);
+      card.style.setProperty('--service-group-y', `${sinkY.toFixed(2)}px`);
+      card.style.setProperty('--service-group-scale', '0.965');
+      card.style.setProperty('--service-group-z', '3');
+      return;
+    }
+
+    const dx = pos.x - activePos.x;
+    const dy = pos.y - activePos.y;
+    const distance = Math.hypot(dx, dy);
+    const lift = Math.max(0, 1.3 - (distance * 0.3));
+
+    const shiftX = (pos.x * (5 + lift * 4)) + (ratioX * 5);
+    const shiftY = ((pos.y * (5 + lift * 4)) - (lift * 6)) + (ratioY * 4);
+    const scale = 1 + (lift * 0.03);
+
+    card.style.setProperty('--service-ratio-x', '0');
+    card.style.setProperty('--service-ratio-y', '0');
+    card.style.setProperty('--service-hover', '0');
+
+    card.style.setProperty('--service-group-x', `${shiftX.toFixed(2)}px`);
+    card.style.setProperty('--service-group-y', `${shiftY.toFixed(2)}px`);
+    card.style.setProperty('--service-group-scale', scale.toFixed(3));
+    card.style.setProperty('--service-group-z', '1');
+  });
+}
+
+function resetServiceCardHolographic(card) {
+  if (!card) return;
+
+  card.style.setProperty('--service-ratio-x', '0');
+  card.style.setProperty('--service-ratio-y', '0');
+  card.style.setProperty('--service-hover', '0');
+  card.style.setProperty('--service-group-x', '0px');
+  card.style.setProperty('--service-group-y', '0px');
+  card.style.setProperty('--service-group-scale', '1');
+  card.style.setProperty('--service-group-z', '1');
+}
+
+function clearServicesDiagramEffect() {
+  document.querySelectorAll('#services-list .service-row').forEach((card) => {
+    resetServiceCardHolographic(card);
+  });
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
 
 function renderAudience(items, lang) {
   const container = document.getElementById('audience-list');

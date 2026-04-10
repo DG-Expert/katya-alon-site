@@ -135,13 +135,44 @@
 
   <!-- ═══════════ Services Section ═══════════ -->
   <section id="services" class="py-20 md:py-28 services-section-theme">
-    <div class="max-w-5xl mx-auto px-5">
+    <div class="max-w-6xl mx-auto px-5">
       <div class="text-center mb-14 fade-up">
         <h2 class="text-3xl md:text-4xl font-bold services-title-theme"
           data-content="services.title"></h2>
       </div>
-      <!-- Service items rendered dynamically -->
-      <div id="services-list" class="space-y-4"></div>
+
+      <div class="services-diagram-wrap fade-up">
+        <div class="services-diagram" id="services-diagram">
+          <svg
+            class="services-diagram-lines"
+            viewBox="0 0 1200 900"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <circle class="services-lines-core" cx="600" cy="450" r="18"></circle>
+
+            <line class="services-lines-path services-line-1" x1="600" y1="450" x2="355" y2="220"></line>
+            <line class="services-lines-path services-line-2" x1="600" y1="450" x2="845" y2="220"></line>
+            <line class="services-lines-path services-line-3" x1="600" y1="450" x2="290" y2="455"></line>
+            <line class="services-lines-path services-line-4" x1="600" y1="450" x2="910" y2="455"></line>
+            <line class="services-lines-path services-line-5" x1="600" y1="450" x2="355" y2="690"></line>
+            <line class="services-lines-path services-line-6" x1="600" y1="450" x2="845" y2="690"></line>
+          </svg>
+
+          <div class="services-center">
+            <div class="services-center-ring">
+              <img
+                src="/assets/images/katya-1.jpg"
+                alt="Katya Alon"
+                class="services-center-image"
+              />
+            </div>
+          </div>
+
+          <!-- Service items rendered dynamically -->
+          <div id="services-list" class="services-list" aria-live="polite"></div>
+        </div>
+      </div>
     </div>
   </section>
 

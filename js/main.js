@@ -108,14 +108,19 @@ function renderClientsStrip(items) {
     `;
   }).join('');
 
-  container.innerHTML = oneSetHtml + oneSetHtml;
+  container.innerHTML = `
+    <div class="clients-marquee-inner">
+      <div class="marquee-track">${oneSetHtml}</div>
+      <div class="marquee-track" aria-hidden="true">${oneSetHtml}</div>
+    </div>
+  `;
 }
 
 function renderAboutParagraphs(paragraphs, lang) {
   const container = document.getElementById('about-paragraphs');
   if (!container || !paragraphs) return;
   container.innerHTML = paragraphs.map(p =>
-    `<p class="text-gray font-light leading-relaxed">${t(p, lang)}</p>`
+    `<p class="about-paragraph-theme font-light leading-relaxed">${t(p, lang)}</p>`
   ).join('');
 }
 
@@ -124,10 +129,10 @@ function renderServices(items, lang) {
   if (!container || !items) return;
 
   container.innerHTML = items.map((item, index) =>
-    `<button type="button" class="service-row fade-up visible bg-cream rounded-xl p-6 border border-goldrose/50 w-full text-start cursor-pointer"
+    `<button type="button" class="service-row fade-up visible service-card-theme rounded-xl p-6 w-full text-start cursor-pointer"
       onclick="openServiceModal(${index})">
-      <h3 class="font-semibold text-lg mb-2 text-purple">${t(item.title, lang)}</h3>
-      <p class="text-gray text-sm font-light leading-relaxed">${t(item.description, lang)}</p>
+      <h3 class="font-semibold text-lg mb-2 service-card-title-theme">${t(item.title, lang)}</h3>
+      <p class="text-sm font-light leading-relaxed service-card-description-theme">${t(item.description, lang)}</p>
     </button>`
   ).join('');
 }
@@ -136,7 +141,7 @@ function renderAudience(items, lang) {
   const container = document.getElementById('audience-list');
   if (!container || !items) return;
   container.innerHTML = items.map(item =>
-    `<div class="audience-card p-5 rounded-xl bg-charcoal border border-goldrose/30 text-white">${t(item, lang)}</div>`
+    `<div class="audience-card p-5 rounded-xl audience-card-theme">${t(item, lang)}</div>`
   ).join('');
 }
 
@@ -144,10 +149,10 @@ function renderProcess(steps, lang) {
   const container = document.getElementById('process-list');
   if (!container || !steps) return;
   container.innerHTML = steps.map(step =>
-    `<div class="process-card bg-charcoal border border-goldrose/40 rounded-xl p-5">
-      <div class="text-purple font-bold mb-3">${step.number}</div>
-      <h3 class="font-semibold mb-2 text-white">${t(step.title, lang)}</h3>
-      <p class="text-sm text-gray font-light">${t(step.description, lang)}</p>
+    `<div class="process-card rounded-xl p-5 process-card-theme">
+      <div class="font-bold mb-3 process-step-number-theme">${step.number}</div>
+      <h3 class="font-semibold mb-2 process-step-title-theme">${t(step.title, lang)}</h3>
+      <p class="text-sm font-light process-step-description-theme">${t(step.description, lang)}</p>
     </div>`
   ).join('');
 }
@@ -177,17 +182,17 @@ function openServiceModal(index) {
 
   const techItems = details.tech_points || [];
   techPoints.innerHTML = techItems.map(point =>
-    `<li class="text-gray leading-relaxed">${t(point, currentLang)}</li>`
+    `<li class="leading-relaxed modal-list-item-theme">${t(point, currentLang)}</li>`
   ).join('');
 
   const secondTechItems = details.second_tech_points || [];
   secondTechPoints.innerHTML = secondTechItems.map(point =>
-    `<li class="text-gray leading-relaxed">${t(point, currentLang)}</li>`
+    `<li class="leading-relaxed modal-list-item-theme">${t(point, currentLang)}</li>`
   ).join('');
 
   const bodyItems = details.body || [];
   body.innerHTML = bodyItems.map(par =>
-    `<p class="text-gray leading-relaxed">${t(par, currentLang)}</p>`
+    `<p class="leading-relaxed modal-body-paragraph-theme">${t(par, currentLang)}</p>`
   ).join('');
 
   const contactCta = details.contact_cta || null;
@@ -209,7 +214,7 @@ function openServiceModal(index) {
     const link = details.video.link || '#';
 
     if (embed) {
-      videoFrame.innerHTML = `<iframe src="${embed}" class="w-full aspect-video rounded-xl border border-goldrose/30" allowfullscreen loading="lazy"></iframe>`;
+      videoFrame.innerHTML = `<iframe src="${embed}" class="w-full aspect-video rounded-xl modal-video-frame-theme" allowfullscreen loading="lazy"></iframe>`;
     } else {
       videoFrame.innerHTML = '';
     }

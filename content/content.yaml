@@ -448,7 +448,6 @@ services:
       - he: 'ביטחון בהחלטות שיווקיות'
         en: 'Confidence in marketing decisions'
         ru: 'Уверенность в маркетинговых решениях'
-
       video:
         title:
           he: סרטון הסבר על הייעוץ האישי
@@ -479,7 +478,67 @@ services:
           he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
           en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
           ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
-
+  - title:
+      he: קורס שיווק חכם
+      en: Smart Marketing Course
+      ru: Курс Умный маркетинг
+    description:
+      he: קורס מעשי לבעלי עסקים שרוצים לקחת שליטה על השיווק, לבנות אסטרטגיה נכונה ולהביא לקוחות דרך הרשתות החברתיות.
+      en: A practical course for business owners who want to take control of their marketing, build the right strategy, and attract clients through social media.
+      ru: Практический курс для владельцев бизнеса, которые хотят взять под контроль свой маркетинг, выстроить правильную стратегию и привлекать клиентов через социальные сети.
+    details:
+      summary:
+        he: "אם אתם רוצים להבין איך שיווק באמת עובד, להפסיק לפעול בניחוש, ולבנות מערכת שיווקית מדויקת, הקורס הזה נועד עבורכם."
+        en: "If you want to understand how marketing really works, stop acting based on guesswork, and build a precise marketing system, this course is for you."
+        ru: "Если вы хотите понять, как маркетинг действительно работает, перестать действовать наугад и построить точную маркетинговую систему, этот курс для вас."
+      tech_points:
+        - he: עבודה נכונה עם קהל היעד
+          en: Working correctly with the target audience
+          ru: Правильная работа с целевой аудиторией
+        - he: בניית אסטרטגיה שיווקית ברורה
+          en: Building a clear marketing strategy
+          ru: Построение чёткой маркетинговой стратегии
+        - he: יצירת תוכן שמייצר עניין ומעורבות
+          en: Creating content that generates interest and engagement
+          ru: Создание контента, который вызывает интерес и вовлечённость
+        - he: הבנת הדרך להפוך עוקבים ללקוחות
+          en: Understanding how to turn followers into clients
+          ru: Понимание того, как превращать подписчиков в клиентов
+        - he: בניית מערכת שיווקית שמובילה לפניות ומכירות
+          en: Building a marketing system that leads to inquiries and sales
+          ru: Построение маркетинговой системы, которая приводит к обращениям и продажам
+        - he: למידה מעשית בקבוצה קטנה ופרונטלית
+          en: Practical learning in a small in-person group
+          ru: Практическое обучение в небольшой очной группе
+      second_tech_points:
+        - he: הבנה אמיתית של איך שיווק עובד
+          en: A real understanding of how marketing works
+          ru: Настоящее понимание того, как работает маркетинг
+        - he: כיוון ברור לשיווק העסק שלכם
+          en: A clear direction for your business marketing
+          ru: Чёткое направление для маркетинга вашего бизнеса
+        - he: כלים פרקטיים שאפשר ליישם מיד
+          en: Practical tools you can apply immediately
+          ru: Практические инструменты, которые можно применять сразу
+        - he: בסיס יציב לעבודה עצמאית ומדויקת
+          en: A solid foundation for independent and accurate marketing work
+          ru: Надёжная основа для самостоятельной и точной маркетинговой работы
+      body:
+        - he: הקורס מתקיים בקבוצות קטנות של עד 10 משתתפים, במפגשים פרונטליים, ומיועד לבעלי עסקים שמוכנים להעמיק, להבין על מה צריך לשים דגש, ולבנות שיווק שמביא תוצאות.
+          en: The course takes place in small groups of up to 10 participants, in face-to-face sessions, and is intended for business owners who are ready to go deeper, understand what really matters, and build marketing that delivers results.
+          ru: Курс проходит в небольших группах до 10 участников, в очных встречах, и предназначен для владельцев бизнеса, которые готовы глубже разобраться, понять, на чём действительно нужно делать акцент, и выстроить маркетинг, который приносит результаты.
+        - he: רוצים ללמוד איך לבנות שיווק שעובד באמת?
+          en: Want to learn how to build marketing that truly works?
+          ru: Хотите научиться выстраивать маркетинг, который действительно работает?
+      contact_cta:
+        label:
+          he: צרו קשר
+          en: Contact me
+          ru: Связаться со мной
+        href:
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20קורס%20שיווק%20חכם."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20the%20Smart%20Marketing%20course."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20курсе%20«Умный%20маркетинг»."
 
   modal_kicker:
     he: פרטים נוספים על השירות

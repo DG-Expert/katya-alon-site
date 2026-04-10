@@ -12,743 +12,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          charcoal: '#121111',
-          purple: '#7A5CFF',
-          goldrose: '#C9A3A3',
-          gray: '#7d7c82',
-          white: '#FFFFFF',
-          cream: '#FAF8F5',
-          greenCream: '#DFECEB',
-          roseCream: '#ECDFE0',
-        }
-      }
-    }
-  }
-</script>
+  <link rel="stylesheet" href="./css/styles.css">
 
-<style>
-/* ==================================================
-   01. PAGE / GLOBAL
-   ================================================== */
-
-html {
-  scroll-behavior: smooth;
-}
-
-* {
-  box-sizing: border-box;
-  cursor: default;
-}
-
-a,
-button,
-[role="button"] {
-  cursor: pointer;
-}
-
-input,
-textarea,
-select {
-  cursor: default;
-}
-
-.page-theme {
-  background-color: #FAF8F5;
-  background-image: url('/assets/images/main-bg.webp');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  color: #F6EFF0;
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(26px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-up {
-  opacity: 0;
-}
-
-.fade-up.visible {
-  animation: fadeUp 0.7s ease forwards;
-}
-
-
-/* ==================================================
-   02. REUSABLE ELEMENTS / COMPONENTS
-   ================================================== */
-
-.cta-primary {
-  background: #590099;
-  color: #DFECEB;
-  transition: all 0.3s ease;
-}
-
-.cta-primary:hover {
-  background: #20c00b;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(47, 107, 255, 0.3);
-}
-
-.cta-secondary {
-  background: #483696;
-  border: 1.5px solid #483696;
-  color: #DFECEB;
-  transition: all 0.3s ease;
-}
-
-.cta-secondary:hover {
-  background: #20c00b;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(47, 107, 255, 0.3);
-}
-
-.portrait-placeholder {
-  background: linear-gradient(135deg, #636363 0%, #383737 50%, #0B0B0B 100%);
-  border: 1px solid rgba(201, 163, 163, 0.18);
-}
-
-
-/* ==================================================
-   03. HEADER / NAVIGATION
-   ================================================== */
-
-.site-header-theme {
-  background-color: #ad009c31;
-  border-top-color: rgba(201, 163, 163, 0.4);
-  border-bottom-color: rgba(201, 163, 163, 0.4);
-}
-
-.site-logo-link {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.site-logo {
-  display: block;
-  width: auto;
-  height: 100px;
-  object-fit: contain;
-}
-
-.nav-text-theme {
-  color: #C9A3A3;
-}
-
-.nav-link {
-  position: relative;
-  transition: color 0.3s ease;
-  color: #C9A3A3;
-  font-size: 1.25rem;
-}
-
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  width: 0;
-  height: 2.5px;
-  background: #ffa600;
-  transition: width 0.3s ease;
-}
-
-[dir="rtl"] .nav-link::after {
-  right: 0;
-}
-
-[dir="ltr"] .nav-link::after {
-  left: 0;
-}
-
-.nav-link:hover::after {
-  width: 100%;
-}
-
-.nav-link:hover {
-  color: #ffa600;
-}
-
-.lang-switcher-theme {
-  border-color: #C9A3A3;
-}
-
-.separator-theme {
-  color: #C9A3A3;
-}
-
-.lang-btn {
-  transition: all 0.3s ease;
-}
-
-.lang-btn.active {
-  color: #cf6ef5;
-  border-bottom: 2px solid #590099;
-}
-
-.lang-btn:hover {
-  color: #ffa600;
-  border-bottom: 2px solid #ffa600;
-}
-
-.mobile-nav-theme {
-  background-color: #FAF8F5;
-  border-top-color: #C9A3A3;
-}
-
-@media (max-width: 768px) {
-  .site-logo {
-    height: 44px;
-    max-width: 150px;
-  }
-}
-
-
-/* ==================================================
-   04. HERO SECTION
-   ================================================== */
-
-.hero-title-theme {
-  color: #ECDFE0;
-}
-
-.hero-subtitle-theme {
-  color: #DFECEB;
-}
-
-.hero-description-theme {
-  color: #DFECEB;
-}
-
-
-/* ==================================================
-   05. CLIENTS SECTION
-   ================================================== */
-
-.clients-section-theme {
-  background-color: #ad009c31;
-  border-top-color: rgba(201, 163, 163, 0.4);
-  border-bottom-color: rgba(201, 163, 163, 0.4);
-}
-
-.clients-title-theme {
-  color: #ECDFE0;
-}
-
-.clients-subtitle-theme {
-  color: #DFECEB;
-}
-
-@keyframes clientsMarquee {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-.clients-marquee {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  direction: ltr;
-}
-
-#clients-strip {
-  display: flex;
-  width: max-content;
-  direction: ltr;
-}
-
-.clients-marquee-inner {
-  display: flex;
-  align-items: flex-start;
-  width: max-content;
-  direction: ltr;
-  animation: clientsMarquee 70s linear infinite;
-  will-change: transform;
-}
-
-.clients-marquee:hover .clients-marquee-inner {
-  animation-play-state: paused;
-}
-
-.marquee-track {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: flex-start;
-  gap: 80px;
-  flex-shrink: 0;
-  direction: ltr;
-}
-
-.client-item {
-  width: 220px;
-  min-width: 220px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  text-align: center;
-  padding: 0 10px;
-  flex-shrink: 0;
-}
-
-.client-logo-box {
-  width: 200px;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.client-logo-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.client-logo-name {
-  margin-top: 14px;
-  font-size: 19px;
-  font-weight: 500;
-  line-height: 1.35;
-  color: #ECDFE0;
-  text-align: center;
-  white-space: normal;
-}
-
-@media (max-width: 768px) {
-  .client-item {
-    width: 180px;
-    min-width: 180px;
-  }
-
-  .client-logo-box {
-    width: 150px;
-    height: 150px;
-  }
-
-  .client-logo-name {
-    font-size: 16px;
-  }
-
-  .marquee-track {
-    gap: 48px;
-  }
-
-  .clients-marquee-inner {
-    animation-duration: 55s;
-  }
-}
-
-
-/* ==================================================
-   06. ABOUT SECTION
-   ================================================== */
-
-.about-title-theme {
-  color: #ECDFE0;
-}
-
-.about-paragraph-theme {
-  color: #DFECEB;
-}
-
-
-/* ==================================================
-   07. SERVICES SECTION
-   ================================================== */
-
-.services-section-theme {
-  background-color: #ad009c31;
-  border-top-color: rgba(201, 163, 163, 0.4);
-  border-bottom-color: rgba(201, 163, 163, 0.4);
-}
-
-.services-title-theme {
-  color: #ECDFE0;
-}
-
-.service-row {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  color: #590099;
-}
-
-.service-row:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(140, 120, 255, 0.486);
-}
-
-.service-card-theme {
-  background-color: #FAF8F5;
-  border: 1px solid rgba(201, 163, 163, 0.5);
-}
-
-.service-card-title-theme {
-  color: #590099;
-}
-
-.service-card-description-theme {
-  color: #121111;
-}
-
-.service-trigger {
-  width: 100%;
-  text-align: inherit;
-  background: transparent;
-  border: none;
-  padding: 0;
-  display: block;
-}
-
-.service-trigger .service-row {
-  position: relative;
-}
-
-.service-trigger .service-row::after {
-  content: "+";
-  position: absolute;
-  top: 1.25rem;
-  inset-inline-end: 1.25rem;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(122, 92, 255, 0.35);
-  color: #590099;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  line-height: 1;
-  background: rgba(122, 92, 255, 0.05);
-}
-
-.service-trigger:focus-visible .service-row {
-  outline: 2px solid #590099;
-  outline-offset: 3px;
-}
-
-
-/* ==================================================
-   08. SERVICE MODAL (LEGACY BLOCK IN HTML)
-   ================================================== */
-
-.legacy-modal-backdrop-theme {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.legacy-modal-panel-theme {
-  background-color: #590099;
-  border-color: rgba(201, 163, 163, 0.3);
-}
-
-.legacy-modal-close-theme {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.legacy-modal-close-theme:hover {
-  color: #FFFFFF;
-}
-
-.legacy-modal-title-theme {
-  color: #FFFFFF;
-}
-
-.legacy-modal-heading-theme {
-  color: #FFFFFF;
-}
-
-.legacy-modal-video-title-theme {
-  color: #FFFFFF;
-}
-
-.legacy-modal-summary-theme {
-  color: #f1eded;
-}
-
-
-/* ==================================================
-   09. AUDIENCE SECTION
-   ================================================== */
-
-.audience-title-theme {
-  color: #ECDFE0;
-}
-
-.audience-subtitle-theme {
-  color: #DFECEB;
-}
-
-.audience-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  color: #590099;
-}
-
-.audience-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(140, 120, 255, 0.486);
-}
-
-.audience-card-theme {
-  background-color: #590099;
-  border: 1px solid rgba(201, 163, 163, 0.3);
-  color: #DFECEB;
-}
-
-
-/* ==================================================
-   10. WHY SECTION
-   ================================================== */
-
-.why-section-theme {
-  background-color: #ad009c31;
-  border-top-color: rgba(201, 163, 163, 0.4);
-  border-bottom-color: rgba(201, 163, 163, 0.4);
-}
-
-.why-title-theme {
-  color: #ECDFE0;
-}
-
-.why-text-theme {
-  color: #DFECEB;
-}
-
-
-/* ==================================================
-   11. PROCESS SECTION
-   ================================================== */
-
-.process-title-theme {
-  color: #ECDFE0;
-}
-
-.process-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  color: #590099;
-}
-
-.process-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(140, 120, 255, 0.486);
-}
-
-.process-card-theme {
-  background-color: #590099;
-  border: 1px solid rgba(201, 163, 163, 0.4);
-}
-
-.process-step-number-theme {
-  color: #590099;
-}
-
-.process-step-title-theme {
-  color: #ECDFE0;
-}
-
-.process-step-description-theme {
-  color: #DFECEB;
-}
-
-
-/* ==================================================
-   12. TRUST SECTION
-   ================================================== */
-
-.trust-section-theme {
-  background-color: #ad009c31;
-  border-top-color: rgba(201, 163, 163, 0.4);
-  border-bottom-color: rgba(201, 163, 163, 0.4);
-}
-
-.trust-title-theme {
-  color: #ECDFE0;
-}
-
-.trust-text-theme {
-  color: #DFECEB;
-}
-
-
-/* ==================================================
-   13. FINAL CTA SECTION
-   ================================================== */
-
-.final-cta-title-theme {
-  color: #ECDFE0;
-}
-
-.final-cta-text-theme {
-  color: #DFECEB;
-}
-
-
-/* ==================================================
-   14. FOOTER
-   ================================================== */
-
-.footer-theme {
-  border-top-color: rgba(201, 163, 163, 0.4);
-}
-
-.footer-brand-muted {
-  color: rgba(125, 124, 130, 0.5);
-}
-
-.footer-brand-name {
-  color: rgba(18, 17, 17, 0.6);
-}
-
-.footer-rights-muted {
-  color: rgba(125, 124, 130, 0.4);
-}
-
-
-/* ==================================================
-   15. SERVICE MODAL (MODERN BLOCK IN HTML)
-   ================================================== */
-
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(11, 11, 11, 0.72);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.25rem;
-}
-
-.modal-panel {
-  width: min(100%, 860px);
-  max-height: min(88vh, 920px);
-  overflow: auto;
-  background: #111111;
-  color: #FFFFFF;
-  border: 1px solid rgba(201, 163, 163, 0.24);
-  border-radius: 1.25rem;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
-}
-
-.modal-close {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(201, 163, 163, 0.24);
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.04);
-  transition: all 0.25s ease;
-}
-
-.modal-close:hover {
-  background: rgba(122, 92, 255, 0.18);
-  border-color: rgba(122, 92, 255, 0.4);
-}
-
-.modal-close:focus-visible {
-  outline: 2px solid #590099;
-  outline-offset: 3px;
-}
-
-.modal-chip {
-  border: 1px solid rgba(201, 163, 163, 0.24);
-  background: rgba(255, 255, 255, 0.03);
-  color: #C9A3A3;
-  border-radius: 9999px;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.3;
-}
-
-.modal-video-box {
-  border: 1px solid rgba(201, 163, 163, 0.18);
-  border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(122, 92, 255, 0.12), rgba(201, 163, 163, 0.08));
-  padding: 1rem;
-}
-
-.modal-video-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #FFFFFF;
-  background: #590099;
-  border-radius: 9999px;
-  padding: 0.85rem 1.1rem;
-  transition: all 0.25s ease;
-}
-
-.modal-video-link:hover {
-  background: #590099;
-  transform: translateY(-1px);
-}
-
-.modal-video-link:focus-visible {
-  outline: 2px solid #590099;
-  outline-offset: 3px;
-}
-
-.modal-hidden {
-  display: none;
-}
-
-.modal-kicker-theme {
-  color: #C9A3A3;
-}
-
-.modal-summary-theme {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.modal-points-title-theme {
-  color: #C9A3A3;
-}
-
-.modal-body-theme {
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.modal-video-heading-theme {
-  color: #C9A3A3;
-}
-
-.modal-video-description-theme {
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.modal-list-item-theme {
-  color: #FFFFFF;
-}
-
-.modal-body-paragraph-theme {
-  color: #FFFFFF;
-}
-
-.modal-video-frame-theme {
-  border: 1px solid rgba(201, 163, 163, 0.3);
-}
-</style>
 
 </head>
-<body class="h-full w-full overflow-auto page-theme" style="font-family: 'Rubik', Assistant;">
+<body class="h-full w-full overflow-auto page-theme">
 
   <!-- ═══════════ Header / Navigation ═══════════ -->
   <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b site-header-theme">
@@ -801,7 +69,7 @@ select {
     <div class="max-w-6xl mx-auto px-5">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="fade-up">
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 hero-title-theme" style="font-family: 'Rubik', Assistant; line-height: 1.15;"
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 hero-title-theme"
             data-content="hero.title"></h1>
 
           <p class="text-xl md:text-2xl leading-relaxed mb-6 max-w-2xl hero-subtitle-theme"
@@ -811,7 +79,7 @@ select {
             data-content="hero.description"></p>
 
           <div class="flex flex-wrap gap-4">
-            <a href="https://wa.me/972547838645" class="cta-primary px-7 py-3 rounded-full text-sm font-medium"
+            <a href="https://wa.me/972547838645" class="cta-primary cta-image-button text-sm font-medium"
               data-content="hero.cta_primary"></a>
           </div>
         </div>
@@ -832,7 +100,7 @@ select {
   <!-- ═══════════ Clients Strip (Marquee) ═══════════ -->
   <section class="py-10 border-y overflow-hidden clients-section-theme">
     <div class="max-w-6xl mx-auto px-5 text-center mb-6">
-      <h2 class="text-2xl md:text-3xl font-bold mb-3 clients-title-theme" style="font-family: 'Rubik', Assistant;" data-content="clients.title"></h2>
+      <h2 class="text-2xl md:text-3xl font-bold mb-3 clients-title-theme" data-content="clients.title"></h2>
       <p class="font-light max-w-3xl mx-auto clients-subtitle-theme" data-content="clients.subtitle"></p>
     </div>
     <!-- Client items rendered dynamically -->
@@ -856,7 +124,7 @@ select {
         </div>
 
         <div class="fade-up order-1 md:order-2">
-          <h2 class="text-3xl md:text-4xl font-bold mb-6 about-title-theme" style="font-family: 'Rubik', Assistant;"
+          <h2 class="text-3xl md:text-4xl font-bold mb-6 about-title-theme"
             data-content="about.title"></h2>
           <!-- About paragraphs rendered dynamically -->
           <div id="about-paragraphs" class="space-y-4"></div>
@@ -869,7 +137,7 @@ select {
   <section id="services" class="py-20 md:py-28 services-section-theme">
     <div class="max-w-5xl mx-auto px-5">
       <div class="text-center mb-14 fade-up">
-        <h2 class="text-3xl md:text-4xl font-bold services-title-theme" style="font-family: 'Rubik', Assistant;"
+        <h2 class="text-3xl md:text-4xl font-bold services-title-theme"
           data-content="services.title"></h2>
       </div>
       <!-- Service items rendered dynamically -->
@@ -890,7 +158,7 @@ select {
       </button>
 
       <div class="mb-6">
-        <h3 id="modal-title" class="text-2xl md:text-3xl font-bold mb-3 legacy-modal-title-theme" style="font-family: 'Rubik', Assistant;"></h3>
+        <h3 id="modal-title" class="text-2xl md:text-3xl font-bold mb-3 legacy-modal-title-theme"></h3>
         <p id="modal-summary" class="leading-relaxed legacy-modal-summary-theme"></p>
       </div>
 
@@ -912,7 +180,7 @@ select {
           href="#"
           target="_blank"
           rel="noopener noreferrer"
-          class="cta-secondary inline-flex px-6 py-3 rounded-full text-sm font-medium cursor-pointer"
+          class="cta-secondary cta-image-button text-sm font-medium cursor-pointer"
         ></a>
       </div>
 
@@ -924,7 +192,7 @@ select {
           href="#"
           target="_blank"
           rel="noopener noreferrer"
-          class="cta-secondary inline-flex px-5 py-2 rounded-full text-sm font-medium cursor-pointer"
+          class="cta-secondary cta-image-button text-sm font-medium cursor-pointer"
         >
           לצפייה בסרטון
         </a>
@@ -936,7 +204,7 @@ select {
   <section class="py-20 md:py-28">
     <div class="max-w-5xl mx-auto px-5">
       <div class="text-center mb-12 fade-up">
-        <h2 class="text-3xl md:text-4xl font-bold audience-title-theme" style="font-family: 'Rubik', Assistant;"
+        <h2 class="text-3xl md:text-4xl font-bold audience-title-theme"
           data-content="audience.title"></h2>
         <p class="font-light max-w-3xl mx-auto mt-4 audience-subtitle-theme"
           data-content="audience.subtitle"></p>
@@ -949,7 +217,7 @@ select {
   <!-- ═══════════ Why Work With Me ═══════════ -->
   <section class="py-20 md:py-28 why-section-theme">
     <div class="max-w-4xl mx-auto px-5 text-center fade-up">
-      <h2 class="text-3xl md:text-4xl font-bold mb-6 why-title-theme" style="font-family: 'Rubik', Assistant;"
+      <h2 class="text-3xl md:text-4xl font-bold mb-6 why-title-theme"
         data-content="why.title"></h2>
       <p class="leading-relaxed max-w-3xl mx-auto text-lg why-text-theme"
         data-content="why.text"></p>
@@ -960,7 +228,7 @@ select {
   <section id="process" class="py-20 md:py-28">
     <div class="max-w-5xl mx-auto px-5">
       <div class="text-center mb-14 fade-up">
-        <h2 class="text-3xl md:text-4xl font-bold process-title-theme" style="font-family: 'Rubik', Assistant;"
+        <h2 class="text-3xl md:text-4xl font-bold process-title-theme"
           data-content="process.title"></h2>
       </div>
       <!-- Process steps rendered dynamically -->
@@ -971,7 +239,7 @@ select {
   <!-- ═══════════ Trust Section ═══════════ -->
   <section class="py-20 md:py-28 trust-section-theme">
     <div class="max-w-4xl mx-auto px-5 text-center fade-up">
-      <h2 class="text-3xl md:text-4xl font-bold mb-6 trust-title-theme" style="font-family: 'Rubik', Assistant;"
+      <h2 class="text-3xl md:text-4xl font-bold mb-6 trust-title-theme"
         data-content="trust.title"></h2>
       <p class="font-light leading-relaxed max-w-3xl mx-auto trust-text-theme"
         data-content="trust.text"></p>
@@ -981,12 +249,12 @@ select {
   <!-- ═══════════ Final CTA Section ═══════════ -->
   <section id="contact" class="py-20 md:py-28">
     <div class="max-w-3xl mx-auto px-5 text-center fade-up">
-      <h2 class="text-3xl md:text-4xl font-bold mb-5 final-cta-title-theme" style="font-family: 'Rubik', Assistant;"
+      <h2 class="text-3xl md:text-4xl font-bold mb-5 final-cta-title-theme"
         data-content="final_cta.title"></h2>
       <p class="font-light mb-10 max-w-xl mx-auto leading-relaxed final-cta-text-theme"
         data-content="final_cta.text"></p>
       <div class="flex flex-wrap justify-center gap-4">
-        <a href="https://wa.me/972547838645" class="cta-primary px-7 py-3 rounded-full text-sm font-medium"
+        <a href="https://wa.me/972547838645" class="cta-primary cta-image-button text-sm font-medium"
           data-content="final_cta.cta_primary"></a>
       </div>
     </div>
@@ -995,7 +263,7 @@ select {
   <!-- ═══════════ Footer ═══════════ -->
   <footer class="py-8 border-t footer-theme">
     <div class="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <p class="text-xs footer-brand-muted" style="font-family: 'Rubik', Assistant;"><span class="font-medium footer-brand-name">Katya Alon</span> &copy; <span id="footer-year">2026</span></p>
+      <p class="text-xs footer-brand-muted"><span class="font-medium footer-brand-name">Katya Alon</span> &copy; <span id="footer-year">2026</span></p>
       <p class="text-xs footer-rights-muted" data-content="footer.rights"></p>
     </div>
   </footer>
@@ -1008,7 +276,7 @@ select {
         <div class="flex items-start justify-between gap-6 mb-6">
           <div>
             <p id="service-modal-kicker" class="text-sm uppercase tracking-[0.24em] mb-3 modal-kicker-theme"></p>
-            <h3 id="service-modal-title" class="text-2xl md:text-4xl font-bold leading-tight" style="font-family: 'Rubik', Assistant;"></h3>
+            <h3 id="service-modal-title" class="text-2xl md:text-4xl font-bold leading-tight"></h3>
           </div>
           <button id="service-modal-close" type="button" class="modal-close" aria-label="Close service details">✕</button>
         </div>
@@ -1029,7 +297,7 @@ select {
                 <h4 id="service-modal-video-title" class="text-base font-semibold mb-2 modal-video-heading-theme"></h4>
                 <p id="service-modal-video-description" class="leading-relaxed modal-video-description-theme"></p>
               </div>
-              <a id="service-modal-video-link" class="modal-video-link" href="#" target="_blank" rel="noopener noreferrer">
+              <a id="service-modal-video-link" class="modal-video-link cta-image-button" href="#" target="_blank" rel="noopener noreferrer">
                 <span id="service-modal-video-link-label"></span>
               </a>
             </div>
@@ -1041,6 +309,6 @@ select {
 
   <!-- Main script — loads content.yaml and handles language switching -->
 
-  <script src="/js/main.js"></script>
+  <script src="./js/main.js"></script>
 </body>
 </html>

@@ -129,7 +129,7 @@ function renderServices(items, lang) {
   if (!container || !items) return;
 
   container.innerHTML = items.map((item, index) =>
-    `<button type="button" class="service-row fade-up visible service-card-theme rounded-xl p-6 w-full text-start cursor-pointer"
+    `<button type="button" class="service-row fade-up visible service-card-theme p-6 w-full text-start cursor-pointer"
       onclick="openServiceModal(${index})">
       <h3 class="font-semibold text-lg mb-2 service-card-title-theme">${t(item.title, lang)}</h3>
       <p class="text-sm font-light leading-relaxed service-card-description-theme">${t(item.description, lang)}</p>

@@ -15,7 +15,13 @@ function t(obj, lang) {
 
 async function loadContent() {
   try {
-    const response = await fetch('/content/content.yaml');
+    const contentUrl = new URL('./content/content.yaml', document.baseURI);
+    const response = await fetch(contentUrl);
+
+    if (!response.ok) {
+      throw new Error(`Failed to load content.yaml: ${response.status} ${response.statusText} (${contentUrl})`);
+    }
+
     const yamlText = await response.text();
     siteContent = jsyaml.load(yamlText);
     renderContent(currentLang);

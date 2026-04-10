@@ -25,7 +25,7 @@ select {
 
 .page-theme {
   background-color: #FAF8F5;
-  background-image: url('/assets/images/main-bg.webp');
+  background-image: url('../assets/images/main-bg.webp');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -499,7 +499,7 @@ body {
 }
 
 .service-card-base {
-  background-image: url('/assets/images/card-bg-light.webp');
+  background-image: url('../assets/images/card-bg-light.webp');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;

@@ -68,72 +68,72 @@ clients:
       he: 'עו״ד דניאל לרין'
       en: "Adv. Daniel Larin"
       ru: "Адвокат Даниэль Ларин"
-    logo: "/assets/clients/Adv_daniel_Larin.png"
+    logo: "./assets/clients/Adv_daniel_Larin.png"
   - name:
       he: "עדי שני רביב"
       en: "Adi Shani Revive"
       ru: "Ади Шани Ревайв"
-    logo: "/assets/clients/Adi_Shani_Revive.png"
+    logo: "./assets/clients/Adi_Shani_Revive.png"
   - name:
       he: "בוטיק קלין"
       en: "Boutique Clean"
       ru: "Бутик Клин"
-    logo: "/assets/clients/boutique_clean.png"
+    logo: "./assets/clients/boutique_clean.png"
   - name:
       he: "ז'אנה רייכמן עיצוב פנים"
       en: "Janna Raihman Interior Design"
       ru: "Джанна Райхман Дизайн Интерьера"
-    logo: "/assets/clients/Janna_Raihman_Interior_design.png"
+    logo: "./assets/clients/Janna_Raihman_Interior_design.png"
   - name:
       he: "לב ניורוספייס"
       en: "Lev NeuroSpace"
       ru: "Лев Нейроспейс"
-    logo: "/assets/clients/LevNeuroSpace.png"
+    logo: "./assets/clients/LevNeuroSpace.png"
   - name:
       he: "נייאקס"
       en: "Nayax"
       ru: "Найакс"
-    logo: "/assets/clients/Nayax.png"
+    logo: "./assets/clients/Nayax.png"
   - name:
       he: "רנר אדוקיישן"
       en: "Rener education"
       ru: "Ренер образование"
-    logo: "/assets/clients/Rener_Education.png"
+    logo: "./assets/clients/Rener_Education.png"
   - name:
       he: "סקטצ' איט"
       en: "Sketch It"
       ru: "Скетч Ит"
-    logo: "/assets/clients/sketch_it.png"
+    logo: "./assets/clients/sketch_it.png"
   - name:
       he: "טרידאה"
       en: "TRIDEA"
       ru: "ТРИДЕА"
-    logo: "/assets/clients/TRIDEA.png"
+    logo: "./assets/clients/TRIDEA.png"
   - name:
       he: 'ד"ר עומר וולף'
       en: "Dr. Omer Wolf"
       ru: "Доктор Омер Вольф"
-    logo: "/assets/clients/דר_עומר_וולף.png"
+    logo: "./assets/clients/דר_עומר_וולף.png"
   - name:
       he: 'ד"ר עלא מלחם'
       en: "Dr. Alaa Makhoul"
       ru: "Доктор Алаа Махул"
-    logo: "/assets/clients/דר_עלא_מלחם.png"
+    logo: "./assets/clients/דר_עלא_מלחם.png"
   - name:
       he: "מעדנה סדנאות שף"
       en: "Madana Chef Workshops"
       ru: "Мадана Кулинарные Мастерские"
-    logo: "/assets/clients/סדנאות_שף.png"
+    logo: "./assets/clients/סדנאות_שף.png"
   - name:
       he: "אגסטה סוכנות לביטוח"
       en: "Agasta Insurance Agency"
       ru: "Агаста Страховое Агентство"
-    logo: "/assets/clients/סוכנות_ביטוח.png"
+    logo: "./assets/clients/סוכנות_ביטוח.png"
   - name:
       he: 'עו"ד צביקה שכטר'
       en: "Adv. Tzvika Shechter"
       ru: "Адвокат Цвика Шехтер"
-    logo: "/assets/clients/עוד_צביקה_שכטר.png"
+    logo: "./assets/clients/עוד_צביקה_שכטר.png"
 
 about:
   title:

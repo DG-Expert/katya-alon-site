@@ -361,9 +361,6 @@ body {
 }
 
 
-/* ==================================================
-   07. SERVICES SECTION
-   ================================================== */
 
 /* ==================================================
    07. SERVICES SECTION
@@ -402,7 +399,18 @@ body {
 }
 
 .services-diagram {
+  --services-scene-shift-x: 0px;
+  --services-scene-shift-y: 0px;
+  --services-center-shift-x: 0px;
+  --services-center-shift-y: 0px;
+  --services-center-rotate-x: 0deg;
+  --services-center-rotate-y: 0deg;
+  --services-center-scale: 1;
+  --services-lines-opacity: 0.84;
+  --services-core-scale: 1;
+
   position: relative;
+  transform-style: preserve-3d;
 }
 
 .services-diagram-lines,
@@ -422,6 +430,7 @@ body {
   --service-hover: 0;
   --service-group-x: 0px;
   --service-group-y: 0px;
+  --service-group-depth: 0px;
   --service-group-scale: 1;
   --service-group-z: 1;
 
@@ -433,8 +442,13 @@ body {
   color: inherit;
   perspective: 1200px;
   transform-style: preserve-3d;
-  transform: translate3d(var(--service-group-x), var(--service-group-y), 0) scale(var(--service-group-scale));
-  transition: transform 0.22s ease, z-index 0.22s ease;
+  transform: translate3d(
+      var(--service-group-x),
+      var(--service-group-y),
+      var(--service-group-depth)
+    )
+    scale(var(--service-group-scale));
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), z-index 0.28s ease;
   z-index: var(--service-group-z);
   will-change: transform;
 }
@@ -462,8 +476,8 @@ body {
   overflow: hidden;
   isolation: isolate;
   transform-style: preserve-3d;
-  transform: rotateY(calc(-8deg * var(--service-ratio-x))) rotateX(calc(8deg * var(--service-ratio-y)));
-  transition: transform 0.18s linear, filter 0.22s ease, box-shadow 0.22s ease;
+  transform: rotateY(calc(-14deg * var(--service-ratio-x))) rotateX(calc(14deg * var(--service-ratio-y)));
+  transition: transform 0.22s linear, filter 0.28s ease, box-shadow 0.28s ease;
   box-shadow: 0 calc(14px + (var(--service-hover) * 8px)) calc(28px + (var(--service-hover) * 12px)) rgb(0 0 0 / calc(0.18 + (var(--service-hover) * 0.08)));
   filter: brightness(calc(1 - (var(--service-hover) * 0.04)));
   will-change: transform, filter, box-shadow;
@@ -499,7 +513,7 @@ body {
     radial-gradient(circle at center, rgb(212 157 255 / 0.18) 0 1.5px, transparent 1.5px 100%) 9px 9px / 18px 18px;
   transform: translate(calc(var(--service-ratio-x) * -10px), calc(var(--service-ratio-y) * -10px)) rotate(18deg);
   mix-blend-mode: screen;
-  transition: transform 0.18s linear, opacity 0.22s ease;
+  transition: transform 0.22s linear, opacity 0.28s ease;
 }
 
 .service-card-holo-bg {
@@ -522,7 +536,7 @@ body {
   mix-blend-mode: screen;
   opacity: calc(0.12 + (var(--service-hover) * 0.48));
   transform: translate(calc(var(--service-ratio-x) * -12px), calc(var(--service-ratio-y) * -12px));
-  transition: transform 0.18s linear, opacity 0.22s ease;
+  transition: transform 0.22s linear, opacity 0.28s ease;
 }
 
 .service-card-holo-lines {
@@ -538,7 +552,7 @@ body {
   transform: translate(calc(var(--service-ratio-x) * -18px), calc(var(--service-ratio-y) * -18px));
   mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 0.95) 14%, black 86%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 0.95) 14%, black 86%, transparent 100%);
-  transition: transform 0.18s linear, opacity 0.22s ease;
+  transition: transform 0.22s linear, opacity 0.28s ease;
 }
 
 .service-card-content {
@@ -551,7 +565,7 @@ body {
   padding: 1.5rem 1.75rem;
   transform-style: preserve-3d;
   transform: translateZ(calc(8px + (var(--service-hover) * 10px))) translate(calc(var(--service-ratio-x) * -6px), calc(var(--service-ratio-y) * -6px));
-  transition: transform 0.18s linear;
+  transition: transform 0.22s linear;
 }
 
 .service-card-title,
@@ -581,21 +595,48 @@ body {
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.22);
 }
 
-/* ---------- Radial layout shared styles ---------- */
+/* ---------- Shared scene pieces ---------- */
+
+.services-diagram-lines {
+  transform: translate3d(var(--services-scene-shift-x), var(--services-scene-shift-y), 0);
+  opacity: var(--services-lines-opacity);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+  will-change: transform, opacity;
+}
 
 .services-lines-core {
   fill: rgba(160, 102, 255, 0.22);
   stroke: rgba(210, 184, 255, 0.55);
   stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(var(--services-core-scale));
+  transition: transform 0.28s ease, fill 0.28s ease, stroke 0.28s ease;
 }
 
 .services-lines-path {
+  --line-shift-x: 0px;
+  --line-shift-y: 0px;
+  --line-active: 0;
+
   stroke: rgba(204, 176, 255, 0.38);
   stroke-width: 2;
   stroke-linecap: round;
   fill: none;
   vector-effect: non-scaling-stroke;
   filter: drop-shadow(0 0 10px rgba(120, 68, 255, 0.16));
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: translate(var(--line-shift-x), var(--line-shift-y));
+  opacity: calc(0.56 + (var(--line-active) * 0.34));
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+  will-change: transform, opacity;
+}
+
+.services-center {
+  transform-style: preserve-3d;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
 
 .services-center-ring {
@@ -606,6 +647,10 @@ body {
   background: radial-gradient(circle at center, rgba(255, 255, 255, 0.18), rgba(122, 92, 255, 0.08) 55%, rgba(255, 255, 255, 0.04) 100%);
   box-shadow: 0 0 0 1px rgba(219, 192, 255, 0.18), 0 20px 40px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(10px);
+  transform-style: preserve-3d;
+  transform: rotateX(var(--services-center-rotate-x)) rotateY(var(--services-center-rotate-y));
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease;
+  will-change: transform;
 }
 
 .services-center-image {
@@ -616,6 +661,8 @@ body {
   object-fit: cover;
   border: 3px solid rgba(236, 223, 224, 0.7);
   box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+  transform: translateZ(8px);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
 }
 
 /* ---------- Tablet and desktop radial activation ---------- */
@@ -642,7 +689,12 @@ body {
     left: 50%;
     width: 190px;
     height: 190px;
-    transform: translate(-50%, -50%);
+    transform:
+      translate(
+        calc(-50% + var(--services-center-shift-x)),
+        calc(-50% + var(--services-center-shift-y))
+      )
+      scale(var(--services-center-scale));
     align-items: center;
     justify-content: center;
     z-index: 4;
@@ -765,6 +817,7 @@ body {
     position: relative;
     width: 100%;
     perspective: none;
+    transform: none !important;
   }
 
   .service-card-shell {

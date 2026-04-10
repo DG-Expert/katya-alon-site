@@ -156,12 +156,20 @@ function renderServices(items, lang) {
 }
 
 const SERVICES_RADIAL_BREAKPOINT = 900;
-let servicesResizeBound = false;
+
+const servicesSceneState = {
+  activeIndex: -1,
+  localX: 0,
+  localY: 0,
+  bound: false,
+  resizeBound: false
+};
 
 function setupServicesDiagram() {
   const section = document.getElementById('services');
+  const diagram = document.getElementById('services-diagram');
   const list = document.getElementById('services-list');
-  if (!section || !list) return;
+  if (!section || !diagram || !list) return;
 
   const cards = Array.from(list.querySelectorAll('.service-row'));
   const isRadial = window.innerWidth >= SERVICES_RADIAL_BREAKPOINT && cards.length === 6;
@@ -171,24 +179,20 @@ function setupServicesDiagram() {
 
   cards.forEach((card, index) => {
     card.dataset.serviceIndex = String(index);
-    bindServiceCardHolographic(card);
+    resetServiceCardHolographic(card);
   });
 
-  if (!servicesResizeBound) {
-    window.addEventListener('resize', handleServicesDiagramResize, { passive: true });
-    servicesResizeBound = true;
+  if (!servicesSceneState.bound) {
+    diagram.addEventListener('pointermove', handleServicesDiagramPointerMove);
+    diagram.addEventListener('pointerleave', handleServicesDiagramPointerLeave);
+    diagram.addEventListener('pointercancel', handleServicesDiagramPointerLeave);
+    servicesSceneState.bound = true;
   }
-}
 
-function bindServiceCardHolographic(card) {
-  if (card.dataset.holoBound === 'true') return;
-
-  card.addEventListener('pointermove', handleServiceCardPointerMove);
-  card.addEventListener('pointerleave', handleServiceCardPointerLeave);
-  card.addEventListener('pointercancel', handleServiceCardPointerLeave);
-  card.dataset.holoBound = 'true';
-
-  resetServiceCardHolographic(card);
+  if (!servicesSceneState.resizeBound) {
+    window.addEventListener('resize', handleServicesDiagramResize, { passive: true });
+    servicesSceneState.resizeBound = true;
+  }
 }
 
 function handleServicesDiagramResize() {
@@ -200,90 +204,201 @@ function handleServicesDiagramResize() {
   const isRadial = window.innerWidth >= SERVICES_RADIAL_BREAKPOINT && cards.length === 6;
 
   section.classList.toggle('services-layout-radial', isRadial);
+
+  servicesSceneState.activeIndex = -1;
+  servicesSceneState.localX = 0;
+  servicesSceneState.localY = 0;
+
   clearServicesDiagramEffect();
 }
 
-function handleServiceCardPointerMove(event) {
-  const card = event.currentTarget;
+function handleServicesDiagramPointerMove(event) {
   const section = document.getElementById('services');
+  const diagram = document.getElementById('services-diagram');
   const list = document.getElementById('services-list');
 
-  if (!card || !section || !list || !section.classList.contains('services-layout-radial')) {
+  if (!section || !diagram || !list || !section.classList.contains('services-layout-radial')) {
     clearServicesDiagramEffect();
     return;
   }
 
-  if (window.innerWidth < SERVICES_RADIAL_BREAKPOINT) {
+  const cards = Array.from(list.querySelectorAll('.service-row'));
+  if (window.innerWidth < SERVICES_RADIAL_BREAKPOINT || cards.length !== 6) {
     clearServicesDiagramEffect();
     return;
   }
 
-  const rect = card.getBoundingClientRect();
-  const halfWidth = rect.width / 2;
-  const halfHeight = rect.height / 2;
-  if (!halfWidth || !halfHeight) return;
+  const hoveredCard = event.target.closest('.service-row');
 
-  const ratioX = clamp((event.clientX - (rect.left + halfWidth)) / halfWidth, -1, 1);
-  const ratioY = clamp((event.clientY - (rect.top + halfHeight)) / halfHeight, -1, 1);
-  const activeIndex = Number(card.dataset.serviceIndex);
+  if (hoveredCard && list.contains(hoveredCard)) {
+    servicesSceneState.activeIndex = Number(hoveredCard.dataset.serviceIndex);
 
-  applyServicesGroupEffect(list, activeIndex, ratioX, ratioY);
+    const rect = hoveredCard.getBoundingClientRect();
+    const halfWidth = rect.width / 2;
+    const halfHeight = rect.height / 2;
+
+    if (halfWidth && halfHeight) {
+      servicesSceneState.localX = clamp(
+        (event.clientX - (rect.left + halfWidth)) / halfWidth,
+        -1,
+        1
+      );
+      servicesSceneState.localY = clamp(
+        (event.clientY - (rect.top + halfHeight)) / halfHeight,
+        -1,
+        1
+      );
+    }
+  } else if (servicesSceneState.activeIndex === -1) {
+    clearServicesDiagramEffect();
+    return;
+  } else {
+    servicesSceneState.localX *= 0.84;
+    servicesSceneState.localY *= 0.84;
+  }
+
+  const sceneRect = diagram.getBoundingClientRect();
+  const sceneHalfWidth = sceneRect.width / 2;
+  const sceneHalfHeight = sceneRect.height / 2;
+  if (!sceneHalfWidth || !sceneHalfHeight) return;
+
+  const sceneX = clamp(
+    (event.clientX - (sceneRect.left + sceneHalfWidth)) / sceneHalfWidth,
+    -1,
+    1
+  );
+  const sceneY = clamp(
+    (event.clientY - (sceneRect.top + sceneHalfHeight)) / sceneHalfHeight,
+    -1,
+    1
+  );
+
+  applyServicesGroupEffect(
+    diagram,
+    list,
+    servicesSceneState.activeIndex,
+    sceneX,
+    sceneY,
+    servicesSceneState.localX,
+    servicesSceneState.localY
+  );
 }
 
-function handleServiceCardPointerLeave() {
+function handleServicesDiagramPointerLeave() {
+  servicesSceneState.activeIndex = -1;
+  servicesSceneState.localX = 0;
+  servicesSceneState.localY = 0;
   clearServicesDiagramEffect();
 }
 
-function applyServicesGroupEffect(list, activeIndex, ratioX, ratioY) {
+function getServicesCardVectors(diagram, cards) {
+  const diagramRect = diagram.getBoundingClientRect();
+  const centerX = diagramRect.left + (diagramRect.width / 2);
+  const centerY = diagramRect.top + (diagramRect.height / 2);
+
+  return cards.map((card) => {
+    const rect = card.getBoundingClientRect();
+    const cardCenterX = rect.left + (rect.width / 2);
+    const cardCenterY = rect.top + (rect.height / 2);
+
+    const dx = cardCenterX - centerX;
+    const dy = cardCenterY - centerY;
+    const length = Math.hypot(dx, dy) || 1;
+
+    return {
+      x: dx / length,
+      y: dy / length
+    };
+  });
+}
+
+function applyServicesGroupEffect(diagram, list, activeIndex, sceneX, sceneY, localX, localY) {
   const cards = Array.from(list.querySelectorAll('.service-row'));
-  if (!cards.length || Number.isNaN(activeIndex)) return;
+  const lines = Array.from(diagram.querySelectorAll('.services-lines-path'));
 
-  const positionMap = [
-    { x: -1, y: -1 },
-    { x: 1, y: -1 },
-    { x: -1, y: 0 },
-    { x: 1, y: 0 },
-    { x: -1, y: 1 },
-    { x: 1, y: 1 }
-  ];
+  if (!cards.length || activeIndex < 0 || activeIndex >= cards.length) {
+    clearServicesDiagramEffect();
+    return;
+  }
 
-  const activePos = positionMap[activeIndex] || { x: 0, y: 0 };
+  const vectors = getServicesCardVectors(diagram, cards);
+  const activeVector = vectors[activeIndex] || { x: 0, y: 0 };
+
+  diagram.style.setProperty('--services-scene-shift-x', `${(-sceneX * 15).toFixed(2)}px`);
+  diagram.style.setProperty('--services-scene-shift-y', `${(-sceneY * 15).toFixed(2)}px`);
+  diagram.style.setProperty('--services-center-shift-x', `${(sceneX * 10 + activeVector.x * 1).toFixed(2)}px`);
+  diagram.style.setProperty('--services-center-shift-y', `${(sceneY * 10 + activeVector.y * 1).toFixed(2)}px`);
+  diagram.style.setProperty('--services-center-rotate-y', `${(sceneX * 15).toFixed(2)}deg`);
+  diagram.style.setProperty('--services-center-rotate-x', `${(-sceneY * 15).toFixed(2)}deg`);
+  diagram.style.setProperty('--services-center-scale', '1.05');
+  diagram.style.setProperty('--services-lines-opacity', '1');
+  diagram.style.setProperty('--services-core-scale', '1.05');
 
   cards.forEach((card, index) => {
-    const pos = positionMap[index] || { x: 0, y: 0 };
+    const vector = vectors[index] || { x: 0, y: 0 };
+    const relation = clamp(
+      (vector.x * activeVector.x) + (vector.y * activeVector.y),
+      -1,
+      1
+    );
+
+    const inverseStrength = (1 - relation) / 2;
+    const sameSideStrength = 1 - inverseStrength;
+
+    let shiftX = 0;
+    let shiftY = 0;
+    let depth = 0;
+    let scale = 1;
+    let hover = 0;
+    let ratioX = 0;
+    let ratioY = 0;
+    let zIndex = 1;
 
     if (index === activeIndex) {
-      const sinkX = (-activePos.x * 6) + (ratioX * 5);
-      const sinkY = (-activePos.y * 5) + (ratioY * 4) + 5;
+      const outward = 16;
 
-      card.style.setProperty('--service-ratio-x', ratioX.toFixed(3));
-      card.style.setProperty('--service-ratio-y', ratioY.toFixed(3));
-      card.style.setProperty('--service-hover', '1');
+      shiftX = (vector.x * outward) + (localX * 8) + (sceneX * 4);
+      shiftY = (vector.y * outward) + (localY * 7) + (sceneY * 4);
+      depth = -20;
+      scale = 0.972;
+      hover = 1;
+      ratioX = clamp(localX + (sceneX * 0.25), -1, 1);
+      ratioY = clamp(localY + (sceneY * 0.25), -1, 1);
+      zIndex = 4;
+    } else {
+      const awayFromActiveX = -activeVector.x * (4 + inverseStrength * 7);
+      const awayFromActiveY = -activeVector.y * (4 + inverseStrength * 7);
+      const ownBiasX = vector.x * (2 + sameSideStrength * 2.5);
+      const ownBiasY = vector.y * (2 + sameSideStrength * 2.5);
 
-      card.style.setProperty('--service-group-x', `${sinkX.toFixed(2)}px`);
-      card.style.setProperty('--service-group-y', `${sinkY.toFixed(2)}px`);
-      card.style.setProperty('--service-group-scale', '0.965');
-      card.style.setProperty('--service-group-z', '3');
-      return;
+      shiftX = awayFromActiveX + ownBiasX + (sceneX * 4.5);
+      shiftY = awayFromActiveY + ownBiasY + (sceneY * 3.5);
+      depth = 6 + (inverseStrength * 6);
+      scale = 1 + (inverseStrength * 0.026) + (sameSideStrength * 0.008);
+      hover = 0.12 + (inverseStrength * 0.18);
+      ratioX = clamp(sceneX * (0.12 + inverseStrength * 0.08), -0.35, 0.35);
+      ratioY = clamp(sceneY * (0.12 + inverseStrength * 0.08), -0.35, 0.35);
+      zIndex = 1;
     }
 
-    const dx = pos.x - activePos.x;
-    const dy = pos.y - activePos.y;
-    const distance = Math.hypot(dx, dy);
-    const lift = Math.max(0, 1.3 - (distance * 0.3));
-
-    const shiftX = (pos.x * (5 + lift * 4)) + (ratioX * 5);
-    const shiftY = ((pos.y * (5 + lift * 4)) - (lift * 6)) + (ratioY * 4);
-    const scale = 1 + (lift * 0.03);
-
-    card.style.setProperty('--service-ratio-x', '0');
-    card.style.setProperty('--service-ratio-y', '0');
-    card.style.setProperty('--service-hover', '0');
-
+    card.style.setProperty('--service-ratio-x', ratioX.toFixed(3));
+    card.style.setProperty('--service-ratio-y', ratioY.toFixed(3));
+    card.style.setProperty('--service-hover', hover.toFixed(3));
     card.style.setProperty('--service-group-x', `${shiftX.toFixed(2)}px`);
     card.style.setProperty('--service-group-y', `${shiftY.toFixed(2)}px`);
+    card.style.setProperty('--service-group-depth', `${depth.toFixed(2)}px`);
     card.style.setProperty('--service-group-scale', scale.toFixed(3));
-    card.style.setProperty('--service-group-z', '1');
+    card.style.setProperty('--service-group-z', String(zIndex));
+
+    if (lines[index]) {
+      const lineShiftX = (shiftX * 0.32) + (sceneX * 2);
+      const lineShiftY = (shiftY * 0.32) + (sceneY * 2);
+      const lineActive = index === activeIndex ? 1 : (0.24 + (inverseStrength * 0.42));
+
+      lines[index].style.setProperty('--line-shift-x', `${lineShiftX.toFixed(2)}px`);
+      lines[index].style.setProperty('--line-shift-y', `${lineShiftY.toFixed(2)}px`);
+      lines[index].style.setProperty('--line-active', lineActive.toFixed(3));
+    }
   });
 }
 
@@ -295,14 +410,41 @@ function resetServiceCardHolographic(card) {
   card.style.setProperty('--service-hover', '0');
   card.style.setProperty('--service-group-x', '0px');
   card.style.setProperty('--service-group-y', '0px');
+  card.style.setProperty('--service-group-depth', '0px');
   card.style.setProperty('--service-group-scale', '1');
   card.style.setProperty('--service-group-z', '1');
 }
 
+function resetServiceConnectorLine(line) {
+  if (!line) return;
+
+  line.style.setProperty('--line-shift-x', '0px');
+  line.style.setProperty('--line-shift-y', '0px');
+  line.style.setProperty('--line-active', '0');
+}
+
 function clearServicesDiagramEffect() {
+  const diagram = document.getElementById('services-diagram');
+
   document.querySelectorAll('#services-list .service-row').forEach((card) => {
     resetServiceCardHolographic(card);
   });
+
+  document.querySelectorAll('#services-diagram .services-lines-path').forEach((line) => {
+    resetServiceConnectorLine(line);
+  });
+
+  if (!diagram) return;
+
+  diagram.style.setProperty('--services-scene-shift-x', '0px');
+  diagram.style.setProperty('--services-scene-shift-y', '0px');
+  diagram.style.setProperty('--services-center-shift-x', '0px');
+  diagram.style.setProperty('--services-center-shift-y', '0px');
+  diagram.style.setProperty('--services-center-rotate-x', '0deg');
+  diagram.style.setProperty('--services-center-rotate-y', '0deg');
+  diagram.style.setProperty('--services-center-scale', '1');
+  diagram.style.setProperty('--services-lines-opacity', '0.84');
+  diagram.style.setProperty('--services-core-scale', '1');
 }
 
 function clamp(value, min, max) {

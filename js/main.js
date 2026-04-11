@@ -469,13 +469,75 @@ function renderAudience(items, lang) {
 function renderProcess(steps, lang) {
   const container = document.getElementById('process-list');
   if (!container || !steps) return;
-  container.innerHTML = steps.map(step =>
-    `<div class="process-card rounded-xl p-5 process-card-theme">
-      <div class="font-bold mb-3 process-step-number-theme">${step.number}</div>
-      <h3 class="font-semibold mb-2 process-step-title-theme">${t(step.title, lang)}</h3>
-      <p class="text-sm font-light process-step-description-theme">${t(step.description, lang)}</p>
-    </div>`
-  ).join('');
+
+  const isHebrew = lang === 'he';
+  const arrowSrc = isHebrew
+    ? './assets/images/leftArrow.png'
+    : './assets/images/rightArrow.png';
+
+  const bulletImages = [
+    './assets/images/bullet_01.png',
+    './assets/images/bullet_02.png',
+    './assets/images/bullet_03.png',
+    './assets/images/bullet_04.png',
+    './assets/images/bullet_05.png',
+    './assets/images/bullet_06.png'
+  ];
+
+  container.setAttribute('dir', isHebrew ? 'rtl' : 'ltr');
+
+  container.innerHTML = `
+    <div class="process-flow-track">
+      ${steps.map((step, index) => {
+        const bulletSrc = bulletImages[index] || bulletImages[bulletImages.length - 1];
+        const title = t(step.title, lang);
+        const description = t(step.description, lang);
+
+        const titleHtml = title
+          ? `<h3 class="process-flow-step-title">${title}</h3>`
+          : '';
+
+        const descriptionHtml = description
+          ? `<p class="process-flow-step-description">${description}</p>`
+          : '';
+
+        const arrowHtml = index < steps.length - 1
+          ? `
+            <div class="process-flow-arrow" aria-hidden="true">
+              <img
+                src="${arrowSrc}"
+                alt=""
+                class="process-flow-arrow-image"
+                loading="lazy"
+              />
+            </div>
+          `
+          : '';
+
+        return `
+          <div class="process-flow-step">
+            <div class="process-flow-bullet">
+              <img
+                src="${bulletSrc}"
+                alt="Step ${index + 1}"
+                class="process-flow-bullet-image"
+                loading="lazy"
+              />
+            </div>
+
+            <div class="process-flow-card">
+              <div class="process-flow-card-inner">
+                ${titleHtml}
+                ${descriptionHtml}
+              </div>
+            </div>
+          </div>
+
+          ${arrowHtml}
+        `;
+      }).join('')}
+    </div>
+  `;
 }
 
 function openServiceModal(index) {

@@ -7,6 +7,8 @@
 let currentLang = 'he';
 let siteContent = null;
 let activeServiceIndex = null;
+let activeRecommendationIndex = null;
+let recommendationItemsCache = [];
 
 function t(obj, lang) {
   if (!obj) return '';
@@ -63,8 +65,9 @@ function renderContent(lang) {
   setText('audience.subtitle', t(c.audience.subtitle, lang));
   renderAudience(c.audience.items, lang);
 
-  setText('why.title', t(c.why.title, lang));
-  setText('why.text', t(c.why.text, lang));
+  setText('recommendations.title', t(c.recommendations.title, lang));
+  setText('recommendations.subtitle', t(c.recommendations.subtitle, lang));
+  renderRecommendationsStrip(c.recommendations.items, lang);
 
   setText('process.title', t(c.process.title, lang));
   renderProcess(c.process.steps, lang);
@@ -81,6 +84,10 @@ function renderContent(lang) {
 
   if (activeServiceIndex !== null) {
     openServiceModal(activeServiceIndex);
+  }
+
+  if (activeRecommendationIndex !== null) {
+    openRecommendationModal(activeRecommendationIndex);
   }
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -118,6 +125,42 @@ function renderClientsStrip(items) {
     <div class="clients-marquee-inner">
       <div class="marquee-track">${oneSetHtml}</div>
       <div class="marquee-track" aria-hidden="true">${oneSetHtml}</div>
+    </div>
+  `;
+}
+
+function renderRecommendationsStrip(items, lang) {
+  const container = document.getElementById('recommendations-strip');
+  if (!container || !items || !items.length) return;
+
+  recommendationItemsCache = items;
+
+  const openLabel = t(siteContent?.recommendations?.open_label, lang) || 'לחצו לצפייה';
+
+  const oneSetHtml = items.map((item, index) => {
+    return `
+      <button
+        type="button"
+        class="recommendation-item"
+        onclick="openRecommendationModal(${index})"
+        aria-label="${openLabel}"
+      >
+        <span class="recommendation-envelope-box">
+          <img
+            src="${item.envelope}"
+            alt=""
+            class="recommendation-envelope-image"
+            loading="lazy"
+          />
+        </span>
+      </button>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="recommendations-marquee-inner">
+      <div class="recommendations-track">${oneSetHtml}</div>
+      <div class="recommendations-track" aria-hidden="true">${oneSetHtml}</div>
     </div>
   `;
 }
@@ -620,6 +663,41 @@ function closeServiceModal() {
   activeServiceIndex = null;
 }
 
+function openRecommendationModal(index) {
+  if (!siteContent || !siteContent.recommendations || !recommendationItemsCache[index]) return;
+
+  activeRecommendationIndex = index;
+
+  const item = recommendationItemsCache[index];
+  const modal = document.getElementById('recommendation-modal');
+  const image = document.getElementById('recommendation-modal-image');
+
+  if (!modal || !image) return;
+
+  image.src = item.screenshot;
+  image.alt = t(siteContent.recommendations.modal_image_alt, currentLang) || 'Recommendation screenshot';
+
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+
+function closeRecommendationModal() {
+  const modal = document.getElementById('recommendation-modal');
+  const image = document.getElementById('recommendation-modal-image');
+
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+
+  if (image) {
+    image.src = '';
+    image.alt = '';
+  }
+
+  document.body.classList.remove('overflow-hidden');
+  activeRecommendationIndex = null;
+}
+
 function switchLang(lang) {
   currentLang = lang;
   const html = document.documentElement;
@@ -659,16 +737,26 @@ function initAnimations() {
 }
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeServiceModal();
+  if (e.key === 'Escape') {
+    closeServiceModal();
+    closeRecommendationModal();
+  }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('footer-year').textContent = new Date().getFullYear();
 
-  const modal = document.getElementById('service-modal');
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeServiceModal();
+  const serviceModal = document.getElementById('service-modal');
+  if (serviceModal) {
+    serviceModal.addEventListener('click', (e) => {
+      if (e.target === serviceModal) closeServiceModal();
+    });
+  }
+
+  const recommendationModal = document.getElementById('recommendation-modal');
+  if (recommendationModal) {
+    recommendationModal.addEventListener('click', (e) => {
+      if (e.target === recommendationModal) closeRecommendationModal();
     });
   }
 

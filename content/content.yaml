@@ -589,20 +589,44 @@ audience:
     en: Anyone looking for real guidance, not just technical execution
     ru: Тем, кто ищет настоящее сопровождение, а не только техническое выполнение
 
-why:
+recommendations:
   title:
-    he: למה לעבוד איתי
-    en: Why Work With Me
-    ru: Почему стоит работать со мной
-  text:
-    he: אני לא מסתכלת רק על מה לפרסם, אלא על מה נכון לעסק שלך, איך נכון להציג אותו,
-      ואיך לגרום לכל השיווק לעבוד יחד בצורה ברורה, מקצועית ומשכנעת.
-    en: I don't only look at what to publish, but at what is right for your business,
-      how it should be presented, and how to make all of your marketing work together
-      in a clear, professional, and convincing way.
-    ru: Я смотрю не только на то, что публиковать, а на то, что правильно именно для
-      вашего бизнеса, как его правильно представить и как сделать так, чтобы весь
-      маркетинг работал вместе , ясно, профессионально и убедительно.
+    he: מה הלקוחות אומרים
+    en: What Clients Say
+    ru: Что говорят клиенты
+  subtitle:
+    he: לחצו על כל מעטפה כדי לפתוח את ההמלצה המלאה
+    en: Click any envelope to open the full recommendation
+    ru: Нажмите на конверт, чтобы открыть полный отзыв
+  open_label:
+    he: לחצו לצפייה
+    en: Click to view
+    ru: Нажмите, чтобы открыть
+  modal_image_alt:
+    he: צילום מסך של המלצה מוואטסאפ
+    en: WhatsApp recommendation screenshot
+    ru: Скриншот отзыва из WhatsApp
+  items:
+    - envelope: "./assets/images/recommend-1-env.webp"
+      screenshot: "./assets/images/recommend-1.webp"
+    - envelope: "./assets/images/recommend-2-env.webp"
+      screenshot: "./assets/images/recommend-2.webp"
+    - envelope: "./assets/images/recommend-3-env.webp"
+      screenshot: "./assets/images/recommend-3.webp"
+    - envelope: "./assets/images/recommend-4-env.webp"
+      screenshot: "./assets/images/recommend-4.webp"
+    - envelope: "./assets/images/recommend-5-env.webp"
+      screenshot: "./assets/images/recommend-5.webp"
+    - envelope: "./assets/images/recommend-6-env.webp"
+      screenshot: "./assets/images/recommend-6.webp"
+    - envelope: "./assets/images/recommend-7-env.webp"
+      screenshot: "./assets/images/recommend-7.webp"
+    - envelope: "./assets/images/recommend-8-env.webp"
+      screenshot: "./assets/images/recommend-8.webp"
+    - envelope: "./assets/images/recommend-9-env.webp"
+      screenshot: "./assets/images/recommend-9.webp"
+    - envelope: "./assets/images/recommend-10-env.webp"
+      screenshot: "./assets/images/recommend-10.webp"
 
 process:
   title:

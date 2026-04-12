@@ -245,15 +245,51 @@
     </div>
   </section>
 
-  <!-- ═══════════ Why Work With Me ═══════════ -->
-  <section class="py-20 md:py-28 why-section-theme">
-    <div class="max-w-4xl mx-auto px-5 text-center fade-up">
-      <h2 class="text-3xl md:text-4xl font-bold mb-6 why-title-theme"
-        data-content="why.title"></h2>
-      <p class="leading-relaxed max-w-3xl mx-auto text-lg why-text-theme"
-        data-content="why.text"></p>
+<!-- ═══════════ Recommendations Section ═══════════ -->
+<section class="py-20 md:py-28 why-section-theme">
+  <div class="max-w-6xl mx-auto px-5">
+    <div class="text-center mb-6 fade-up">
+      <h2
+        class="text-3xl md:text-4xl font-bold mb-4 why-title-theme"
+        data-content="recommendations.title"
+      ></h2>
+      <p
+        class="font-light max-w-3xl mx-auto why-text-theme"
+        data-content="recommendations.subtitle"
+      ></p>
     </div>
-  </section>
+
+    <div class="relative w-full overflow-hidden recommendations-marquee fade-up">
+      <div id="recommendations-strip"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ Recommendation Modal ═══════════ -->
+<div
+  id="recommendation-modal"
+  class="hidden fixed inset-0 z-[110] backdrop-blur-sm flex items-center justify-center p-4 recommendation-modal-backdrop-theme"
+>
+  <div class="recommendation-modal-panel relative">
+    <button
+      type="button"
+      onclick="closeRecommendationModal()"
+      class="recommendation-modal-close"
+      aria-label="Close recommendation modal"
+    >
+      ×
+    </button>
+
+    <div class="recommendation-modal-image-wrap">
+      <img
+        id="recommendation-modal-image"
+        src=""
+        alt=""
+        class="recommendation-modal-image"
+      />
+    </div>
+  </div>
+</div>
 
   <!-- ═══════════ Process Section ═══════════ -->
   <section id="process" class="py-20 md:py-28">

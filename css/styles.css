@@ -899,7 +899,7 @@ body {
 
 
 /* ==================================================
-   10. WHY SECTION
+   10. RECOMMENDATIONS SECTION
    ================================================== */
 
 .why-section-theme {
@@ -914,6 +914,172 @@ body {
 
 .why-text-theme {
   color: #DFECEB;
+}
+
+.recommendations-marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  direction: ltr;
+}
+
+#recommendations-strip {
+  display: flex;
+  width: max-content;
+  direction: ltr;
+}
+
+.recommendations-marquee-inner {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  direction: ltr;
+  animation: clientsMarquee 75s linear infinite;
+  will-change: transform;
+}
+
+.recommendations-marquee:hover .recommendations-marquee-inner {
+  animation-play-state: paused;
+}
+
+.recommendations-track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 28px;
+  flex-shrink: 0;
+  direction: ltr;
+  padding: 10px 0 16px;
+}
+
+.recommendation-item {
+  width: 280px;
+  min-width: 280px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.recommendation-envelope-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 230px;
+  border-radius: 1rem;
+  overflow: visible;
+  box-shadow: none;
+  transition: none;
+}
+
+.recommendation-item:hover .recommendation-envelope-box {
+  transform: none;
+  filter: none;
+  box-shadow: none;
+}
+
+.recommendation-item:focus-visible {
+  outline: none;
+}
+
+.recommendation-item:focus-visible .recommendation-envelope-box {
+  outline: 2px solid #590099;
+  outline-offset: 4px;
+}
+
+.recommendation-envelope-image {
+  width: 100%;
+  max-width: 160px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  transform-origin: center center;
+  transition: transform 0.22s ease, filter 0.22s ease;
+  will-change: transform, filter;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .recommendation-item:hover .recommendation-envelope-image {
+    transform: translateY(-3px) scale(1.06);
+    filter: brightness(1.04) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.22));
+  }
+}
+
+.recommendation-modal-backdrop-theme {
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.recommendation-modal-panel {
+  position: relative;
+  width: min(100%, 520px);
+  max-height: 90vh;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  background: rgba(17, 17, 17, 0.92);
+  border: 1px solid rgba(201, 163, 163, 0.22);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.42);
+}
+
+.recommendation-item:focus-visible .recommendation-envelope-image {
+  outline: 2px solid #590099;
+  outline-offset: 6px;
+}
+
+.recommendation-modal-close {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: none;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  line-height: 1;
+  z-index: 2;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.recommendation-modal-close:hover {
+  background: rgba(122, 92, 255, 0.26);
+  transform: scale(1.04);
+}
+
+.recommendation-modal-image-wrap {
+  width: 100%;
+  max-height: calc(90vh - 2rem);
+  overflow: auto;
+  border-radius: 1rem;
+}
+
+.recommendation-modal-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 1rem;
+}
+
+@media (max-width: 768px) {
+  .recommendation-item {
+    width: 220px;
+    min-width: 220px;
+  }
+
+  .recommendations-track {
+    gap: 18px;
+  }
+
+  .recommendations-marquee-inner {
+    animation-duration: 58s;
+  }
+
+  .recommendation-modal-panel {
+    width: min(100%, 92vw);
+    padding: 0.8rem;
+  }
 }
 
 

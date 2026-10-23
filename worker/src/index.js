@@ -76,17 +76,16 @@ async function callGas(env, value) {
   } catch (error) {
     return { http: error?.name === 'TimeoutError' || error?.name === 'AbortError' ? 504 : 503, body: { ok: false, error: error?.name === 'TimeoutError' || error?.name === 'AbortError' ? 'timeout' : 'unavailable' } };
   }
+  // Diagnostics only: reason codes, never payloads, secrets or URLs (visible via `wrangler tail`).
+  const upstream = reason => { console.warn(`gas_upstream reason=${reason} http=${res.status} redirected=${res.redirected} ct=${(res.headers.get('content-type') || '').split(';')[0].slice(0, 40)}`); return { http: 502, body: { ok: false, error: 'upstream' } }; };
   let data;
-  try {
-    if (!res.ok) throw new Error('status');
-    data = await res.json();
-  } catch {
-    return { http: 502, body: { ok: false, error: 'upstream' } };
-  }
+  if (!res.ok) return upstream('http_status');
+  try { data = await res.json(); } catch { return upstream('not_json'); }
   const http = GAS_STATUS[data?.status];
-  if (!http) return { http: 502, body: { ok: false, error: 'upstream' } };
+  if (!http) return upstream('unknown_status');
+  if (data.status === 'auth') return upstream('gas_auth');
   if (http === 200) {
-    if (typeof data.registrationId !== 'string' || !/^[A-Za-z0-9-]{1,64}$/.test(data.registrationId)) return { http: 502, body: { ok: false, error: 'upstream' } };
+    if (typeof data.registrationId !== 'string' || !/^[A-Za-z0-9-]{1,64}$/.test(data.registrationId)) return upstream('bad_registration_id');
     return { http, body: { ok: true, registrationId: data.registrationId, replay: data.status === 'replay' } };
   }
   return { http, body: { ok: false, error: data.status === 'auth' ? 'upstream' : data.status } };

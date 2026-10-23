@@ -1,7 +1,8 @@
 /**
  * workshops.js - Independent renderer for workshops.html.
  * Content is loaded from content/workshop.yaml and inserted as text only.
- * The demo form never sends, stores, or logs field values.
+ * Registration is disabled by default and never sends, stores, or logs field values
+ * until an owner-approved endpoint is explicitly configured.
  */
 
 (() => {
@@ -10,6 +11,9 @@
   const LANGUAGES = ['he', 'en', 'ru'];
   const LAYOUTS = ['conversion', 'story', 'program'];
   const FIELD_NAMES = ['full_name', 'mobile', 'email', 'expertise'];
+  // Change only after the chosen verified backend, functioning server-side Turnstile Siteverify (hostname and action),
+  // consent text approval, CORS review, and full E2E testing have all been approved.
+  const SECURE_REGISTRATION_BACKEND_APPROVED = false;
   const FALLBACK_LOAD_ERRORS = {
     he: 'לא ניתן לטעון את תוכן הסדנה. בדקו את קובץ ה-YAML ורעננו את העמוד.',
     en: 'The workshop content could not be loaded. Check the YAML file and refresh the page.',
@@ -81,6 +85,14 @@
     if (!LAYOUTS.includes(content.layout)) {
       throw new Error('layout must be conversion, story, or program.');
     }
+
+    const reg = content.registration;
+    if (!reg || typeof reg !== 'object' || reg.enabled !== false && reg.enabled !== true || typeof reg.endpoint !== 'string') {
+      throw new Error('registration must contain boolean enabled and string endpoint settings.');
+    }
+    ['turnstile_site_key', 'turnstile_action', 'workshop_id', 'consent_version'].forEach(key => {
+      if (reg[key] !== undefined && typeof reg[key] !== 'string') throw new Error(`registration.${key} must be a string.`);
+    });
 
     if (!content.sections || typeof content.sections !== 'object') {
       throw new Error('sections must be a mapping.');
@@ -345,7 +357,22 @@
     setText('form-intro', translatedAt('form.intro'));
     setText('form-demo-notice', translatedAt('form.demo_notice'));
     setText('form-privacy-note', translatedAt('form.privacy_note'));
+    setText('form-privacy-placeholder', translatedAt('form.privacy_notice'));
+    setText('form-consent-label', translatedAt('form.consent'));
     setText('form-submit', translatedAt('form.submit_label'));
+
+    const consentWrap = document.getElementById('form-consent-wrap');
+    const consent = document.getElementById('form-consent');
+    const submit = document.getElementById('form-submit');
+    const enabled = registrationIsReady();
+    if (consentWrap) consentWrap.hidden = !enabled;
+    if (consent) {
+      consent.disabled = !enabled;
+      consent.required = enabled;
+    }
+    if (submit) submit.disabled = !enabled;
+    const demoNotice = document.getElementById('form-demo-notice')?.closest('.demo-notice');
+    if (demoNotice) demoNotice.hidden = enabled; // the demo text is only truthful while registration is off
 
     const fieldIdParts = {
       full_name: 'full-name',
@@ -452,6 +479,148 @@
     status.textContent = translatedAt(`form.status.${key}`);
   }
 
+  function registrationIsReady() {
+    const settings = workshopContent?.registration;
+    if (!SECURE_REGISTRATION_BACKEND_APPROVED || !settings || settings.enabled !== true || !settings.endpoint) return false;
+    if (!settings.turnstile_site_key || !settings.turnstile_action || !settings.workshop_id || !settings.consent_version || settings.consent_version === 'pending-approval') return false;
+    try {
+      const endpoint = new URL(settings.endpoint);
+      return endpoint.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  }
+
+  function registrationEndpoint() {
+    return new URL(workshopContent.registration.endpoint).toString();
+  }
+
+  function registrationTimeout() {
+    const configured = Number(workshopContent?.registration?.timeout_ms);
+    return Number.isFinite(configured) ? Math.min(Math.max(configured, 3000), 30000) : 10000;
+  }
+
+  let turnstileWidgetId = null;
+  let turnstileToken = '';
+  let turnstileLoading = null;
+  let idempotencyKey = '';
+
+  function newIdempotencyKey() {
+    idempotencyKey = crypto.randomUUID();
+  }
+
+  // Loaded only after the code gate and every public setting pass registrationIsReady().
+  function loadTurnstile() {
+    if (window.turnstile) return Promise.resolve(window.turnstile);
+    if (!turnstileLoading) {
+      turnstileLoading = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.onload = () => resolve(window.turnstile);
+        script.onerror = () => { turnstileLoading = null; reject(new Error('turnstile')); };
+        document.head.appendChild(script);
+      });
+    }
+    return turnstileLoading;
+  }
+
+  async function setupTurnstile() {
+    const box = document.getElementById('turnstile-widget');
+    if (!box || !registrationIsReady() || turnstileWidgetId !== null) return;
+    try {
+      const api = await loadTurnstile();
+      if (turnstileWidgetId !== null) return;
+      box.hidden = false;
+      turnstileWidgetId = api.render(box, {
+        sitekey: workshopContent.registration.turnstile_site_key,
+        action: workshopContent.registration.turnstile_action,
+        language: currentLang,
+        callback: token => { turnstileToken = token; },
+        'expired-callback': () => { turnstileToken = ''; },
+        'error-callback': () => { turnstileToken = ''; }
+      });
+    } catch {
+      setFormStatus('challenge_failure');
+    }
+  }
+
+  function resetTurnstile() {
+    turnstileToken = '';
+    if (turnstileWidgetId !== null && window.turnstile) window.turnstile.reset(turnstileWidgetId);
+  }
+
+  async function submitRegistration(form) {
+    const honeypot = document.getElementById('registration-website');
+    if (honeypot?.value) {
+      setFormStatus('challenge_failure');
+      return;
+    }
+
+    const consent = document.getElementById('form-consent');
+    if (!consent?.checked) {
+      consent?.focus();
+      setFormStatus('fix_errors');
+      return;
+    }
+
+    if (!turnstileToken) {
+      setFormStatus('challenge_failure');
+      return;
+    }
+
+    const settings = workshopContent.registration;
+    const submit = document.getElementById('form-submit');
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), registrationTimeout());
+    if (!idempotencyKey) newIdempotencyKey();
+    const payload = Object.fromEntries(FIELD_NAMES.map(name => [name, document.getElementById(name).value.trim()]));
+    Object.assign(payload, {
+      consent: true,
+      consentVersion: settings.consent_version,
+      workshopId: settings.workshop_id,
+      lang: currentLang,
+      website: honeypot ? honeypot.value : '',
+      idempotencyKey,
+      turnstileToken
+    });
+    setFormStatus('loading');
+    if (submit) submit.disabled = true;
+
+    try {
+      const response = await fetch(registrationEndpoint(), {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'omit',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+      if (response.status === 409) return setFormStatus('duplicate');
+      if (response.status === 429) return setFormStatus('rate_limited');
+      if (response.status === 422) return setFormStatus('invalid');
+      if (response.status === 400 || response.status === 403) return setFormStatus('challenge_failure');
+      if (response.status === 503) return setFormStatus('unavailable');
+      if (response.status === 504) return setFormStatus('timeout');
+      if (!response.ok) return setFormStatus('failure');
+
+      const result = await response.json();
+      if (result?.ok === true && typeof result.registrationId === 'string' && result.registrationId.trim()) {
+        form.reset();
+        newIdempotencyKey();
+        setFormStatus('success');
+      } else {
+        setFormStatus('failure');
+      }
+    } catch (error) {
+      setFormStatus(error?.name === 'AbortError' ? 'timeout' : 'failure');
+    } finally {
+      window.clearTimeout(timeoutId);
+      resetTurnstile(); // tokens are single-use; the idempotency key is kept so a retry cannot duplicate
+      if (submit) submit.disabled = !registrationIsReady();
+    }
+  }
+
   function validateAllFields() {
     let firstInvalid = null;
     let allValid = true;
@@ -503,6 +672,7 @@
       input.addEventListener('input', () => {
         if (name === 'mobile') sanitizeMobileInput(input);
         if (touchedFields.has(name)) validateField(input, true);
+        idempotencyKey = '';
         const status = document.getElementById('form-status');
         if (status) {
           status.textContent = '';
@@ -517,7 +687,13 @@
     form.addEventListener('submit', event => {
       event.preventDefault();
       const allValid = validateAllFields();
-      setFormStatus(allValid ? 'no_registration' : 'fix_errors');
+      if (!allValid) {
+        setFormStatus('fix_errors');
+      } else if (!registrationIsReady()) {
+        setFormStatus('no_registration');
+      } else {
+        submitRegistration(form);
+      }
     });
 
   }
@@ -630,6 +806,7 @@
       validateContent(workshopContent);
       renderPage();
       setupForm();
+      setupTurnstile();
       setupReveals();
       document.body.classList.remove('is-loading');
     } catch (error) {

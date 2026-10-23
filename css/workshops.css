@@ -369,10 +369,10 @@ html {
 .price-deadline { color:#ffb18c; font-weight:650; }
 .price-stack .workshop-cta { margin-block-start:1.5rem; display:inline-flex; }
 .instructor-panel { grid-template-columns:minmax(180px,.55fr) minmax(0,1.45fr); }
-.instructor-media { min-width:0; margin:0; }
-.instructor-image-frame { display:grid; place-items:center; aspect-ratio:4/5; max-block-size:560px; overflow:hidden; border:1px solid var(--workshop-line); }
-.instructor-image-frame img { display:block; inline-size:100%; block-size:100%; object-fit:contain; object-position:center top; }
-.instructor-caption { margin-block-start:.85rem; color:var(--workshop-teal); font-weight:650; line-height:1.55; text-align:center; }
+.instructor-media { min-width:0; margin:0; align-self:end; }
+.instructor-image-frame { border:0; border-block-end:1px solid var(--workshop-line); }
+.instructor-image-frame img { display:block; inline-size:min(100%, 420px); block-size:auto; max-block-size:70vh; margin-inline:auto; object-fit:contain; object-position:center bottom; }
+.instructor-caption { margin-block-start:0; color:var(--workshop-teal); font-weight:650; line-height:1.55; text-align:center; }
 
 .workshop-content-flow {
   position: relative;
@@ -728,6 +728,11 @@ html {
   font-size: 0.8rem;
   line-height: 1.65;
 }
+
+.form-privacy-placeholder { margin:0.8rem 0 0; color:rgba(223,236,235,.62); font-size:0.78rem; line-height:1.65; }
+.form-consent { margin-block-start:1rem; display:flex; align-items:flex-start; gap:0.65rem; color:var(--workshop-copy); font-size:0.84rem; line-height:1.55; }
+.form-consent input { margin-block-start:0.2rem; accent-color:var(--workshop-teal); }
+.registration-honeypot { position:absolute; inline-size:1px; block-size:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
 
 .workshop-submit {
   margin-block-start: 1.35rem;
@@ -1278,6 +1283,8 @@ html {
   .registration-copy {
     max-width: 700px;
   }
+
+  .instructor-media { align-self:auto; justify-self:center; inline-size:min(100%, 420px); }
 
   .layout-story .hero-details {
     max-width: 780px;

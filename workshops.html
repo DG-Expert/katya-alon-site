@@ -31,7 +31,7 @@
         >
       </a>
 
-      <nav class="hidden xl:flex items-center xl:gap-5 text-sm font-light nav-text-theme" data-aria-copy="nav.navigation_label">
+      <nav class="hidden lg:flex items-center lg:gap-5 text-sm font-light nav-text-theme" data-aria-copy="nav.navigation_label">
         <a href="./index.html?lang=he#about" class="nav-link" data-home-anchor="about" data-copy="nav.about"></a>
         <a href="./index.html?lang=he#services" class="nav-link" data-home-anchor="services" data-copy="nav.services"></a>
         <a href="./index.html?lang=he#process" class="nav-link" data-home-anchor="process" data-copy="nav.process"></a>
@@ -51,7 +51,7 @@
         <button
           id="mobile-menu-button"
           type="button"
-          class="xl:hidden workshop-menu-button"
+          class="lg:hidden workshop-menu-button"
           aria-controls="mobile-nav"
           aria-expanded="false"
           data-aria-copy="nav.open_menu"
@@ -61,7 +61,7 @@
       </div>
     </div>
 
-    <div id="mobile-nav" class="hidden xl:hidden border-t px-5 pb-5 mobile-nav-theme workshop-mobile-nav">
+    <div id="mobile-nav" class="hidden lg:hidden border-t px-5 pb-5 mobile-nav-theme workshop-mobile-nav">
       <nav class="workshop-shell flex flex-col gap-3 text-sm pt-4 nav-text-theme" data-aria-copy="nav.navigation_label">
         <a href="./index.html?lang=he#about" class="py-1" data-home-anchor="about" data-copy="nav.about"></a>
         <a href="./index.html?lang=he#services" class="py-1" data-home-anchor="services" data-copy="nav.services"></a>
@@ -180,6 +180,10 @@
         </div>
 
         <form id="registration-form" class="registration-form" novalidate>
+          <div class="registration-honeypot" aria-hidden="true">
+            <label for="registration-website">Website</label>
+            <input id="registration-website" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
           <div class="form-grid">
             <div class="form-field">
               <label id="full-name-label" for="full_name"></label>
@@ -252,6 +256,12 @@
           </div>
 
           <p id="form-privacy-note" class="form-privacy-note"></p>
+          <p id="form-privacy-placeholder" class="form-privacy-placeholder"></p>
+          <label id="form-consent-wrap" class="form-consent" hidden>
+            <input id="form-consent" name="consent" type="checkbox" disabled>
+            <span id="form-consent-label"></span>
+          </label>
+          <div id="turnstile-widget" class="turnstile-widget" hidden></div>
           <button id="form-submit" type="submit" class="cta-primary cta-image-button workshop-submit" disabled></button>
           <p id="form-status" class="form-status" role="status" aria-live="assertive" aria-atomic="true"></p>
         </form>

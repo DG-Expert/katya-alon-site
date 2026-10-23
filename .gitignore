@@ -1,0 +1,13 @@
+# Local Cloudflare/Wrangler state and secrets (never commit)
+worker/.dev.vars
+worker/.dev.vars.*
+.wrangler/
+worker/.wrangler/
+
+# Local environment files (never commit)
+.env
+.env.*
+worker/.env
+worker/.env.*
+node_modules/
+worker/node_modules/

@@ -3,7 +3,7 @@
 layout: conversion
 sections: {content_1: true, content_2: true, power_image: true, content_3: true, pricing: true, instructor: true}
 # Public, fail-closed registration configuration. Do not place credentials or private URLs here.
-registration: {enabled: false, endpoint: "https://katya-workshop-registration.arielbenzikri.workers.dev/api/register", timeout_ms: 28000, turnstile_site_key: "0x4AAAAAAFi1EQCo_Swcfmj0", turnstile_action: workshop_register, workshop_id: lawyers-social-2026-11, consent_version: "2026-10-v1"}
+registration: {enabled: true, endpoint: "https://katya-workshop-registration.arielbenzikri.workers.dev/api/register", timeout_ms: 28000, turnstile_site_key: "0x4AAAAAAFi1EQCo_Swcfmj0", turnstile_action: workshop_register, workshop_id: lawyers-social-2026-11, consent_version: "2026-10-v1"}
 meta:
   title: {he: "הכשרה לעורכי דין לשיווק עצמאי | קטיה אלון", en: "Self-Marketing Training for Lawyers | Katya Alon", ru: "Обучение самостоятельному маркетингу для юристов | Катя Алон"}
   description: {he: "הכשרה מעשית לעורכי דין לשיווק עצמאי ברשתות החברתיות.", en: "Practical social-media self-marketing training for lawyers.", ru: "Практическое обучение самостоятельному маркетингу в соцсетях для юристов."}

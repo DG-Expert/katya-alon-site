@@ -1,8 +1,8 @@
 /**
  * workshops.js - Independent renderer for workshops.html.
  * Content is loaded from content/workshop.yaml and inserted as text only.
- * Registration is disabled by default and never sends, stores, or logs field values
- * until an owner-approved endpoint is explicitly configured.
+ * Registration sends data only when the code gate and registration.enabled are both on
+ * and a configured https endpoint, Turnstile key and consent version are present.
  */
 
 (() => {
@@ -13,7 +13,7 @@
   const FIELD_NAMES = ['full_name', 'mobile', 'email', 'expertise'];
   // Change only after the chosen verified backend, functioning server-side Turnstile Siteverify (hostname and action),
   // consent text approval, CORS review, and full E2E testing have all been approved.
-  const SECURE_REGISTRATION_BACKEND_APPROVED = false;
+  const SECURE_REGISTRATION_BACKEND_APPROVED = true;
   const FALLBACK_LOAD_ERRORS = {
     he: 'לא ניתן לטעון את תוכן הסדנה. בדקו את קובץ ה-YAML ורעננו את העמוד.',
     en: 'The workshop content could not be loaded. Check the YAML file and refresh the page.',

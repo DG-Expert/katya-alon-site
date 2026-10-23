@@ -30,11 +30,12 @@
       </a>
 
       <!-- Desktop nav — text filled from content.yaml -->
-      <nav class="hidden md:flex items-center gap-6 text-sm font-light nav-text-theme">
+      <nav class="hidden lg:flex items-center md:gap-4 lg:gap-6 text-sm font-light nav-text-theme">
         <a href="#about" class="nav-link" data-content="nav.about"></a>
         <a href="#services" class="nav-link" data-content="nav.services"></a>
         <a href="#process" class="nav-link" data-content="nav.process"></a>
         <a href="#contact" class="nav-link" data-content="nav.contact"></a>
+        <a href="./workshops.html?lang=he" class="nav-link" data-content="nav.workshops" data-workshops-link></a>
       </nav>
 
       <div class="flex items-center gap-4">
@@ -47,19 +48,20 @@
           <button onclick="switchLang('ru')" class="lang-btn px-2 py-0.5 rounded" id="btn-ru">RU</button>
         </div>
 
-        <button class="md:hidden" onclick="toggleMobile()" aria-label="Toggle menu">
+        <button class="lg:hidden" onclick="toggleMobile()" aria-label="Toggle menu">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
       </div>
     </div>
 
     <!-- Mobile nav -->
-    <div id="mobile-nav" class="hidden md:hidden border-t px-5 pb-4 mobile-nav-theme">
+    <div id="mobile-nav" class="hidden lg:hidden border-t px-5 pb-4 mobile-nav-theme">
       <nav class="flex flex-col gap-3 text-sm pt-3 nav-text-theme">
         <a href="#about" onclick="closeMobile()" class="py-1" data-content="nav.about"></a>
         <a href="#services" onclick="closeMobile()" class="py-1" data-content="nav.services"></a>
         <a href="#process" onclick="closeMobile()" class="py-1" data-content="nav.process"></a>
         <a href="#contact" onclick="closeMobile()" class="py-1" data-content="nav.contact"></a>
+        <a href="./workshops.html?lang=he" onclick="closeMobile()" class="py-1" data-content="nav.workshops" data-workshops-link></a>
       </nav>
     </div>
   </header>
@@ -85,7 +87,7 @@
         </div>
 
         <div class="fade-up flex justify-center">
-          <div class="portrait-placeholder w-full h-80vh md:w-40vw md:h-[80vh] rounded-2xl flex flex-col items-center justify-center gap-3 shadow-lg">
+          <div class="portrait-placeholder w-full rounded-2xl flex flex-col items-center justify-center gap-3 shadow-lg">
              <img
               src="./assets/images/katya-1.webp"
               alt="Katya Alon"

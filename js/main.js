@@ -42,6 +42,8 @@ function renderContent(lang) {
   document.querySelectorAll('[data-content="nav.services"]').forEach(el => el.textContent = t(c.nav.services, lang));
   document.querySelectorAll('[data-content="nav.process"]').forEach(el => el.textContent = t(c.nav.process, lang));
   document.querySelectorAll('[data-content="nav.contact"]').forEach(el => el.textContent = t(c.nav.contact, lang));
+  document.querySelectorAll('[data-content="nav.workshops"]').forEach(el => el.textContent = t(c.nav.workshops, lang));
+  updateWorkshopLinks(lang);
 
   setText('hero.title', t(c.hero.title, lang));
   setText('hero.subtitle', t(c.hero.subtitle, lang));
@@ -699,6 +701,8 @@ function closeRecommendationModal() {
 }
 
 function switchLang(lang) {
+  if (!['he', 'en', 'ru'].includes(lang)) return;
+
   currentLang = lang;
   const html = document.documentElement;
 
@@ -716,6 +720,12 @@ function switchLang(lang) {
   });
 
   renderContent(lang);
+}
+
+function updateWorkshopLinks(lang) {
+  document.querySelectorAll('[data-workshops-link]').forEach(link => {
+    link.href = `./workshops.html?lang=${encodeURIComponent(lang)}`;
+  });
 }
 
 function toggleMobile() {
@@ -745,6 +755,13 @@ document.addEventListener('keydown', (e) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+  const requestedLang = new URLSearchParams(window.location.search).get('lang');
+  if (['he', 'en', 'ru'].includes(requestedLang)) {
+    switchLang(requestedLang);
+  } else {
+    updateWorkshopLinks(currentLang);
+  }
 
   const serviceModal = document.getElementById('service-modal');
   if (serviceModal) {

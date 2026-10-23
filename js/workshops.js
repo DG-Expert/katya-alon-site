@@ -1,0 +1,652 @@
+/**
+ * workshops.js - Independent renderer for workshops.html.
+ * Content is loaded from content/workshop.yaml and inserted as text only.
+ * The demo form never sends, stores, or logs field values.
+ */
+
+(() => {
+  'use strict';
+
+  const LANGUAGES = ['he', 'en', 'ru'];
+  const LAYOUTS = ['conversion', 'story', 'program'];
+  const FIELD_NAMES = ['full_name', 'mobile', 'email', 'expertise'];
+  const FALLBACK_LOAD_ERRORS = {
+    he: 'לא ניתן לטעון את תוכן הסדנה. בדקו את קובץ ה-YAML ורעננו את העמוד.',
+    en: 'The workshop content could not be loaded. Check the YAML file and refresh the page.',
+    ru: 'Не удалось загрузить содержимое мастер-класса. Проверьте YAML-файл и обновите страницу.'
+  };
+
+  let workshopContent = null;
+  let currentLang = 'he';
+  let currentLayout = 'conversion';
+  let revealObserver = null;
+  const touchedFields = new Set();
+
+  function valueAt(path, root = workshopContent) {
+    if (!root || !path) return undefined;
+    return path.split('.').reduce((value, key) => (
+      value && Object.prototype.hasOwnProperty.call(value, key) ? value[key] : undefined
+    ), root);
+  }
+
+  function translate(value, lang = currentLang) {
+    if (typeof value === 'string') return value;
+    if (!value || typeof value !== 'object') return '';
+    return value[lang] || value.he || value.en || value.ru || '';
+  }
+
+  function translatedAt(path) {
+    return translate(valueAt(path));
+  }
+
+  function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value || '';
+  }
+
+  function createElement(tag, className, text) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+    return element;
+  }
+
+  function requestedLanguage() {
+    const language = new URLSearchParams(window.location.search).get('lang');
+    return LANGUAGES.includes(language) ? language : 'he';
+  }
+
+  function requestedLayout() {
+    const layout = new URLSearchParams(window.location.search).get('layout');
+    return LAYOUTS.includes(layout) ? layout : null;
+  }
+
+  function assertTranslation(value, path) {
+    if (!value || typeof value !== 'object') {
+      throw new Error(`Missing translation object: ${path}`);
+    }
+
+    LANGUAGES.forEach(lang => {
+      if (typeof value[lang] !== 'string') {
+        throw new Error(`Missing ${lang} translation: ${path}`);
+      }
+    });
+  }
+
+  function validateContent(content) {
+    if (!content || typeof content !== 'object') {
+      throw new Error('workshop.yaml must contain a mapping.');
+    }
+
+    if (!LAYOUTS.includes(content.layout)) {
+      throw new Error('layout must be conversion, story, or program.');
+    }
+
+    if (!content.sections || typeof content.sections !== 'object') {
+      throw new Error('sections must be a mapping.');
+    }
+
+    ['content_1', 'content_2', 'power_image', 'content_3', 'pricing', 'instructor'].forEach(section => {
+      if (typeof content.sections[section] !== 'boolean') {
+        throw new Error(`sections.${section} must be a YAML boolean.`);
+      }
+    });
+
+    [
+      'meta.title',
+      'meta.description',
+      'hero.title',
+      'hero.subtitle',
+      'content_1.title',
+      'content_2.title',
+      'content_3.title',
+      'form.title',
+      'form.demo_notice',
+      'form.submit_label'
+    ].forEach(path => assertTranslation(valueAt(path, content), path));
+
+    if (!Array.isArray(content.hero.details) || !Array.isArray(content.content_2.items) || !Array.isArray(content.content_3.items)) {
+      throw new Error('Workshop detail and section item fields must be YAML lists.');
+    }
+  }
+
+  function applyDocumentLanguage() {
+    const html = document.documentElement;
+    html.lang = currentLang;
+    html.dir = currentLang === 'he' ? 'rtl' : 'ltr';
+
+    LANGUAGES.forEach(lang => {
+      const button = document.getElementById(`btn-${lang}`);
+      if (!button) return;
+      const isActive = lang === currentLang;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+  }
+
+  function homeHref(anchor) {
+    return `./index.html?lang=${encodeURIComponent(currentLang)}#${encodeURIComponent(anchor)}`;
+  }
+
+  function workshopsHref() {
+    const params = new URLSearchParams({ lang: currentLang });
+    const previewLayout = requestedLayout();
+    if (previewLayout) params.set('layout', previewLayout);
+    return `./workshops.html?${params.toString()}`;
+  }
+
+  function updateNavigation() {
+    const brandLink = document.getElementById('brand-link');
+    if (brandLink) brandLink.href = homeHref('hero');
+
+    document.querySelectorAll('[data-home-anchor]').forEach(link => {
+      link.href = homeHref(link.dataset.homeAnchor);
+    });
+
+    document.querySelectorAll('[data-workshops-link]').forEach(link => {
+      link.href = workshopsHref();
+    });
+  }
+
+  function renderTextBindings() {
+    document.querySelectorAll('[data-copy]').forEach(element => {
+      element.textContent = translatedAt(element.dataset.copy);
+    });
+
+    document.querySelectorAll('[data-aria-copy]').forEach(element => {
+      element.setAttribute('aria-label', translatedAt(element.dataset.ariaCopy));
+    });
+
+    const brandLogo = document.getElementById('brand-logo');
+    if (brandLogo) brandLogo.alt = translatedAt('nav.brand_alt');
+  }
+
+  function renderMeta() {
+    const title = translatedAt('meta.title');
+    const description = translatedAt('meta.description');
+    document.title = title;
+
+    const descriptionMeta = document.querySelector('meta[name="description"]');
+    const openGraphTitle = document.querySelector('meta[property="og:title"]');
+    const openGraphDescription = document.querySelector('meta[property="og:description"]');
+
+    if (descriptionMeta) descriptionMeta.content = description;
+    if (openGraphTitle) openGraphTitle.content = title;
+    if (openGraphDescription) openGraphDescription.content = description;
+  }
+
+  function renderHero() {
+    setText('layout-label', translate(workshopContent.layout_labels[currentLayout]));
+    setText('hero-eyebrow', translatedAt('hero.eyebrow'));
+    setText('workshop-title', translatedAt('hero.title'));
+    setText('hero-subtitle', translatedAt('hero.subtitle'));
+    setText('hero-description', translatedAt('hero.description'));
+    setText('details-kicker', translatedAt('hero.details_kicker'));
+    setText('details-heading', translatedAt('hero.details_heading'));
+
+    const list = document.getElementById('hero-details-list');
+    if (!list) return;
+    list.replaceChildren();
+
+    workshopContent.hero.details.forEach(detail => {
+      const row = createElement('div', 'hero-detail');
+      row.append(
+        createElement('dt', '', translate(detail.label)),
+        createElement('dd', '', translate(detail.value))
+      );
+      list.append(row);
+    });
+  }
+
+  function renderParagraphs() {
+    const container = document.getElementById('content-1-paragraphs');
+    if (!container) return;
+    container.replaceChildren();
+
+    (workshopContent.content_1.paragraphs || []).forEach(paragraph => {
+      container.append(createElement('p', '', translate(paragraph)));
+    });
+  }
+
+  function renderWorkshopItems() {
+    const list = document.getElementById('content-2-items');
+    if (!list) return;
+    list.replaceChildren();
+
+    (workshopContent.content_2.items || []).forEach((item, index) => {
+      const listItem = createElement('li', 'workshop-item');
+      const itemNumber = String(index + 1).padStart(2, '0');
+      listItem.append(
+        createElement('span', 'workshop-item-number', itemNumber),
+        createElement('h3', 'workshop-item-title', translate(item.title)),
+        createElement('p', 'workshop-item-text', translate(item.text))
+      );
+      list.append(listItem);
+    });
+  }
+
+  function renderFaqItems() {
+    const list = document.getElementById('content-3-items');
+    if (!list) return;
+    list.replaceChildren();
+
+    (workshopContent.content_3.items || []).forEach(item => {
+      const row = createElement('div', 'faq-item');
+      row.append(
+        createElement('dt', 'faq-question', translate(item.question)),
+        createElement('dd', 'faq-answer', translate(item.answer))
+      );
+      list.append(row);
+    });
+  }
+
+  function safeAssetPath(value) {
+    if (typeof value !== 'string' || !value.startsWith('./assets/') || value.includes('\\')) return '';
+
+    try {
+      const allowedRoot = new URL('./assets/', document.baseURI);
+      const candidate = new URL(value, document.baseURI);
+      const isAllowed = candidate.origin === allowedRoot.origin && candidate.pathname.startsWith(allowedRoot.pathname);
+      return isAllowed ? value : '';
+    } catch (_error) {
+      return '';
+    }
+  }
+
+  function renderPowerImage() {
+    const figure = document.getElementById('power-image-wrap');
+    const image = document.getElementById('power-image');
+    const caption = document.getElementById('power-image-caption');
+    if (!figure || !image || !caption) return;
+
+    const source = safeAssetPath(workshopContent.power_image.src);
+    const shouldShow = workshopContent.sections.power_image === true && Boolean(source);
+    figure.hidden = !shouldShow;
+
+    if (!shouldShow) {
+      image.removeAttribute('src');
+      image.alt = '';
+      caption.textContent = '';
+      return;
+    }
+
+    image.src = source;
+    image.alt = translate(workshopContent.power_image.alt);
+    caption.textContent = translate(workshopContent.power_image.caption);
+    caption.hidden = !caption.textContent;
+  }
+
+  function renderSections() {
+    setText('content-1-kicker', translatedAt('content_1.kicker'));
+    setText('content-1-title', translatedAt('content_1.title'));
+    setText('content-2-kicker', translatedAt('content_2.kicker'));
+    setText('content-2-title', translatedAt('content_2.title'));
+    setText('content-2-intro', translatedAt('content_2.intro'));
+    setText('content-3-kicker', translatedAt('content_3.kicker'));
+    setText('content-3-title', translatedAt('content_3.title'));
+    setText('content-3-intro', translatedAt('content_3.intro'));
+    setText('cta-1', translatedAt('ctas.after_content_1'));
+    setText('cta-2', translatedAt('ctas.after_power_image'));
+
+    renderParagraphs();
+    renderWorkshopItems();
+    renderFaqItems();
+    renderPowerImage();
+
+    const contentOneEnabled = workshopContent.sections.content_1 === true;
+    const contentTwoEnabled = workshopContent.sections.content_2 === true;
+    const contentThreeEnabled = workshopContent.sections.content_3 === true;
+
+    document.getElementById('content-1').hidden = !contentOneEnabled;
+    document.getElementById('cta-1-wrap').hidden = !contentOneEnabled;
+    document.getElementById('content-2').hidden = !contentTwoEnabled;
+    document.getElementById('cta-2-wrap').hidden = !contentTwoEnabled;
+    document.getElementById('content-3').hidden = !contentThreeEnabled;
+    renderPricing();
+    renderInstructor();
+  }
+
+  function priceText(amount) {
+    const price = Number(amount);
+    return Number.isFinite(price) ? new Intl.NumberFormat(currentLang === 'he' ? 'he-IL' : currentLang === 'ru' ? 'ru-RU' : 'en-US').format(price) : '';
+  }
+
+  function renderPricing() {
+    const section = document.getElementById('pricing');
+    const pricing = workshopContent.pricing;
+    section.hidden = workshopContent.sections.pricing !== true;
+    if (section.hidden || !pricing) return;
+    setText('pricing-kicker', translate(pricing.kicker)); setText('pricing-title', translate(pricing.title)); setText('pricing-intro', translate(pricing.intro));
+    const currency = translate(pricing.currency); const vat = translate(pricing.vat_text);
+    const fill = (template, amount) => translate(template)
+      .replaceAll('{price}', priceText(amount))
+      .replaceAll('{total}', priceText(pricing.current_price))
+      .replaceAll('{count}', priceText(pricing.session_count))
+      .replaceAll('{currency}', currency)
+      .replaceAll('{vat}', vat);
+    const original = document.getElementById('pricing-original'); original.replaceChildren(createElement('del', '', fill(pricing.original_label, pricing.original_price)));
+    setText('pricing-current', fill(pricing.current_label, pricing.current_price)); setText('pricing-session', fill(pricing.session_label, pricing.per_session_price)); setText('pricing-breakdown', fill(pricing.breakdown_label, pricing.per_session_price));
+    setText('pricing-includes', translate(pricing.includes)); setText('pricing-deadline', translate(pricing.deadline)); setText('pricing-after', fill(pricing.after_deadline, pricing.original_price)); setText('pricing-cta', translate(pricing.cta));
+  }
+
+  function renderInstructor() {
+    const section = document.getElementById('instructor'); const instructor = workshopContent.instructor;
+    section.hidden = workshopContent.sections.instructor !== true;
+    if (section.hidden || !instructor) return;
+    setText('instructor-kicker', translate(instructor.kicker)); setText('instructor-title', translate(instructor.title));
+    setText('instructor-caption', `${translate(instructor.title)}, ${translate(instructor.role)}`);
+    const bio = document.getElementById('instructor-bio'); bio.replaceChildren(); (instructor.paragraphs || []).forEach(item => bio.append(createElement('p', '', translate(item))));
+    const image = document.getElementById('instructor-image'); image.src = safeAssetPath(instructor.image.src); image.alt = translate(instructor.image.alt);
+  }
+
+  function renderFormText() {
+    setText('form-kicker', translatedAt('form.kicker'));
+    setText('registration-title', translatedAt('form.title'));
+    setText('form-intro', translatedAt('form.intro'));
+    setText('form-demo-notice', translatedAt('form.demo_notice'));
+    setText('form-privacy-note', translatedAt('form.privacy_note'));
+    setText('form-submit', translatedAt('form.submit_label'));
+
+    const fieldIdParts = {
+      full_name: 'full-name',
+      mobile: 'mobile',
+      email: 'email',
+      expertise: 'expertise'
+    };
+
+    FIELD_NAMES.forEach(name => {
+      const input = document.getElementById(name);
+      const idPart = fieldIdParts[name];
+      setText(`${idPart}-label`, translatedAt(`form.fields.${name}.label`));
+      setText(`${idPart}-help`, translatedAt(`form.fields.${name}.help`));
+      if (input) input.placeholder = translatedAt(`form.fields.${name}.placeholder`);
+    });
+
+    const status = document.getElementById('form-status');
+    if (status && status.dataset.statusKey) {
+      status.textContent = translatedAt(`form.status.${status.dataset.statusKey}`);
+    }
+
+    FIELD_NAMES.forEach(name => {
+      const input = document.getElementById(name);
+      if (input && touchedFields.has(name)) validateField(input, true);
+    });
+  }
+
+  function renderPage() {
+    currentLayout = requestedLayout() || workshopContent.layout;
+    document.body.classList.remove(...LAYOUTS.map(layout => `layout-${layout}`));
+    document.body.classList.add(`layout-${currentLayout}`);
+    document.body.dataset.layout = currentLayout;
+
+    applyDocumentLanguage();
+    updateNavigation();
+    renderTextBindings();
+    renderMeta();
+    renderHero();
+    renderSections();
+    renderFormText();
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function errorMessage(fieldName, key) {
+    return translatedAt(`form.fields.${fieldName}.errors.${key}`);
+  }
+
+  function fieldValidation(input) {
+    const value = input.value.trim();
+
+    if (!value) return { valid: false, message: errorMessage(input.name, 'required') };
+
+    if (input.name === 'full_name') {
+      const allowedName = /^[\p{L}\p{M}][\p{L}\p{M}\s.'’ʼ-]*$/u.test(value);
+      const letterCount = (value.match(/\p{L}/gu) || []).length;
+      if (!allowedName || letterCount < 2 || /\p{N}/u.test(value)) {
+        return { valid: false, message: errorMessage(input.name, 'invalid') };
+      }
+    }
+
+    if (input.name === 'mobile' && !/^[0-9]{8,15}$/.test(value)) {
+      return { valid: false, message: errorMessage(input.name, 'invalid') };
+    }
+
+    if (input.name === 'email') {
+      const conservativeEmail = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
+      if (input.validity.typeMismatch || value.length > 254 || !conservativeEmail.test(value)) {
+        return { valid: false, message: errorMessage(input.name, 'invalid') };
+      }
+    }
+
+    if (input.name === 'expertise') {
+      if ([...value].length < 2) {
+        return { valid: false, message: errorMessage(input.name, 'too_short') };
+      }
+      if (/\p{N}/u.test(value)) {
+        return { valid: false, message: errorMessage(input.name, 'has_digit') };
+      }
+    }
+
+    return { valid: true, message: '' };
+  }
+
+  function validateField(input, showMessage) {
+    const result = fieldValidation(input);
+    const error = document.getElementById(`${input.name.replace('_', '-')}-error`);
+
+    input.setCustomValidity(result.valid ? '' : result.message);
+    input.setAttribute('aria-invalid', String(!result.valid));
+
+    if (error) {
+      error.textContent = showMessage && !result.valid ? result.message : '';
+      error.hidden = !showMessage || result.valid;
+    }
+
+    return result.valid;
+  }
+
+  function setFormStatus(key) {
+    const status = document.getElementById('form-status');
+    if (!status) return;
+    status.dataset.statusKey = key;
+    status.textContent = translatedAt(`form.status.${key}`);
+  }
+
+  function validateAllFields() {
+    let firstInvalid = null;
+    let allValid = true;
+
+    FIELD_NAMES.forEach(name => {
+      const input = document.getElementById(name);
+      if (!input) return;
+      touchedFields.add(name);
+      const isValid = validateField(input, true);
+      if (!isValid && !firstInvalid) firstInvalid = input;
+      allValid = isValid && allValid;
+    });
+
+    if (firstInvalid) firstInvalid.focus();
+    return allValid;
+  }
+
+  function sanitizeMobileInput(input) {
+    const sanitized = input.value.replace(/[^0-9]/g, '').slice(0, 15);
+    if (input.value !== sanitized) input.value = sanitized;
+  }
+
+  function handleMobilePaste(event) {
+    event.preventDefault();
+    const input = event.currentTarget;
+    const pastedDigits = (event.clipboardData?.getData('text') || '').replace(/[^0-9]/g, '');
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? input.value.length;
+    input.value = `${input.value.slice(0, start)}${pastedDigits}${input.value.slice(end)}`.slice(0, 15);
+    const cursor = Math.min(start + pastedDigits.length, input.value.length);
+    input.setSelectionRange(cursor, cursor);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  function setupForm() {
+    const form = document.getElementById('registration-form');
+    if (!form || form.dataset.bound === 'true') return;
+    form.dataset.bound = 'true';
+
+    FIELD_NAMES.forEach(name => {
+      const input = document.getElementById(name);
+      if (!input) return;
+
+      input.addEventListener('blur', () => {
+        touchedFields.add(name);
+        validateField(input, true);
+      });
+
+      input.addEventListener('input', () => {
+        if (name === 'mobile') sanitizeMobileInput(input);
+        if (touchedFields.has(name)) validateField(input, true);
+        const status = document.getElementById('form-status');
+        if (status) {
+          status.textContent = '';
+          delete status.dataset.statusKey;
+        }
+      });
+    });
+
+    const mobile = document.getElementById('mobile');
+    if (mobile) mobile.addEventListener('paste', handleMobilePaste);
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const allValid = validateAllFields();
+      setFormStatus(allValid ? 'no_registration' : 'fix_errors');
+    });
+
+  }
+
+  function closeMobileMenu() {
+    const menu = document.getElementById('mobile-nav');
+    const button = document.getElementById('mobile-menu-button');
+    if (!menu || !button) return;
+    menu.classList.add('hidden');
+    button.setAttribute('aria-expanded', 'false');
+    if (workshopContent) button.setAttribute('aria-label', translatedAt('nav.open_menu'));
+  }
+
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-nav');
+    const button = document.getElementById('mobile-menu-button');
+    if (!menu || !button) return;
+    const willOpen = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', !willOpen);
+    button.setAttribute('aria-expanded', String(willOpen));
+    if (workshopContent) {
+      button.setAttribute('aria-label', translatedAt(willOpen ? 'nav.close_menu' : 'nav.open_menu'));
+    }
+  }
+
+  function switchLanguage(lang) {
+    if (!LANGUAGES.includes(lang) || lang === currentLang) return;
+    currentLang = lang;
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('lang', lang);
+    if (url.searchParams.has('layout') && !LAYOUTS.includes(url.searchParams.get('layout'))) {
+      url.searchParams.delete('layout');
+    }
+    window.history.replaceState({}, '', url);
+
+    applyDocumentLanguage();
+    if (workshopContent) renderPage();
+    closeMobileMenu();
+  }
+
+  function setupNavigation() {
+    document.querySelectorAll('[data-language]').forEach(button => {
+      button.addEventListener('click', () => switchLanguage(button.dataset.language));
+    });
+
+    const menuButton = document.getElementById('mobile-menu-button');
+    if (menuButton) menuButton.addEventListener('click', toggleMobileMenu);
+
+    document.querySelectorAll('#mobile-nav a').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') closeMobileMenu();
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1200) closeMobileMenu();
+    });
+  }
+
+  function setupReveals() {
+    const elements = document.querySelectorAll('[data-reveal]:not([hidden])');
+    document.body.classList.add('animations-ready');
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      elements.forEach(element => element.classList.add('is-visible'));
+      return;
+    }
+
+    if (revealObserver) revealObserver.disconnect();
+    revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+    elements.forEach(element => revealObserver.observe(element));
+  }
+
+  function showLoadError(error) {
+    console.error('Failed to load workshop content:', error);
+    document.body.classList.remove('is-loading');
+
+    const message = (workshopContent && translatedAt('system.content_error')) || FALLBACK_LOAD_ERRORS[currentLang];
+    const errorBox = document.getElementById('content-error');
+    if (errorBox) {
+      errorBox.textContent = message;
+      errorBox.hidden = false;
+    }
+
+    document.querySelectorAll('#workshop-main > :not(#content-error)').forEach(element => {
+      element.hidden = true;
+    });
+  }
+
+  async function loadWorkshopContent() {
+    try {
+      const contentUrl = new URL('./content/workshop.yaml', document.baseURI);
+      const response = await fetch(contentUrl);
+      if (!response.ok) {
+        throw new Error(`workshop.yaml returned HTTP ${response.status}`);
+      }
+
+      const yamlText = await response.text();
+      workshopContent = jsyaml.load(yamlText);
+      validateContent(workshopContent);
+      renderPage();
+      setupForm();
+      setupReveals();
+      document.body.classList.remove('is-loading');
+    } catch (error) {
+      showLoadError(error);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    currentLang = requestedLanguage();
+    applyDocumentLanguage();
+    updateNavigation();
+    setupNavigation();
+
+    const year = document.getElementById('footer-year');
+    if (year) year.textContent = String(new Date().getFullYear());
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    loadWorkshopContent();
+  });
+})();

@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="he" dir="rtl" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Katya Alon">
+  <meta property="og:description" content="">
+  <title>Katya Alon</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="./css/workshops.css">
+</head>
+<body class="min-h-full page-theme workshop-page is-loading layout-conversion">
+  <a href="#workshop-main" class="workshop-skip-link" data-copy="accessibility.skip_to_content"></a>
+
+  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b site-header-theme workshop-header">
+    <div class="workshop-shell workshop-header-inner">
+      <a id="brand-link" href="./index.html?lang=he#hero" class="site-logo-link" data-aria-copy="nav.home">
+        <img
+          id="brand-logo"
+          src="./assets/images/Kate%20NoBackground%20Logo.png"
+          alt=""
+          class="site-logo"
+        >
+      </a>
+
+      <nav class="hidden xl:flex items-center xl:gap-5 text-sm font-light nav-text-theme" data-aria-copy="nav.navigation_label">
+        <a href="./index.html?lang=he#about" class="nav-link" data-home-anchor="about" data-copy="nav.about"></a>
+        <a href="./index.html?lang=he#services" class="nav-link" data-home-anchor="services" data-copy="nav.services"></a>
+        <a href="./index.html?lang=he#process" class="nav-link" data-home-anchor="process" data-copy="nav.process"></a>
+        <a href="./index.html?lang=he#contact" class="nav-link" data-home-anchor="contact" data-copy="nav.contact"></a>
+        <a href="./workshops.html?lang=he" class="nav-link workshop-nav-active" aria-current="page" data-workshops-link data-copy="nav.workshops"></a>
+      </nav>
+
+      <div class="flex items-center gap-3 sm:gap-4">
+        <div class="flex items-center gap-1 text-sm border rounded-full px-2 sm:px-3 py-1.5 lang-switcher-theme" role="group" data-aria-copy="nav.language_label">
+          <button type="button" class="lang-btn px-2 py-0.5 rounded active" data-language="he" id="btn-he">HE</button>
+          <span class="separator-theme" aria-hidden="true">|</span>
+          <button type="button" class="lang-btn px-2 py-0.5 rounded" data-language="en" id="btn-en">EN</button>
+          <span class="separator-theme" aria-hidden="true">|</span>
+          <button type="button" class="lang-btn px-2 py-0.5 rounded" data-language="ru" id="btn-ru">RU</button>
+        </div>
+
+        <button
+          id="mobile-menu-button"
+          type="button"
+          class="xl:hidden workshop-menu-button"
+          aria-controls="mobile-nav"
+          aria-expanded="false"
+          data-aria-copy="nav.open_menu"
+        >
+          <i data-lucide="menu" class="w-5 h-5" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-nav" class="hidden xl:hidden border-t px-5 pb-5 mobile-nav-theme workshop-mobile-nav">
+      <nav class="workshop-shell flex flex-col gap-3 text-sm pt-4 nav-text-theme" data-aria-copy="nav.navigation_label">
+        <a href="./index.html?lang=he#about" class="py-1" data-home-anchor="about" data-copy="nav.about"></a>
+        <a href="./index.html?lang=he#services" class="py-1" data-home-anchor="services" data-copy="nav.services"></a>
+        <a href="./index.html?lang=he#process" class="py-1" data-home-anchor="process" data-copy="nav.process"></a>
+        <a href="./index.html?lang=he#contact" class="py-1" data-home-anchor="contact" data-copy="nav.contact"></a>
+        <a href="./workshops.html?lang=he" class="py-1 workshop-nav-active" aria-current="page" data-workshops-link data-copy="nav.workshops"></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="workshop-main" tabindex="-1">
+    <div id="content-error" class="workshop-load-error" role="alert" hidden></div>
+
+    <section class="workshop-hero" aria-labelledby="workshop-title">
+      <div class="workshop-orb workshop-orb-one" aria-hidden="true"></div>
+      <div class="workshop-orb workshop-orb-two" aria-hidden="true"></div>
+      <div class="workshop-shell hero-frame" data-reveal>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="hero-meta-line">
+              <p id="layout-label" class="layout-label"></p>
+              <span aria-hidden="true"></span>
+              <p id="hero-eyebrow" class="hero-eyebrow"></p>
+            </div>
+            <h1 id="workshop-title" class="workshop-title"></h1>
+            <p id="hero-subtitle" class="hero-subtitle"></p>
+            <p id="hero-description" class="hero-description"></p>
+          </div>
+
+          <aside class="hero-details" aria-labelledby="details-heading">
+            <p id="details-kicker" class="details-kicker"></p>
+            <h2 id="details-heading" class="details-heading"></h2>
+            <dl id="hero-details-list" class="hero-details-list"></dl>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <div class="workshop-content-flow">
+      <section id="content-1" class="workshop-section content-section content-section-one" aria-labelledby="content-1-title">
+        <div class="workshop-shell section-panel section-grid" data-reveal>
+          <header class="section-heading">
+            <p id="content-1-kicker" class="section-kicker"></p>
+            <h2 id="content-1-title" class="section-title"></h2>
+          </header>
+          <div id="content-1-paragraphs" class="section-prose"></div>
+        </div>
+      </section>
+
+      <div id="cta-1-wrap" class="workshop-cta-row workshop-shell" data-reveal>
+        <a id="cta-1" href="#registration" class="cta-primary cta-image-button workshop-cta"></a>
+      </div>
+
+      <section id="content-2" class="workshop-section content-section content-section-two" aria-labelledby="content-2-title">
+        <div class="workshop-shell" data-reveal>
+          <header class="section-heading section-heading-wide">
+            <p id="content-2-kicker" class="section-kicker"></p>
+            <h2 id="content-2-title" class="section-title"></h2>
+            <p id="content-2-intro" class="section-intro"></p>
+          </header>
+          <ol id="content-2-items" class="workshop-items"></ol>
+        </div>
+      </section>
+
+      <figure id="power-image-wrap" class="workshop-power-image workshop-shell" data-reveal>
+        <div class="power-image-frame">
+          <img id="power-image" alt="" loading="lazy" decoding="async">
+          <span class="power-image-accent" aria-hidden="true"></span>
+        </div>
+        <figcaption id="power-image-caption" class="power-image-caption"></figcaption>
+      </figure>
+
+      <div id="cta-2-wrap" class="workshop-cta-row workshop-shell" data-reveal>
+        <a id="cta-2" href="#registration" class="cta-primary cta-image-button workshop-cta"></a>
+      </div>
+
+      <section id="content-3" class="workshop-section content-section content-section-three" aria-labelledby="content-3-title">
+        <div class="workshop-shell" data-reveal>
+          <header class="section-heading section-heading-wide">
+            <p id="content-3-kicker" class="section-kicker"></p>
+            <h2 id="content-3-title" class="section-title"></h2>
+            <p id="content-3-intro" class="section-intro"></p>
+          </header>
+          <dl id="content-3-items" class="workshop-faq"></dl>
+        </div>
+      </section>
+
+      <section id="pricing" class="workshop-section pricing-section" aria-labelledby="pricing-title">
+        <div class="workshop-shell pricing-panel" data-reveal>
+          <div><p id="pricing-kicker" class="section-kicker"></p><h2 id="pricing-title" class="section-title"></h2><p id="pricing-intro" class="section-intro"></p></div>
+          <div class="price-stack"><p id="pricing-original" class="price-original"></p><p id="pricing-current" class="price-current"></p><p id="pricing-session" class="price-session"></p><p id="pricing-breakdown" class="price-breakdown"></p><p id="pricing-includes" class="price-includes"></p><p id="pricing-deadline" class="price-deadline"></p><p id="pricing-after" class="price-after"></p><a id="pricing-cta" href="#registration" class="cta-primary cta-image-button workshop-cta"></a></div>
+        </div>
+      </section>
+
+      <section id="instructor" class="workshop-section instructor-section" aria-labelledby="instructor-title">
+        <div class="workshop-shell instructor-panel" data-reveal>
+          <figure class="instructor-media">
+            <div class="instructor-image-frame"><img id="instructor-image" alt="" loading="lazy" decoding="async"></div>
+            <figcaption id="instructor-caption" class="instructor-caption"></figcaption>
+          </figure>
+          <div><p id="instructor-kicker" class="section-kicker"></p><h2 id="instructor-title" class="section-title"></h2><div id="instructor-bio" class="section-prose"></div></div>
+        </div>
+      </section>
+    </div>
+
+    <section id="registration" class="registration-section" aria-labelledby="registration-title">
+      <div class="workshop-shell registration-shell" data-reveal>
+        <div class="registration-copy">
+          <p id="form-kicker" class="section-kicker"></p>
+          <h2 id="registration-title" class="registration-title"></h2>
+          <p id="form-intro" class="registration-intro"></p>
+          <div class="demo-notice" role="note">
+            <i data-lucide="info" aria-hidden="true"></i>
+            <p id="form-demo-notice"></p>
+          </div>
+        </div>
+
+        <form id="registration-form" class="registration-form" novalidate>
+          <div class="form-grid">
+            <div class="form-field">
+              <label id="full-name-label" for="full_name"></label>
+              <input
+                id="full_name"
+                name="full_name"
+                type="text"
+                required
+                minlength="2"
+                maxlength="100"
+                autocomplete="name"
+                aria-describedby="full-name-help full-name-error"
+                aria-invalid="false"
+              >
+              <p id="full-name-help" class="field-help"></p>
+              <p id="full-name-error" class="field-error" aria-live="polite" hidden></p>
+            </div>
+
+            <div class="form-field">
+              <label id="mobile-label" for="mobile"></label>
+              <input
+                id="mobile"
+                name="mobile"
+                type="tel"
+                inputmode="numeric"
+                required
+                minlength="8"
+                maxlength="15"
+                pattern="[0-9]{8,15}"
+                autocomplete="tel"
+                aria-describedby="mobile-help mobile-error"
+                aria-invalid="false"
+              >
+              <p id="mobile-help" class="field-help"></p>
+              <p id="mobile-error" class="field-error" aria-live="polite" hidden></p>
+            </div>
+
+            <div class="form-field">
+              <label id="email-label" for="email"></label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                maxlength="254"
+                autocomplete="email"
+                aria-describedby="email-help email-error"
+                aria-invalid="false"
+              >
+              <p id="email-help" class="field-help"></p>
+              <p id="email-error" class="field-error" aria-live="polite" hidden></p>
+            </div>
+
+            <div class="form-field">
+              <label id="expertise-label" for="expertise"></label>
+              <input
+                id="expertise"
+                name="expertise"
+                type="text"
+                required
+                minlength="2"
+                maxlength="160"
+                autocomplete="off"
+                aria-describedby="expertise-help expertise-error"
+                aria-invalid="false"
+              >
+              <p id="expertise-help" class="field-help"></p>
+              <p id="expertise-error" class="field-error" aria-live="polite" hidden></p>
+            </div>
+          </div>
+
+          <p id="form-privacy-note" class="form-privacy-note"></p>
+          <button id="form-submit" type="submit" class="cta-primary cta-image-button workshop-submit" disabled></button>
+          <p id="form-status" class="form-status" role="status" aria-live="assertive" aria-atomic="true"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-8 border-t footer-theme workshop-footer">
+    <div class="workshop-shell flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="text-xs footer-brand-muted"><span class="font-medium footer-brand-name">Katya Alon</span> &copy; <span id="footer-year"></span></p>
+      <p class="text-xs footer-rights-muted" data-copy="footer.rights"></p>
+    </div>
+  </footer>
+
+  <script src="./js/workshops.js"></script>
+</body>
+</html>

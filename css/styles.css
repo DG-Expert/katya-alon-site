@@ -203,6 +203,17 @@ body {
   }
 }
 
+/* Landscape tablets retain the desktop navigation without its desktop-scale footprint. */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .site-logo {
+    height: 64px;
+  }
+
+  .nav-link {
+    font-size: 1rem;
+  }
+}
+
 
 /* ==================================================
    04. HERO SECTION
@@ -219,6 +230,18 @@ body {
 
 .hero-description-theme {
   color: #DFECEB;
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  #hero .portrait-placeholder {
+    height: 56vh;
+  }
+}
+
+@media (min-width: 1280px) {
+  #hero .portrait-placeholder {
+    height: 80vh;
+  }
 }
 
 
@@ -344,6 +367,26 @@ body {
 
   .clients-marquee-inner {
     animation-duration: 55s;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1199px) {
+  .client-item {
+    width: 190px;
+    min-width: 190px;
+  }
+
+  .client-logo-box {
+    width: 170px;
+    height: 170px;
+  }
+
+  .client-logo-name {
+    font-size: 17px;
+  }
+
+  .marquee-track {
+    gap: 56px;
   }
 }
 
@@ -1082,6 +1125,25 @@ body {
   }
 }
 
+@media (min-width: 769px) and (max-width: 1199px) {
+  .recommendation-item {
+    width: 230px;
+    min-width: 230px;
+  }
+
+  .recommendation-envelope-box {
+    min-height: 190px;
+  }
+
+  .recommendation-envelope-image {
+    max-width: 140px;
+  }
+
+  .recommendations-track {
+    gap: 20px;
+  }
+}
+
 
 /* ==================================================
    11. PROCESS SECTION
@@ -1221,7 +1283,37 @@ body {
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.22));
 }
 
-@media (max-width: 1100px) {
+@media (min-width: 1200px) and (max-width: 1599px) {
+  .process-flow {
+    --process-step-width: clamp(200px, calc((100vw - 14.125rem) / 5), 248px);
+    --process-card-height: 222px;
+    --process-card-half: 111px;
+    --process-card-inner-width: 178px;
+    --process-bullet-size: 64px;
+    --process-step-gap: 0.75rem;
+    --process-arrow-width: clamp(22px, 2vw, 30px);
+    --process-arrow-icon: 22px;
+    --process-arrow-half: 11px;
+    --process-arrow-offset: calc(
+      var(--process-bullet-size) + var(--process-step-gap) + var(--process-card-half) - var(--process-arrow-half)
+    );
+  }
+
+  .process-flow-track {
+    gap: 0.45rem;
+  }
+
+  .process-flow-step-title {
+    font-size: 0.98rem;
+  }
+
+  .process-flow-step-description {
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 1199px) {
   .process-flow {
     --process-step-width: clamp(208px, 20vw, 238px);
     --process-card-height: 222px;
@@ -1246,7 +1338,7 @@ body {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1199px) {
   .process-flow-track {
     flex-direction: column;
     align-items: center;

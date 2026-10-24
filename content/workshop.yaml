@@ -3,7 +3,16 @@
 layout: conversion
 sections: {content_1: true, content_2: true, power_image: true, content_3: true, pricing: true, instructor: true}
 # Public, fail-closed registration configuration. Do not place credentials or private URLs here.
-registration: {enabled: true, endpoint: "https://katya-workshop-registration.arielbenzikri.workers.dev/api/register", timeout_ms: 28000, turnstile_site_key: "0x4AAAAAAFi1EQCo_Swcfmj0", turnstile_action: workshop_register, workshop_id: lawyers-social-2026-11, consent_version: "2026-10-v1"}
+# SINGLE SOURCE for technical event details. Used by the site ({event.*} tokens), the Worker (npm-free sync script) and the registration emails.
+# After editing, run: node scripts/sync-event.mjs   then deploy the Worker (see WORKSHOPS_EDITING.md). Plain "key: value" lines only.
+event:
+  workshop_id: lawyers-social-2026-11
+  timezone: Asia/Jerusalem
+  first_session_date: "2026-11-16"
+  second_session_date: null # "YYYY-MM-DD" once known
+  session_count: 2
+  total_hours: 4
+registration: {enabled: true, endpoint: "https://katya-workshop-registration.arielbenzikri.workers.dev/api/register", timeout_ms: 28000, turnstile_site_key: "0x4AAAAAAFi1EQCo_Swcfmj0", turnstile_action: workshop_register, consent_version: "2026-10-v1"}
 meta:
   title: {he: "הכשרה לעורכי דין לשיווק עצמאי | קטיה אלון", en: "Self-Marketing Training for Lawyers | Katya Alon", ru: "Обучение самостоятельному маркетингу для юристов | Катя Алон"}
   description: {he: "הכשרה מעשית לעורכי דין לשיווק עצמאי ברשתות החברתיות.", en: "Practical social-media self-marketing training for lawyers.", ru: "Практическое обучение самостоятельному маркетингу в соцсетях для юристов."}
@@ -32,9 +41,9 @@ hero:
   details_kicker: {he: "בזום · בלייב", en: "Live on Zoom", ru: "Вживую в Zoom"}
   details_heading: {he: "במבט מהיר", en: "At a glance", ru: "Кратко"}
   details:
-    - {label: {he: "פורמט", en: "Format", ru: "Формат"}, value: {he: "2 מפגשים בלייב בזום", en: "2 live Zoom sessions", ru: "2 живые встречи в Zoom"}}
-    - {label: {he: "משך", en: "Duration", ru: "Продолжительность"}, value: {he: "4 שעות לימוד", en: "4 learning hours", ru: "4 учебных часа"}}
-    - {label: {he: "התחלה", en: "Starts", ru: "Начало"}, value: {he: "16.11.2026", en: "16 Nov 2026", ru: "16.11.2026"}}
+    - {label: {he: "פורמט", en: "Format", ru: "Формат"}, value: {he: "{event.sessions} מפגשים בלייב בזום", en: "{event.sessions} live Zoom sessions", ru: "{event.sessions} живые встречи в Zoom"}}
+    - {label: {he: "משך", en: "Duration", ru: "Продолжительность"}, value: {he: "{event.hours} שעות לימוד", en: "{event.hours} learning hours", ru: "{event.hours} учебных часа"}}
+    - {label: {he: "התחלה", en: "Starts", ru: "Начало"}, value: {he: "{event.date}", en: "{event.date_short}", ru: "{event.date}"}}
 content_1:
   kicker: {he: "01 · למי ההכשרה מתאימה?", en: "01 · Who is it for?", ru: "01 · Для кого обучение?"}
   title: {he: "שיווק עצמאי, מסודר ומקצועי", en: "Independent, structured, professional marketing", ru: "Самостоятельный, системный и профессиональный маркетинг"}
@@ -64,7 +73,7 @@ content_3:
   title: {he: "שני מפגשים, בסיס להמשך הדרך", en: "Two sessions, a foundation for the road ahead", ru: "Две встречи, основа для дальнейшего пути"}
   intro: {he: "שני מפגשים קבוצתיים בלייב בזום, שעתיים בכל מפגש. במהלך ארבע שעות הלימוד נשלב הסברים, דוגמאות מעשיות ותרגול כדי להבין לא רק מה לעשות אלא גם איך לעשות זאת בפועל.", en: "Two group sessions live on Zoom, two hours each. Across four learning hours we combine explanations, practical examples, and exercises to understand not only what to do but how to do it.", ru: "Две групповые живые встречи в Zoom, по два часа каждая. За четыре часа обучения будут объяснения, практические примеры и упражнения, чтобы понять не только что делать, но и как."}
   items:
-    - {question: {he: "מועד ומיקוד", en: "Date and focus", ru: "Дата и фокус"}, answer: {he: "המפגש הראשון ב־16.11.2026. מועד המפגש השני יימסר לנרשמים. ההכשרה מיועדת לעורכי דין בלבד ומתמקדת באתגרים השיווקיים של משרדי עורכי דין.", en: "The first session is 16 Nov 2026. The second-session date will be provided to registrants. The training is for lawyers only and focuses on law firms’ marketing challenges.", ru: "Первая встреча: 16.11.2026. Дату второй сообщат зарегистрированным. Обучение только для юристов и посвящено маркетинговым задачам юридических фирм."}}
+    - {question: {he: "מועד ומיקוד", en: "Date and focus", ru: "Дата и фокус"}, answer: {he: "המפגש הראשון ב־{event.date}. מועד המפגש השני יימסר לנרשמים. ההכשרה מיועדת לעורכי דין בלבד ומתמקדת באתגרים השיווקיים של משרדי עורכי דין.", en: "The first session is {event.date_short}. The second-session date will be provided to registrants. The training is for lawyers only and focuses on law firms’ marketing challenges.", ru: "Первая встреча: {event.date}. Дату второй сообщат зарегистрированным. Обучение только для юристов и посвящено маркетинговым задачам юридических фирм."}}
     - {question: {he: "מכל מקום", en: "From anywhere", ru: "Из любого места"}, answer: {he: "אפשר להשתתף מכל מקום, בלי לצאת מהמשרד ובלי לבזבז זמן על נסיעות.", en: "Join from anywhere, without leaving the office or spending time travelling.", ru: "Участвовать можно из любого места, не выходя из офиса и не тратя время на дорогу."}}
     - {question: {he: "למה דווקא עכשיו?", en: "Why now?", ru: "Почему сейчас?"}, answer: {he: "אנחנו מתקרבים לסוף השנה. זה זמן לבחון את שיווק המשרד ולהיערך לשנה הבאה. הבעיה אינה תמיד חוסר זמן; לפעמים חסרה שיטה ברורה. במקום לדחות או לפרסם בלי אסטרטגיה, ארבע שעות יכולות לתת בסיס מקצועי. הידע המשפטי שלכם הוא נכס מקצועי. הגיע הזמן להשתמש בו גם בשיווק.", en: "Year end is approaching. This is a time to examine the firm’s marketing and prepare for next year. The issue is not always time; sometimes a clear method is missing. Instead of postponing or publishing without strategy, four hours can provide a professional foundation. Your legal knowledge is an asset. It is time to use it in marketing too.", ru: "Конец года приближается. Это время оценить маркетинг фирмы и подготовиться к следующему году. Дело не всегда во времени; иногда не хватает ясной системы. Вместо откладывания или публикаций без стратегии четыре часа могут дать профессиональную основу. Ваши юридические знания являются активом, и пора использовать их в маркетинге."}}
 pricing:
@@ -95,7 +104,7 @@ instructor:
     - {he: "כיום, לצד שירותי השיווק לעסקים, אני מתמקדת גם בהדרכות ובהכשרות מקצועיות שמאפשרות לבעלי עסקים ללמוד לשווק את עצמם. אני מאמינה שלא כל בעל עסק צריך מנהל סושיאל, אבל כל בעל עסק צריך להבין איך השיווק שלו עובד. המטרה שלי היא לתת לכם ידע, ביטחון וכלים לקחת חלק פעיל בקידום המשרד.", en: "Today, alongside marketing services, I focus on professional instruction that lets owners learn to market themselves. I believe not every owner needs a social-media manager, but every owner needs to understand how marketing works. My goal is to give you knowledge, confidence, and tools to take an active role in advancing your firm.", ru: "Сегодня наряду с маркетинговыми услугами я занимаюсь профессиональным обучением, позволяющим владельцам бизнеса продвигать себя. Я считаю, что не каждому нужен SMM-менеджер, но каждому важно понимать маркетинг. Моя цель: дать вам знания, уверенность и инструменты для активного продвижения фирмы."}
 form:
   kicker: {he: "מוכנים להפסיק לדחות את השיווק שלכם?", en: "Ready to stop postponing your marketing?", ru: "Готовы перестать откладывать маркетинг?"}
-  title: {he: "ההכשרה מתחילה ב־16 בנובמבר 2026", en: "Training starts 16 November 2026", ru: "Обучение начинается 16 ноября 2026"}
+  title: {he: "ההכשרה מתחילה ב־{event.date_long}", en: "Training starts {event.date_long}", ru: "Обучение начинается {event.date_long}"}
   intro: {he: "שני מפגשים. ארבע שעות. ידע וכלים שתוכלו להמשיך להשתמש בהם גם לאחר סיום ההכשרה. השאירו פרטים ואחזור אליכם להשלמת ההרשמה.", en: "Two sessions. Four hours. Knowledge and tools you can continue using after training. Leave your details and I will get back to complete registration.", ru: "Две встречи. Четыре часа. Знания и инструменты, которыми вы сможете пользоваться после обучения. Оставьте данные, и я свяжусь с вами для завершения регистрации."}
   demo_notice: {he: "הדגמה בלבד. ההרשמה אינה פתוחה. שום מידע אינו נשלח, נשמר או יוצר הרשמה. אין כרגע הגנת CAPTCHA או מנגנון נגד בוטים.", en: "DEMO ONLY. Registration is not open. No information is transmitted, stored, or turned into a registration. No CAPTCHA or anti-bot protection is enabled.", ru: "ТОЛЬКО ДЕМО. Регистрация не открыта. Информация не передаётся, не сохраняется и не создаёт заявку. CAPTCHA и защита от ботов не подключены."}
   privacy_note: {he: "ההכשרה מיועדת ללימוד שיווק עצמאי ואינה כוללת ניהול בפועל של הרשתות החברתיות, יצירת תוכן עבור המשתתפים או התחייבות למספר פניות או לקוחות. עלות ההכשרה עשויה להיות מוכרת כהוצאה לצורכי מס בהתאם לנסיבות ולהוראות הדין; מומלץ לבדוק מול רואה החשבון.", en: "The training teaches independent marketing and does not include hands-on social-media management, content creation for participants, or a commitment to enquiries or clients. Its cost may be recognised as a tax expense depending on circumstances and law; consult your accountant.", ru: "Обучение посвящено самостоятельному маркетингу и не включает фактическое ведение соцсетей, создание контента для участников или обязательство по обращениям либо клиентам. Его стоимость может быть признана расходом для налогообложения в зависимости от обстоятельств и закона; уточните у бухгалтера."}

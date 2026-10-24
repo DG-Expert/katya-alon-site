@@ -1,4 +1,5 @@
 // Strict server-side validation. Browser checks are convenience only.
+import { EVENT } from './event.generated.js';
 const FIELDS = ['full_name', 'mobile', 'email', 'expertise', 'lang', 'workshopId', 'consent', 'consentVersion', 'website', 'idempotencyKey', 'turnstileToken'];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EMAIL = /^[^\s@<>()[\]\\,;:"]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
@@ -23,7 +24,7 @@ export function validatePayload(body, env) {
   if (v.expertise.length < 2 || v.expertise.length > 160 || /\p{N}|\p{C}/u.test(v.expertise)) return { ok: false, field: 'expertise' };
   if (!['he', 'en', 'ru'].includes(body.lang)) return { ok: false, field: 'lang' };
   v.lang = body.lang;
-  if (!env.WORKSHOP_ID || body.workshopId !== env.WORKSHOP_ID) return { ok: false, field: 'workshopId' };
+  if (body.workshopId !== EVENT.workshopId) return { ok: false, field: 'workshopId' };
   v.workshopId = body.workshopId;
   if (body.consent !== true) return { ok: false, field: 'consent' };
   if (!list(env.CONSENT_VERSIONS).includes(body.consentVersion)) return { ok: false, field: 'consentVersion' };

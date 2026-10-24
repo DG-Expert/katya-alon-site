@@ -1,6 +1,7 @@
 import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { EVENT } from '../worker/src/event.generated.js';
 
 export const ORIGIN = 'https://dg-expert.github.io';
 export const SECRET = 'test-hmac-secret';
@@ -9,7 +10,7 @@ export function workerEnv(over = {}) {
   return {
     ALLOWED_ORIGINS: `${ORIGIN},https://dev-server.tail6972d4.ts.net:8445`,
     TURNSTILE_HOSTNAMES: 'dg-expert.github.io,dev-server.tail6972d4.ts.net',
-    TURNSTILE_ACTION: 'workshop_register', WORKSHOP_ID: 'lawyers-social-2026-11', CONSENT_VERSIONS: 'v1',
+    TURNSTILE_ACTION: 'workshop_register', CONSENT_VERSIONS: 'v1',
     GAS_URL: 'https://script.example.test/exec', GAS_HMAC_SECRET: SECRET, TURNSTILE_SECRET: 'ts-secret',
     REGISTRATION_LIMITER: { limit: async () => ({ success: true }) }, ...over
   };
@@ -30,7 +31,7 @@ export function post(body, { origin = ORIGIN, headers = {}, raw } = {}) {
 // ---------- Google Apps Script mock runtime ----------
 const toSigned = buf => [...buf].map(b => (b > 127 ? b - 256 : b));
 
-export function loadGas({ props = {}, quota = 100, failMail = false, maxRows = 1000 } = {}) {
+export function loadGas({ props = {}, quota = 100, failMail = false, maxRows = 1000, source } = {}) {
   const properties = { SHEET_ID: 'sheet-id', HMAC_SECRET: SECRET, DEDUPE_SALT: 'salt', OWNER_EMAIL: 'owner@example.com', ...props };
   const grid = []; // grid[r-1][c-1]
   const formats = [];
@@ -53,7 +54,7 @@ export function loadGas({ props = {}, quota = 100, failMail = false, maxRows = 1
   const ctx = {
     console: { error() {}, log() {} },
     Date,
-    PropertiesService: { getScriptProperties: () => ({ getProperty: k => properties[k] ?? null }) },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: k => properties[k] ?? null, setProperty: (k, v) => { properties[k] = v; } }) },
     LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
     SpreadsheetApp: { openById: () => ({ getSheetByName: () => (sheetExists ? sheet : null), insertSheet: () => { sheetExists = true; return sheet; } }) },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: t => ({ text: t, setMimeType() { return this; } }) },
@@ -61,13 +62,15 @@ export function loadGas({ props = {}, quota = 100, failMail = false, maxRows = 1
     ScriptApp: { getProjectTriggers: () => [], newTrigger: () => ({ timeBased: () => ({ everyMinutes: () => ({ create() {} }) }) }) },
     Utilities: {
       DigestAlgorithm: { SHA_256: 'sha256' }, Charset: { UTF_8: 'utf8' },
-      computeHmacSha256Signature: (m, k) => toSigned(createHmac('sha256', k).update(m, 'utf8').digest()),
+      // Real GAS: the 2-arg overload does not encode as UTF-8 (verified live: HMAC_UTF8_MATCH=false for Hebrew/Russian).
+      // The mock simulates that deterministically with a lossy single-byte encoding; only an explicit UTF_8 charset gives UTF-8.
+      computeHmacSha256Signature: (m, k, cs) => toSigned(createHmac('sha256', k).update(Buffer.from(m, cs === 'utf8' ? 'utf8' : 'latin1')).digest()),
       computeDigest: (_a, t) => toSigned(createHash('sha256').update(t, 'utf8').digest()),
       getUuid: () => randomUUID()
     }
   };
   vm.createContext(ctx);
-  vm.runInContext(readFileSync(new URL('../gas/Code.gs', import.meta.url), 'utf8'), ctx);
+  vm.runInContext(source ?? readFileSync(new URL('../gas/Code.gs', import.meta.url), 'utf8'), ctx);
   const call = envelope => JSON.parse(ctx.doPost({ postData: { contents: typeof envelope === 'string' ? envelope : JSON.stringify(envelope) } }).text);
   return { ctx, call, grid, formats, mails, properties };
 }
@@ -77,7 +80,13 @@ export function envelope(payloadObj, { rid = randomUUID(), ts = Math.floor(Date.
   return { v: 1, ts, rid, payload: p, sig: createHmac('sha256', secret).update(`1.${ts}.${rid}.${p}`).digest('hex') };
 }
 
-export const gasPayload = (over = {}) => ({
-  workshopId: 'lawyers-social-2026-11', full_name: 'Maya Cohen', mobile: '0501234567', email: 'maya@example.com', expertise: 'Family law',
+// Pre-change sender: exactly the original 7 keys, no `event`.
+export const oldGasPayload = (over = {}) => ({
+  workshopId: EVENT.workshopId, full_name: 'Maya Cohen', mobile: '0501234567', email: 'maya@example.com', expertise: 'Family law',
   lang: 'en', consentVersion: 'v1', ...over
 });
+export const gasEvent = (over = {}) => ({
+  firstSessionDate: EVENT.firstSessionDate, secondSessionDate: EVENT.secondSessionDate, sessionCount: EVENT.sessionCount, totalHours: EVENT.totalHours,
+  timezone: EVENT.timezone, ...over
+});
+export const gasPayload = (over = {}) => ({ ...oldGasPayload(), event: gasEvent(), ...over });

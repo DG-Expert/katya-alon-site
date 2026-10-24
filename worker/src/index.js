@@ -1,5 +1,6 @@
 // Cloudflare Worker: browser -> POST /api/register -> Turnstile Siteverify -> signed server-to-server call to Apps Script.
 import { validatePayload, list } from './validate.js';
+import { EVENT } from './event.generated.js';
 
 const MAX_BODY = 8192;
 const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
@@ -62,7 +63,9 @@ const GAS_STATUS = { created: 200, replay: 200, duplicate: 409, conflict: 409, i
 async function callGas(env, value) {
   const payload = JSON.stringify({
     workshopId: value.workshopId, full_name: value.full_name, mobile: value.mobile, email: value.email, expertise: value.expertise,
-    lang: value.lang, consentVersion: value.consentVersion
+    lang: value.lang, consentVersion: value.consentVersion,
+    // Canonical event details come from the build-time config, never from the browser; GAS treats this key as optional.
+    event: { firstSessionDate: EVENT.firstSessionDate, secondSessionDate: EVENT.secondSessionDate, sessionCount: EVENT.sessionCount, totalHours: EVENT.totalHours, timezone: EVENT.timezone }
   });
   const ts = Math.floor(Date.now() / 1000);
   const rid = value.idempotencyKey;

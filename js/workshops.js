@@ -33,10 +33,29 @@
     ), root);
   }
 
+  const EVENT_LOCALES = { he: 'he-IL', en: 'en-GB', ru: 'ru-RU' };
+
+  // Fills {event.*} tokens from the single `event` block so dates/counts are never hand-copied into translations.
+  function fillEvent(text, lang) {
+    const event = workshopContent?.event;
+    if (!event || !text.includes('{event.')) return text;
+    const date = new Date(`${event.first_session_date}T00:00:00Z`);
+    const part = (options) => new Intl.DateTimeFormat(EVENT_LOCALES[lang] || 'en-GB', { timeZone: 'UTC', ...options }).formatToParts(date)
+      .filter(p => ['day', 'month', 'year', 'literal'].includes(p.type)).map(p => p.value).join('').replace(/\s*г\.$/, '').trim();
+    const values = {
+      'event.sessions': String(event.session_count),
+      'event.hours': String(event.total_hours),
+      'event.date': part({ day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.'),
+      'event.date_short': part({ day: 'numeric', month: 'short', year: 'numeric' }),
+      'event.date_long': part({ day: 'numeric', month: 'long', year: 'numeric' })
+    };
+    return text.replace(/\{(event\.[a-z_]+)\}/g, (match, key) => (key in values ? values[key] : match));
+  }
+
   function translate(value, lang = currentLang) {
-    if (typeof value === 'string') return value;
+    if (typeof value === 'string') return fillEvent(value, lang);
     if (!value || typeof value !== 'object') return '';
-    return value[lang] || value.he || value.en || value.ru || '';
+    return fillEvent(value[lang] || value.he || value.en || value.ru || '', lang);
   }
 
   function translatedAt(path) {
@@ -90,7 +109,12 @@
     if (!reg || typeof reg !== 'object' || reg.enabled !== false && reg.enabled !== true || typeof reg.endpoint !== 'string') {
       throw new Error('registration must contain boolean enabled and string endpoint settings.');
     }
-    ['turnstile_site_key', 'turnstile_action', 'workshop_id', 'consent_version'].forEach(key => {
+    const event = content.event;
+    if (!event || typeof event !== 'object' || !/^[A-Za-z0-9._-]{1,64}$/.test(event.workshop_id) || !/^\d{4}-\d{2}-\d{2}$/.test(event.first_session_date)
+      || !Number.isInteger(event.session_count) || !Number.isFinite(event.total_hours)) {
+      throw new Error('event must contain workshop_id, first_session_date, session_count and total_hours.');
+    }
+    ['turnstile_site_key', 'turnstile_action', 'consent_version'].forEach(key => {
       if (reg[key] !== undefined && typeof reg[key] !== 'string') throw new Error(`registration.${key} must be a string.`);
     });
 
@@ -482,7 +506,7 @@
   function registrationIsReady() {
     const settings = workshopContent?.registration;
     if (!SECURE_REGISTRATION_BACKEND_APPROVED || !settings || settings.enabled !== true || !settings.endpoint) return false;
-    if (!settings.turnstile_site_key || !settings.turnstile_action || !settings.workshop_id || !settings.consent_version || settings.consent_version === 'pending-approval') return false;
+    if (!settings.turnstile_site_key || !settings.turnstile_action || !workshopContent.event?.workshop_id || !settings.consent_version || settings.consent_version === 'pending-approval') return false;
     try {
       const endpoint = new URL(settings.endpoint);
       return endpoint.protocol === 'https:';
@@ -578,7 +602,7 @@
     Object.assign(payload, {
       consent: true,
       consentVersion: settings.consent_version,
-      workshopId: settings.workshop_id,
+      workshopId: workshopContent.event.workshop_id,
       lang: currentLang,
       website: honeypot ? honeypot.value : '',
       idempotencyKey,

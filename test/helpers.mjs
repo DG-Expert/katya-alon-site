@@ -18,7 +18,7 @@ export function workerEnv(over = {}) {
 
 export const goodBody = (over = {}) => ({
   full_name: 'Maya Cohen', mobile: '0501234567', email: 'maya@example.com', expertise: 'Family law', lang: 'en',
-  workshopId: 'lawyers-social-2026-11', consent: true, consentVersion: 'v1', website: '', idempotencyKey: randomUUID(),
+  workshopId: EVENT.workshopId, consent: true, consentVersion: 'v1', website: '', idempotencyKey: randomUUID(),
   turnstileToken: 'tok', ...over
 });
 

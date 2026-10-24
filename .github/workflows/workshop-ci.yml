@@ -1,0 +1,53 @@
+name: Workshop CI
+
+on:
+  push:
+    branches:
+      - sheet-workshop-drafts
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: workshop-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate workshop draft
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Fetch the protected main baseline
+        run: git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+
+      - name: Validate event and protected registration configuration
+        run: node scripts/validate-workshop.mjs --base-ref origin/main
+
+      - name: Generate Worker event metadata
+        run: node scripts/sync-event.mjs
+
+      - name: Check generated metadata
+        run: node scripts/sync-event.mjs --check
+
+      - name: Run static checks
+        run: |
+          node --check js/*.js scripts/*.mjs test/*.mjs worker/src/*.js
+          git diff --check
+
+      - name: Run regression tests
+        run: node --test test/*.test.mjs

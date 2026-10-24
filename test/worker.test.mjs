@@ -147,6 +147,11 @@ import { readFileSync } from 'node:fs';
 import { EVENT } from '../worker/src/event.generated.js';
 import { parseEvent, render } from '../scripts/sync-event.mjs';
 const yamlText = () => readFileSync(new URL('../content/workshop.yaml', import.meta.url), 'utf8');
+const withEventValue = (yaml, key, value) => {
+  const line = new RegExp(`^(  ${key}:).*$`, 'm');
+  assert.match(yaml, line, `missing event.${key}`);
+  return yaml.replace(line, `$1 ${value}`);
+};
 
 test('Worker signs a payload that carries the canonical event from config', async () => {
   const res = await run(post(goodBody()));
@@ -166,16 +171,24 @@ test('browser-supplied event details and foreign workshop ids are rejected', asy
 test('generated Worker metadata is in sync with content/workshop.yaml and follows YAML edits', () => {
   assert.deepEqual(parseEvent(yamlText()), EVENT);
   assert.equal(render(parseEvent(yamlText())), readFileSync(new URL('../worker/src/event.generated.js', import.meta.url), 'utf8'));
-  const edited = yamlText().replace('first_session_date: "2026-11-16"', 'first_session_date: "2027-01-10"').replace('second_session_date: null', 'second_session_date: "2027-01-17"')
-    .replace('workshop_id: lawyers-social-2026-11', 'workshop_id: next-2027-01').replace('total_hours: 4', 'total_hours: 6');
+  let edited = withEventValue(yamlText(), 'first_session_date', '"2027-01-10"');
+  edited = withEventValue(edited, 'second_session_date', '"2027-01-17"');
+  edited = withEventValue(edited, 'workshop_id', '"next-2027-01"');
+  edited = withEventValue(edited, 'total_hours', '6');
   const e = parseEvent(edited);
   assert.deepEqual([e.firstSessionDate, e.secondSessionDate, e.workshopId, e.totalHours], ['2027-01-10', '2027-01-17', 'next-2027-01', 6]);
   assert.match(render(e), /2027-01-17/);
 });
 
 test('sync script rejects invalid event config', () => {
-  for (const [from, to] of [['"2026-11-16"', '"2026-13-45"'], ['session_count: 2', 'session_count: 0'], ['timezone: Asia/Jerusalem', 'timezone: bad zone'], ['second_session_date: null', 'second_session_date: "2026-01-01"'], ['total_hours: 4', 'total_hours: abc']]) {
-    assert.throws(() => parseEvent(yamlText().replace(from, to)), undefined, to);
+  const beforeFirstSession = new Date(`${parseEvent(yamlText()).firstSessionDate}T00:00:00Z`);
+  beforeFirstSession.setUTCDate(beforeFirstSession.getUTCDate() - 1);
+  const invalid = [
+    ['first_session_date', '"2026-13-45"'], ['session_count', '0'], ['timezone', '"bad zone"'],
+    ['second_session_date', `"${beforeFirstSession.toISOString().slice(0, 10)}"`], ['total_hours', 'abc']
+  ];
+  for (const [key, value] of invalid) {
+    assert.throws(() => parseEvent(withEventValue(yamlText(), key, value)), undefined, `${key}: ${value}`);
   }
 });
 

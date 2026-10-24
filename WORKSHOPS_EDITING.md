@@ -4,7 +4,7 @@ The workshops page is driven by one manual content file: `content/workshop.yaml`
 
 ## Choose a layout
 
-Set `layout` to exactly one of these unquoted values:
+Set `layout` to exactly one of these values (the Sheet publisher may serialize it with quotes):
 
 - `conversion` — dominant hero and detail rail, benefit cards, supporting image, repeated CTA emphasis.
 - `story` — centered editorial hero, spacious staggered narrative blocks, wide image, minimal FAQ rows.
@@ -124,15 +124,15 @@ The four fixed field keys are `full_name`, `mobile`, `email`, and `expertise`. T
 - List entries begin with `-` at the list’s indentation level.
 - Quote text containing `: `, `#`, leading punctuation, or other YAML-significant characters.
 - Keep `true` and `false` unquoted. Quoted values such as `"false"` are strings and the page will reject them.
-- Keep `layout` unquoted and lowercase.
+- Keep `layout` lowercase; either a plain YAML scalar or the Sheet publisher's quoted form is accepted.
 - Content is rendered as text with DOM text nodes. HTML entered in YAML is not interpreted as markup.
 - After editing, load all three languages and check the browser console for a YAML parse or schema error.
 
 ## Registration status and security boundary
 
-Registration is not live. The page has no backend, collection purpose, retention policy, CAPTCHA provider, bot protection, database, or secrets. The sign-up button is always disabled and must remain disabled until a secure backend, server-side validation, CAPTCHA/anti-bot decision, privacy terms, and data-handling design are approved. Client-side field validation remains available for usability only; the page does not fetch, log, persist, or transmit field values. Even an implicit form-submit attempt is prevented and produces an explicit “no registration was created” message.
+Registration is active through the approved browser → Cloudflare Worker → HMAC-protected Apps Script path described in `REGISTRATION_SETUP.md`. The Worker performs strict validation, exact-origin CORS, rate limiting and server-side Turnstile verification before GAS can write to the private Sheet or send mail.
 
-Do not change the disclosure or imply that anti-bot/security infrastructure is enabled. Connecting Firebase, reCAPTCHA, Turnstile, email, a CRM, or any other submission service requires a separate product and security decision, server-side validation, privacy terms, and an approved data-handling design.
+Treat `registration.*`, the Worker origins/action/consent configuration, and all legal copy as protected. Sheet publishing must never change those settings. Do not place Worker or GAS secrets in YAML, GitHub, browser code or documentation; the runtime secrets remain only in Cloudflare and Apps Script. Any registration architecture, privacy/retention policy or consent change needs a separate reviewed security and legal decision.
 
 ## Workshop event details (single source) and deploy
 
@@ -140,6 +140,6 @@ Technical event details live in ONE place: the `event:` block at the top of `con
 
 - **Site**: strings may use `{event.date}` (16.11.2026), `{event.date_short}` (en), `{event.date_long}` (16 November 2026), `{event.sessions}`, `{event.hours}`. They are used for the "at a glance" list, the first-session answer and the form title.
 - **Worker + emails**: the Worker no longer has `WORKSHOP_ID`; it takes the workshop id and event details from `worker/src/event.generated.js`, generated from the YAML, and adds them to the HMAC-signed payload. Registration emails (he/en/ru) are built from that data; the browser cannot supply event details.
-- **After editing the YAML** run (from the repo root): `node scripts/sync-event.mjs && (cd worker && npx wrangler deploy)`. `node scripts/sync-event.mjs --check` fails if the generated file is stale (also covered by `node --test test/*.test.mjs`). Changing `workshop_id` starts a new dedup namespace by design.
+- **After editing the YAML locally** run `node scripts/sync-event.mjs`, `node scripts/sync-event.mjs --check`, and `node --test test/*.test.mjs`. Sheet changes go to `sheet-workshop-drafts`; CI regenerates metadata ephemerally. Production deploy happens only after reviewed merge to `main`, as documented in `docs/WORKSHOP_CICD_HE.md`. A normal content PR must not change `workshop_id`; CI blocks it because the current single-ID Worker cannot roll over without a phased migration.
 - **Still manual text** (does not follow `event`): number words and plural forms such as "two sessions / four hours" in prose, pricing dates (`pricing.deadline`, `after_deadline`, 10.11.2026), the "second-session date will be provided" sentence on the page, and the Google Calendar link (`EVENT_START_ISO`, `EVENT_END_ISO`, `EVENT_TIMEZONE` Script Properties).
 - **Apps Script**: `gas/Code.gs` is the source; `node scripts/make-gas-patch.mjs` writes an ASCII-only block (default `/tmp/gas-event-patch.gs`) to paste at the END of an existing cloud `Code.gs`. Deploy order: Apps Script first (new version of the web app), then the Worker. The GAS change accepts both old 7-key and new payloads.

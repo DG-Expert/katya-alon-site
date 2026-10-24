@@ -1,22 +1,22 @@
 # OWNER WARNING (non-visible): source copy conflicts on early-bird date (8.11 vs 10.11).
 # This private preview uses 10.11.2026; owner must confirm before publication.
-layout: conversion
+layout: "story"
 sections: {content_1: true, content_2: true, power_image: true, content_3: true, pricing: true, instructor: true}
 # Public, fail-closed registration configuration. Do not place credentials or private URLs here.
 # SINGLE SOURCE for technical event details. Used by the site ({event.*} tokens), the Worker (npm-free sync script) and the registration emails.
 # After editing, run: node scripts/sync-event.mjs   then deploy the Worker (see WORKSHOPS_EDITING.md). Plain "key: value" lines only.
 event:
-  workshop_id: lawyers-social-2026-11
-  timezone: Asia/Jerusalem
+  workshop_id: "lawyers-social-2026-11"
+  timezone: "Asia/Jerusalem"
   first_session_date: "2026-11-16"
-  second_session_date: null # "YYYY-MM-DD" once known
+  second_session_date: null
   session_count: 2
   total_hours: 4
 registration: {enabled: true, endpoint: "https://katya-workshop-registration.arielbenzikri.workers.dev/api/register", timeout_ms: 28000, turnstile_site_key: "0x4AAAAAAFi1EQCo_Swcfmj0", turnstile_action: workshop_register, consent_version: "2026-10-v1"}
 meta:
   title: {he: "הכשרה לעורכי דין לשיווק עצמאי | קטיה אלון", en: "Self-Marketing Training for Lawyers | Katya Alon", ru: "Обучение самостоятельному маркетингу для юристов | Катя Алон"}
   description: {he: "הכשרה מעשית לעורכי דין לשיווק עצמאי ברשתות החברתיות.", en: "Practical social-media self-marketing training for lawyers.", ru: "Практическое обучение самостоятельному маркетингу в соцсетях для юристов."}
-accessibility: {skip_to_content: {he: "דילוג לתוכן הראשי", en: "Skip to main content", ru: "Перейти к основному содержанию"}}
+accessibility: {skip_to_content: {he: "דילוג לתוכן הראשי", en: "Skip to main content", ru: "Перейти к основному содержанию"}, en: "Skip to main content", ru: "Перейти к основному содержанию"}}
 nav:
   brand_alt: {he: "קטיה אלון, שיווק דיגיטלי", en: "Katya Alon, Digital Marketing", ru: "Катя Алон, цифровой маркетинг"}
   navigation_label: {he: "ניווט ראשי", en: "Main navigation", ru: "Основная навигация"}
@@ -64,7 +64,7 @@ content_2:
     - {title: {he: "איך הפורמטים עובדים", en: "How formats work", ru: "Как работают форматы"}, text: {he: "תכירו את ההבדלים בין רילסים, פוסטים, קרוסלות וסטוריז ואיך להשתמש בכל אחד למטרות שיווקיות שונות.", en: "Learn the differences between reels, posts, carousels, and stories and how to use each for different marketing goals.", ru: "Узнаете различия между reels, постами, каруселями и stories и как использовать каждый для разных маркетинговых целей."}}
     - {title: {he: "מחשיפה לפניות", en: "From visibility to enquiries", ru: "От узнаваемости к обращениям"}, text: {he: "תבינו איך לבנות תוכן שמוביל מהיכרות ראשונית עם המשרד, דרך בניית אמון ועד לרצון ליצור קשר.", en: "Understand how to build content leading from first awareness of the firm, through trust-building, to wanting contact.", ru: "Поймёте, как создавать контент, ведущий от первого знакомства с фирмой через доверие к желанию связаться."}}
     - {title: {he: "ניהול עצמאי", en: "Independent management", ru: "Самостоятельное ведение"}, text: {he: "תקבלו שיטה לתכנון תוכן, עבודה עקבית ושילוב השיווק בשגרת העבודה בלי לבזבז שעות מיותרות.", en: "Receive a method for planning content, working consistently, and fitting marketing into your routine without wasting hours.", ru: "Получите метод планирования контента, последовательной работы и включения маркетинга в рабочий распорядок без лишней траты часов."}}
-power_image: {src: "./assets/images/katya-2.webp", alt: {he: "קטיה אלון", en: "Katya Alon", ru: "Катя Алон"}, caption: {he: "", en: "", ru: ""}}
+power_image: {src: "./assets/images/katya-2.webp", alt: {he: "קטיה אלון", en: "Katya Alon", ru: "Катя Алон"}, en: "Katya Alon", ru: "Катя Алон"}, caption: {he: "", en: "", ru: ""}, en: "", ru: ""}}
 ctas:
   after_content_1: {he: "אני רוצה להירשם להכשרה", en: "I want to register for the training", ru: "Я хочу зарегистрироваться на обучение"}
   after_power_image: {he: "אני רוצה להירשם להכשרה", en: "I want to register for the training", ru: "Я хочу зарегистрироваться на обучение"}
@@ -128,5 +128,5 @@ form:
     timeout: {he: "פג הזמן הקצוב לבקשה. בדקו את החיבור ונסו שוב.", en: "The request timed out. Check your connection and try again.", ru: "Время ожидания заявки истекло. Проверьте подключение и попробуйте снова."}
     invalid: {he: "הפרטים שנשלחו לא נתקבלו כתקינים. בדקו את השדות ונסו שוב.", en: "The submitted details were not accepted. Check the fields and try again.", ru: "Отправленные данные не приняты. Проверьте поля и попробуйте снова."}
     unavailable: {he: "השירות אינו זמין זמנית. נסו שוב מאוחר יותר.", en: "The service is temporarily unavailable. Please try again later.", ru: "Сервис временно недоступен. Попробуйте позже."}
-footer: {rights: {he: "כל הזכויות שמורות", en: "All rights reserved", ru: "Все права защищены"}}
+footer: {rights: {he: "כל הזכויות שמורות", en: "All rights reserved", ru: "Все права защищены"}, en: "All rights reserved", ru: "Все права защищены"}}
 system: {content_error: {he: "לא ניתן לטעון את תוכן הסדנה. בדקו את קובץ ה־YAML ורעננו.", en: "The workshop content could not be loaded. Check the YAML file and refresh.", ru: "Не удалось загрузить содержание обучения. Проверьте YAML и обновите страницу."}}

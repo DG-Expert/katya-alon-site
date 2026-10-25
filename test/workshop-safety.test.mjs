@@ -6,6 +6,20 @@ import { validateWorkshopText } from '../scripts/validate-workshop.mjs';
 const yaml = readFileSync(new URL('../content/workshop.yaml', import.meta.url), 'utf8');
 const wranglerText = readFileSync(new URL('../worker/wrangler.toml', import.meta.url), 'utf8');
 const setEvent = (text, key, value) => text.replace(new RegExp(`^(  ${key}:).*$`, 'm'), `$1 ${value}`);
+const wranglerList = key => wranglerText.match(new RegExp(`^${key} = "([^"]*)"$`, 'm'))?.[1].split(',');
+
+test('Worker config preserves existing hosts and allows the new apex domain', () => {
+  assert.deepEqual(wranglerList('ALLOWED_ORIGINS'), [
+    'https://dg-expert.github.io',
+    'https://dev-server.tail6972d4.ts.net:8445',
+    'https://katya-alon.com'
+  ]);
+  assert.deepEqual(wranglerList('TURNSTILE_HOSTNAMES'), [
+    'dg-expert.github.io',
+    'dev-server.tail6972d4.ts.net',
+    'katya-alon.com'
+  ]);
+});
 
 test('current workshop passes structural, consent and protected-config checks', () => {
   const result = validateWorkshopText(yaml, { baseText: yaml, wranglerText });

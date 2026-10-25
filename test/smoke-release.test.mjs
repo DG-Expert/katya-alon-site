@@ -2,15 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { checkPages, checkWorker } from '../scripts/smoke-release.mjs';
 
-test('Worker smoke check sends only OPTIONS and verifies exact CORS origin', async () => {
-  let request;
+test('Worker smoke check sends only OPTIONS and verifies both exact CORS origins', async () => {
+  const requests = [];
   const fetchImpl = async (url, options) => {
-    request = { url, options };
-    return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': 'https://dg-expert.github.io' } });
+    requests.push({ url, options });
+    return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': options.headers.Origin } });
   };
   await checkWorker('https://worker.example.test/api/register', fetchImpl);
-  assert.equal(request.options.method, 'OPTIONS');
-  assert.equal(request.options.headers.Origin, 'https://dg-expert.github.io');
+  assert.deepEqual(requests.map(({ options }) => options.method), ['OPTIONS', 'OPTIONS']);
+  assert.deepEqual(requests.map(({ options }) => options.headers.Origin), ['https://dg-expert.github.io', 'https://katya-alon.com']);
   await assert.rejects(() => checkWorker('https://worker.example.test/api/register', async () => new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*' } })), /unexpected/);
 });
 

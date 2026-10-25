@@ -133,7 +133,7 @@ jobs:
         run: |
           stage_dir="${RUNNER_TEMP}/pages"
           mkdir -p "$stage_dir"
-          cp index.html workshops.html "$stage_dir/"
+          cp index.html workshops.html robots.txt sitemap.xml "$stage_dir/"
           cp -R css js assets content "$stage_dir/"
           if find "$stage_dir" -type l -print -quit | grep -q .; then
             echo "::error::The Pages artifact must not contain symbolic links."

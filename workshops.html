@@ -8,9 +8,6 @@
   <meta property="og:title" content="Katya Alon">
   <meta property="og:description" content="">
   <title>Katya Alon</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/workshops.css">
   <link rel="stylesheet" href="/css/tailwind.css">
@@ -26,7 +23,8 @@
       <a id="brand-link" href="/#hero" class="site-logo-link" data-aria-copy="nav.home">
         <img
           id="brand-logo"
-          src="/assets/images/Kate%20NoBackground%20Logo.png"
+          src="/assets/images/katya-logo-96.webp"
+          srcset="/assets/images/katya-logo-96.webp 1x, /assets/images/katya-logo-192.webp 2x"
           alt=""
           class="site-logo"
           width="500"
@@ -131,7 +129,7 @@
 
       <figure id="power-image-wrap" class="workshop-power-image workshop-shell" data-reveal>
         <div class="power-image-frame">
-          <img id="power-image" alt="" loading="lazy" decoding="async">
+          <img id="power-image" alt="" width="3360" height="5040" loading="lazy" decoding="async">
           <span class="power-image-accent" aria-hidden="true"></span>
         </div>
         <figcaption id="power-image-caption" class="power-image-caption"></figcaption>
@@ -162,7 +160,7 @@
       <section id="instructor" class="workshop-section instructor-section" aria-labelledby="instructor-title">
         <div class="workshop-shell instructor-panel" data-reveal>
           <figure class="instructor-media">
-            <div class="instructor-image-frame"><img id="instructor-image" alt="" loading="lazy" decoding="async"></div>
+            <div class="instructor-image-frame"><img id="instructor-image" alt="" width="1312" height="1199" loading="lazy" decoding="async"></div>
             <figcaption id="instructor-caption" class="instructor-caption"></figcaption>
           </figure>
           <div><p id="instructor-kicker" class="section-kicker"></p><h2 id="instructor-title" class="section-title"></h2><div id="instructor-bio" class="section-prose"></div></div>
@@ -214,7 +212,6 @@
                 inputmode="numeric"
                 required
                 minlength="8"
-                maxlength="15"
                 pattern="[0-9]{8,15}"
                 autocomplete="tel"
                 aria-describedby="mobile-help mobile-error"

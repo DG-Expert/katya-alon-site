@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
+const bytes = path => readFileSync(new URL(`../${path}`, import.meta.url)).byteLength;
 const indexHtml = read('index.html');
 const workshopsHtml = read('workshops.html');
 const workshopsCss = read('css/workshops.css');
@@ -39,7 +40,6 @@ test('styles load before scripts and deferred dependencies precede application c
   ]) {
     const pageHead = head(html);
     assertOrdered(pageHead, [
-      'fonts.googleapis.com/css2',
       ...styles,
       'lucide.min.js',
       'js-yaml.min.js',
@@ -51,6 +51,39 @@ test('styles load before scripts and deferred dependencies precede application c
     assert.match(pageHead, /<script defer src="[^"]*lucide\.min\.js"><\/script>/);
     assert.match(pageHead, /<script defer src="[^"]*js-yaml\.min\.js"><\/script>/);
   }
+});
+
+test('critical typography is self-hosted without a third-party stylesheet', () => {
+  for (const html of [indexHtml, workshopsHtml]) {
+    assert.doesNotMatch(head(html), /fonts\.(?:googleapis|gstatic)\.com/);
+  }
+  const styles = read('css/styles.css');
+  assert.match(styles, /rubik-normal-hebrew\.woff2/);
+  assert.match(styles, /font-display:\s*swap/);
+});
+
+test('large portraits use responsive variants and reserve their layout space', () => {
+  assert.match(indexHtml, /katya-3-720\.webp 720w, \/assets\/images\/katya-3-1440\.webp 1440w/);
+  assert.match(workshopsHtml, /id="power-image"[^>]*width="3360"[^>]*height="5040"/);
+  assert.match(workshopsHtml, /id="instructor-image"[^>]*width="1312"[^>]*height="1199"/);
+  assert.match(workshopsJs, /katya-2-720\.webp 720w, \/assets\/images\/katya-2-1440\.webp 1440w/);
+  assert.match(workshopsJs, /katya-workshop-cutout-480\.webp 480w, \/assets\/images\/katya-workshop-cutout-960\.webp 960w/);
+  assert.ok(bytes('assets/images/katya-2-720.webp') < 100_000);
+  assert.ok(bytes('assets/images/katya-3-720.webp') < 100_000);
+  assert.ok(bytes('assets/images/katya-workshop-cutout-480.webp') < 50_000);
+});
+
+test('home has a main landmark and hidden marquee controls leave the tab order', () => {
+  assert.equal((indexHtml.match(/<main\b/g) || []).length, 1);
+  assert.match(indexHtml, /<main id="main-content">[\s\S]*<\/main>[\s\S]*<footer/);
+  assert.match(read('js/main.js'), /aria-hidden="true">\$\{recommendationHtml\(true\)\}/);
+  assert.match(read('js/main.js'), /isDuplicate \? 'tabindex="-1"'/);
+});
+
+test('registration paste is native and phone normalization remains on input', () => {
+  assert.doesNotMatch(workshopsJs, /addEventListener\(['"]paste|handleMobilePaste/);
+  assert.match(workshopsJs, /if \(name === 'mobile'\) sanitizeMobileInput\(input\)/);
+  assert.doesNotMatch(workshopsHtml, /id="mobile"[\s\S]*?maxlength="15"[\s\S]*?<\/div>/);
 });
 
 test('Turnstile waits for registration proximity with interaction fallbacks', () => {

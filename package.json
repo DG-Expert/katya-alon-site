@@ -1,0 +1,11 @@
+{
+  "name": "katya-alon-site",
+  "private": true,
+  "description": "Build-time tooling only; the public site is static HTML.",
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "js-yaml": "4.1.1"
+  }
+}

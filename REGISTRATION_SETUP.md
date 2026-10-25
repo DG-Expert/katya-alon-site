@@ -4,7 +4,7 @@ Architecture (approved): **browser → Cloudflare Worker (CORS, validation, rate
 
 The form is live: `SECURE_REGISTRATION_BACKEND_APPROVED = true`, `registration.enabled: true`. To switch OFF, revert these two flags (originally `false` and the form stays OFF until every step below is done: in `js/workshops.js`, `registration.enabled: false`, empty `endpoint` and `turnstile_site_key` in `content/workshop.yaml`. Nothing here creates accounts or resources; the owner performs each step in their own Google and Cloudflare accounts. The repo is public (GitHub Pages root), so `worker/` and `gas/` sources are visible; they contain **no** secrets, Sheet IDs or endpoints.
 
-Files: `worker/wrangler.toml`, `worker/src/index.js`, `worker/src/validate.js`, `gas/Code.gs`, `gas/appsscript.json`, `test/*.test.mjs` (run: `node --test test/*.test.mjs`, Node 24, no dependencies).
+Files: `worker/wrangler.toml`, `worker/src/index.js`, `worker/src/validate.js`, `gas/Code.gs`, `gas/appsscript.json`, `test/*.test.mjs` (run: `node --test test/*.test.mjs`, Node 24; run `npm ci` first for the pinned js-yaml build dependency).
 
 ## Owner decisions still required
 

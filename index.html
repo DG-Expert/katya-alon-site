@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Title is updated dynamically from content.yaml -->
   <title>Katya Alon — Marketing Strategy & Content</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <!-- js-yaml for parsing content.yaml -->
-  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
-
-
+  <!-- Tailwind Play CDN stays parser-blocking until it can be replaced by a static build without FOUC. -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <!-- js-yaml must execute before the deferred application script. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <script defer src="./js/main.js"></script>
 </head>
 <body class="h-full w-full overflow-auto page-theme">
 
@@ -72,7 +72,7 @@
   <section id="hero" class="pt-28 pb-16 md:pt-36 md:pb-24">
     <div class="max-w-6xl mx-auto px-5">
       <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div class="fade-up">
+        <div>
           <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 hero-title-theme"
             data-content="hero.title"></h1>
 
@@ -88,7 +88,7 @@
           </div>
         </div>
 
-        <div class="fade-up flex justify-center">
+        <div class="flex justify-center">
           <div class="portrait-placeholder w-full rounded-2xl flex flex-col items-center justify-center gap-3 shadow-lg">
              <img
               src="./assets/images/katya-1.webp"
@@ -96,6 +96,7 @@
               class="w-full h-full object-cover rounded-2xl"
               width="683"
               height="1024"
+              fetchpriority="high"
             />
           </div>
         </div>
@@ -346,11 +347,5 @@
       <p class="text-xs footer-rights-muted" data-content="footer.rights"></p>
     </div>
   </footer>
-
-
-
-  <!-- Main script — loads content.yaml and handles language switching -->
-
-  <script src="./js/main.js"></script>
 </body>
 </html>

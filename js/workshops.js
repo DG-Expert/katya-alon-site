@@ -527,6 +527,7 @@
   let turnstileWidgetId = null;
   let turnstileToken = '';
   let turnstileLoading = null;
+  let turnstileObserver = null;
   let idempotencyKey = '';
 
   function newIdempotencyKey() {
@@ -566,6 +567,32 @@
       });
     } catch {
       setFormStatus('challenge_failure');
+    }
+  }
+
+  function scheduleTurnstile() {
+    const registration = document.getElementById('registration');
+    if (!registration || !registrationIsReady()) return;
+
+    const start = () => {
+      if (turnstileObserver) {
+        turnstileObserver.disconnect();
+        turnstileObserver = null;
+      }
+      setupTurnstile();
+    };
+
+    registration.addEventListener('focusin', start, { once: true });
+    registration.addEventListener('pointerdown', start, { once: true });
+    document.querySelectorAll('a[href="#registration"]').forEach(link => {
+      link.addEventListener('click', start, { once: true });
+    });
+
+    if ('IntersectionObserver' in window) {
+      turnstileObserver = new IntersectionObserver(entries => {
+        if (entries.some(entry => entry.isIntersecting)) start();
+      }, { rootMargin: '600px 0px', threshold: 0 });
+      turnstileObserver.observe(registration);
     }
   }
 
@@ -803,7 +830,6 @@
 
   function showLoadError(error) {
     console.error('Failed to load workshop content:', error);
-    document.body.classList.remove('is-loading');
 
     const message = (workshopContent && translatedAt('system.content_error')) || FALLBACK_LOAD_ERRORS[currentLang];
     const errorBox = document.getElementById('content-error');
@@ -830,9 +856,8 @@
       validateContent(workshopContent);
       renderPage();
       setupForm();
-      setupTurnstile();
+      scheduleTurnstile();
       setupReveals();
-      document.body.classList.remove('is-loading');
     } catch (error) {
       showLoadError(error);
     }

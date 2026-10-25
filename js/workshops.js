@@ -329,6 +329,33 @@
     }
   }
 
+  const RESPONSIVE_IMAGES = Object.freeze({
+    '/assets/images/katya-2.webp': {
+      src: '/assets/images/katya-2-720.webp',
+      srcset: '/assets/images/katya-2-720.webp 720w, /assets/images/katya-2-1440.webp 1440w',
+      sizes: '(min-width: 1304px) 1240px, (max-width: 767px) calc(100vw - 34px), calc(100vw - 64px)'
+    },
+    '/assets/images/katya-workshop-cutout.png': {
+      src: '/assets/images/katya-workshop-cutout-480.webp',
+      srcset: '/assets/images/katya-workshop-cutout-480.webp 480w, /assets/images/katya-workshop-cutout-960.webp 960w',
+      sizes: '(max-width: 767px) calc(100vw - 98px), 420px'
+    }
+  });
+
+  function setResponsiveImageSource(image, source) {
+    const responsive = RESPONSIVE_IMAGES[source];
+    if (responsive) {
+      image.sizes = responsive.sizes;
+      image.srcset = responsive.srcset;
+      image.src = responsive.src;
+      return;
+    }
+
+    image.removeAttribute('sizes');
+    image.removeAttribute('srcset');
+    image.src = source;
+  }
+
   function renderPowerImage() {
     const figure = document.getElementById('power-image-wrap');
     const image = document.getElementById('power-image');
@@ -346,7 +373,7 @@
       return;
     }
 
-    image.src = source;
+    setResponsiveImageSource(image, source);
     image.alt = translate(workshopContent.power_image.alt);
     caption.textContent = translate(workshopContent.power_image.caption);
     caption.hidden = !caption.textContent;
@@ -412,7 +439,7 @@
     setText('instructor-kicker', translate(instructor.kicker)); setText('instructor-title', translate(instructor.title));
     setText('instructor-caption', `${translate(instructor.title)}, ${translate(instructor.role)}`);
     const bio = document.getElementById('instructor-bio'); bio.replaceChildren(); (instructor.paragraphs || []).forEach(item => bio.append(createElement('p', '', translate(item))));
-    const image = document.getElementById('instructor-image'); image.src = safeAssetPath(instructor.image.src); image.alt = translate(instructor.image.alt);
+    const image = document.getElementById('instructor-image'); setResponsiveImageSource(image, safeAssetPath(instructor.image.src)); image.alt = translate(instructor.image.alt);
   }
 
   function renderFormText() {
@@ -734,18 +761,6 @@
     if (input.value !== sanitized) input.value = sanitized;
   }
 
-  function handleMobilePaste(event) {
-    event.preventDefault();
-    const input = event.currentTarget;
-    const pastedDigits = (event.clipboardData?.getData('text') || '').replace(/[^0-9]/g, '');
-    const start = input.selectionStart ?? input.value.length;
-    const end = input.selectionEnd ?? input.value.length;
-    input.value = `${input.value.slice(0, start)}${pastedDigits}${input.value.slice(end)}`.slice(0, 15);
-    const cursor = Math.min(start + pastedDigits.length, input.value.length);
-    input.setSelectionRange(cursor, cursor);
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-  }
-
   function setupForm() {
     const form = document.getElementById('registration-form');
     if (!form || form.dataset.bound === 'true') return;
@@ -771,9 +786,6 @@
         }
       });
     });
-
-    const mobile = document.getElementById('mobile');
-    if (mobile) mobile.addEventListener('paste', handleMobilePaste);
 
     form.addEventListener('submit', event => {
       event.preventDefault();

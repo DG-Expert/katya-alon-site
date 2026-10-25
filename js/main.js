@@ -144,6 +144,8 @@ function renderClientsStrip(items) {
             src="${logo}"
             alt="${name}"
             class="client-logo-image"
+            width="200"
+            height="200"
             loading="lazy"
           />
         </div>
@@ -168,19 +170,22 @@ function renderRecommendationsStrip(items, lang) {
 
   const openLabel = t(siteContent?.recommendations?.open_label, lang) || 'לחצו לצפייה';
 
-  const oneSetHtml = items.map((item, index) => {
+  const recommendationHtml = isDuplicate => items.map((item, index) => {
     return `
       <button
         type="button"
         class="recommendation-item"
         onclick="openRecommendationModal(${index})"
         aria-label="${openLabel}"
+        ${isDuplicate ? 'tabindex="-1"' : ''}
       >
         <span class="recommendation-envelope-box">
           <img
             src="${rootAssetPath(item.envelope)}"
             alt=""
             class="recommendation-envelope-image"
+            width="200"
+            height="200"
             loading="lazy"
           />
         </span>
@@ -190,8 +195,8 @@ function renderRecommendationsStrip(items, lang) {
 
   container.innerHTML = `
     <div class="recommendations-marquee-inner">
-      <div class="recommendations-track">${oneSetHtml}</div>
-      <div class="recommendations-track" aria-hidden="true">${oneSetHtml}</div>
+      <div class="recommendations-track">${recommendationHtml(false)}</div>
+      <div class="recommendations-track" aria-hidden="true">${recommendationHtml(true)}</div>
     </div>
   `;
 }

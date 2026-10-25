@@ -28,6 +28,12 @@ function doPost(e) {
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 
+// Diagnostic only (Executions log): reason code and non-sensitive flags, never secrets or payloads.
+function authFail_(reason) {
+  console.log('auth_fail ' + reason);
+  return { status: 'auth' };
+}
+
 function doGet() {
   return ContentService.createTextOutput(JSON.stringify({ status: 'invalid' })).setMimeType(ContentService.MimeType.JSON);
 }
@@ -38,11 +44,12 @@ function handle_(e) {
   if (!secret || !props.getProperty('SHEET_ID') || !props.getProperty('DEDUPE_SALT')) return { status: 'unavailable' };
 
   var env;
-  try { env = JSON.parse(e && e.postData && e.postData.contents); } catch (x) { return { status: 'auth' }; }
-  if (!env || env.v !== 1 || typeof env.ts !== 'number' || typeof env.rid !== 'string' || typeof env.payload !== 'string' || typeof env.sig !== 'string') return { status: 'auth' };
+  try { env = JSON.parse(e && e.postData && e.postData.contents); } catch (x) { return authFail_('body_parse'); }
+  if (!env || env.v !== 1 || typeof env.ts !== 'number' || typeof env.rid !== 'string' || typeof env.payload !== 'string' || typeof env.sig !== 'string') return authFail_('envelope_shape');
   var expected = hmacHex_(secret, env.v + '.' + env.ts + '.' + env.rid + '.' + env.payload);
-  if (!constantTimeEqual_(expected, env.sig)) return { status: 'auth' };
-  if (Math.abs(Math.floor(Date.now() / 1000) - env.ts) > MAX_SKEW_SECONDS) return { status: 'auth' };
+  if (!constantTimeEqual_(expected, env.sig)) return authFail_('sig_mismatch secretPadded=' + (secret !== secret.trim()) + ' sigLen=' + env.sig.length);
+  var skew = Math.floor(Date.now() / 1000) - env.ts;
+  if (Math.abs(skew) > MAX_SKEW_SECONDS) return authFail_('timestamp skew=' + skew);
 
   var data = parsePayload_(env.payload);
   if (!data || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(env.rid)) return { status: 'invalid' };
@@ -94,26 +101,10 @@ function handle_(e) {
 
 // ---------- validation / crypto helpers ----------
 
-function parsePayload_(text) {
-  var p;
-  try { p = JSON.parse(text); } catch (x) { return null; }
-  if (!p || typeof p !== 'object' || Array.isArray(p)) return null;
-  var keys = Object.keys(p);
-  if (keys.length !== PAYLOAD_KEYS.length) return null;
-  for (var i = 0; i < PAYLOAD_KEYS.length; i++) if (typeof p[PAYLOAD_KEYS[i]] !== 'string') return null;
-  if (!/^[0-9]{8,15}$/.test(p.mobile)) return null;
-  if (p.email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return null;
-  if (p.full_name.length < 2 || p.full_name.length > 100 || /[0-9]/.test(p.full_name)) return null;
-  if (p.expertise.length < 2 || p.expertise.length > 160 || /[0-9]/.test(p.expertise)) return null;
-  if (['he', 'en', 'ru'].indexOf(p.lang) < 0) return null;
-  if (!/^[A-Za-z0-9._-]{1,64}$/.test(p.workshopId) || !/^[A-Za-z0-9._-]{1,64}$/.test(p.consentVersion)) return null;
-  return p;
-}
-
 function toHex_(bytes) {
   return bytes.map(function (b) { var v = (b + 256) % 256; return (v < 16 ? '0' : '') + v.toString(16); }).join('');
 }
-function hmacHex_(secret, message) { return toHex_(Utilities.computeHmacSha256Signature(message, secret)); }
+function hmacHex_(secret, message) { return toHex_(Utilities.computeHmacSha256Signature(message, secret, Utilities.Charset.UTF_8)); }
 function sha256Hex_(text) { return toHex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, text, Utilities.Charset.UTF_8)); }
 
 function constantTimeEqual_(a, b) {
@@ -167,19 +158,16 @@ var TEXT = {
   he: {
     subject: 'קיבלנו את פרטיך להכשרה', dir: 'rtl', hi: 'שלום', received: 'קיבלנו את הפרטים שלך. זו אינה אישור תשלום או שריון מקום.',
     recorded: 'הפרטים שנרשמו', labels: { full_name: 'שם מלא', mobile: 'טלפון', email: 'דוא״ל', expertise: 'תחום התמחות' },
-    event: 'המפגש הראשון: 16 בנובמבר 2026. ההכשרה כוללת שני מפגשים, ארבע שעות בסך הכול. מועד המפגש השני יימסר בהמשך.',
     next: 'פרטי ההמשך יישלחו בנפרד.', calendar: 'הוספה ליומן Google', reg: 'מספר פנייה'
   },
   en: {
     subject: 'We received your details for the training', dir: 'ltr', hi: 'Hello', received: 'We received your details. This is not a payment or seat confirmation.',
     recorded: 'Details recorded', labels: { full_name: 'Full name', mobile: 'Phone', email: 'Email', expertise: 'Area of expertise' },
-    event: 'First session: 16 November 2026. The training has two sessions, four hours in total. The second session date will be announced.',
     next: 'Next steps will be sent separately.', calendar: 'Add to Google Calendar', reg: 'Reference'
   },
   ru: {
     subject: 'Мы получили ваши данные для обучения', dir: 'ltr', hi: 'Здравствуйте', received: 'Мы получили ваши данные. Это не подтверждение оплаты и не бронь места.',
     recorded: 'Записанные данные', labels: { full_name: 'Полное имя', mobile: 'Телефон', email: 'Эл. почта', expertise: 'Область специализации' },
-    event: 'Первая встреча: 16 ноября 2026. Обучение состоит из двух встреч, всего четыре часа. Дата второй встречи будет сообщена позже.',
     next: 'Дальнейшие шаги будут отправлены отдельно.', calendar: 'Добавить в Google Календарь', reg: 'Номер заявки'
   }
 };
@@ -198,19 +186,119 @@ function calendarLink_(props) {
     '&dates=' + fmt(start) + '/' + fmt(end) + '&ctz=' + encodeURIComponent(tz);
 }
 
+// ===== EVENT-DETAILS BEGIN (self-contained: also shipped as the cloud-editor patch by scripts/make-gas-patch.mjs) =====
+var EVENT_KEYS = ['firstSessionDate', 'secondSessionDate', 'sessionCount', 'totalHours', 'timezone'];
+var EVENT_TEXT = {
+  he: {
+    months: ['\u05d9\u05e0\u05d5\u05d0\u05e8', '\u05e4\u05d1\u05e8\u05d5\u05d0\u05e8', '\u05de\u05e8\u05e5', '\u05d0\u05e4\u05e8\u05d9\u05dc', '\u05de\u05d0\u05d9', '\u05d9\u05d5\u05e0\u05d9', '\u05d9\u05d5\u05dc\u05d9', '\u05d0\u05d5\u05d2\u05d5\u05e1\u05d8', '\u05e1\u05e4\u05d8\u05de\u05d1\u05e8', '\u05d0\u05d5\u05e7\u05d8\u05d5\u05d1\u05e8', '\u05e0\u05d5\u05d1\u05de\u05d1\u05e8', '\u05d3\u05e6\u05de\u05d1\u05e8'],
+    date: function (d, m, y) { return d + ' \u05d1' + m + ' ' + y; },
+    first: '\u05d4\u05de\u05e4\u05d2\u05e9 \u05d4\u05e8\u05d0\u05e9\u05d5\u05df: ', second: '\u05d4\u05de\u05e4\u05d2\u05e9 \u05d4\u05e9\u05e0\u05d9: ', secondTbd: '\u05de\u05d5\u05e2\u05d3 \u05d4\u05de\u05e4\u05d2\u05e9 \u05d4\u05e9\u05e0\u05d9 \u05d9\u05d9\u05de\u05e1\u05e8 \u05d1\u05d4\u05de\u05e9\u05da.',
+    size: function (n, h) { return '\u05d4\u05d4\u05db\u05e9\u05e8\u05d4 \u05db\u05d5\u05dc\u05dc\u05ea ' + (n === 1 ? '\u05de\u05e4\u05d2\u05e9 \u05d0\u05d7\u05d3' : n + ' \u05de\u05e4\u05d2\u05e9\u05d9\u05dd') + ', ' + (h === 1 ? '\u05e9\u05e2\u05d4 \u05d0\u05d7\u05ea' : h + ' \u05e9\u05e2\u05d5\u05ea') + ' \u05d1\u05e1\u05da \u05d4\u05db\u05d5\u05dc.'; }
+  },
+  en: {
+    months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    date: function (d, m, y) { return d + ' ' + m + ' ' + y; },
+    first: 'First session: ', second: 'Second session: ', secondTbd: 'The second session date will be announced.',
+    size: function (n, h) { return 'The training has ' + n + (n === 1 ? ' session' : ' sessions') + ', ' + h + (h === 1 ? ' hour' : ' hours') + ' in total.'; }
+  },
+  ru: {
+    months: ['\u044f\u043d\u0432\u0430\u0440\u044f', '\u0444\u0435\u0432\u0440\u0430\u043b\u044f', '\u043c\u0430\u0440\u0442\u0430', '\u0430\u043f\u0440\u0435\u043b\u044f', '\u043c\u0430\u044f', '\u0438\u044e\u043d\u044f', '\u0438\u044e\u043b\u044f', '\u0430\u0432\u0433\u0443\u0441\u0442\u0430', '\u0441\u0435\u043d\u0442\u044f\u0431\u0440\u044f', '\u043e\u043a\u0442\u044f\u0431\u0440\u044f', '\u043d\u043e\u044f\u0431\u0440\u044f', '\u0434\u0435\u043a\u0430\u0431\u0440\u044f'],
+    date: function (d, m, y) { return d + ' ' + m + ' ' + y; },
+    first: '\u041f\u0435\u0440\u0432\u0430\u044f \u0432\u0441\u0442\u0440\u0435\u0447\u0430: ', second: '\u0412\u0442\u043e\u0440\u0430\u044f \u0432\u0441\u0442\u0440\u0435\u0447\u0430: ', secondTbd: '\u0414\u0430\u0442\u0430 \u0432\u0442\u043e\u0440\u043e\u0439 \u0432\u0441\u0442\u0440\u0435\u0447\u0438 \u0431\u0443\u0434\u0435\u0442 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0430 \u043f\u043e\u0437\u0436\u0435.',
+    size: function (n, h) { return '\u041e\u0431\u0443\u0447\u0435\u043d\u0438\u0435: \u0432\u0441\u0442\u0440\u0435\u0447 \u2014 ' + n + ', \u0432\u0441\u0435\u0433\u043e \u0447\u0430\u0441\u043e\u0432 \u2014 ' + h + '.'; }
+  }
+};
+
+function realDate_(s) {
+  if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  var d = new Date(s + 'T00:00:00Z');
+  return !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+}
+
+// Strict, closed-shape check of the optional canonical event object; returns a fresh object or null.
+function normalizeEvent_(ev) {
+  if (!ev || typeof ev !== 'object' || Array.isArray(ev)) return null;
+  var keys = Object.keys(ev);
+  if (keys.length !== EVENT_KEYS.length) return null;
+  for (var i = 0; i < EVENT_KEYS.length; i++) if (keys.indexOf(EVENT_KEYS[i]) < 0) return null;
+  if (!realDate_(ev.firstSessionDate)) return null;
+  if (ev.secondSessionDate !== null && (!realDate_(ev.secondSessionDate) || ev.secondSessionDate <= ev.firstSessionDate)) return null;
+  if (typeof ev.sessionCount !== 'number' || ev.sessionCount % 1 !== 0 || ev.sessionCount < 1 || ev.sessionCount > 20) return null;
+  if (typeof ev.totalHours !== 'number' || !isFinite(ev.totalHours) || ev.totalHours <= 0 || ev.totalHours > 100) return null;
+  if (typeof ev.timezone !== 'string' || !/^[A-Za-z_]+(\/[A-Za-z_+\-0-9]+)+$/.test(ev.timezone)) return null;
+  return { firstSessionDate: ev.firstSessionDate, secondSessionDate: ev.secondSessionDate, sessionCount: ev.sessionCount, totalHours: ev.totalHours, timezone: ev.timezone };
+}
+
+// Latest authenticated event per workshop lives in Script Properties, so retried mails (no payload) still use current details.
+function rememberEvent_(workshopId, ev) {
+  var props = PropertiesService.getScriptProperties(), json = JSON.stringify(ev);
+  if (props.getProperty('EVENT:' + workshopId) !== json) props.setProperty('EVENT:' + workshopId, json);
+}
+function loadEvent_(workshopId, props) {
+  try { return normalizeEvent_(JSON.parse(props.getProperty('EVENT:' + workshopId))); } catch (x) { return null; }
+}
+
+function eventDate_(t, iso) {
+  var p = iso.split('-');
+  return t.date(Number(p[2]), t.months[Number(p[1]) - 1], p[0]);
+}
+
+// Localized event sentence(s) from canonical data; '' when the payload carried no event (pre-change senders).
+function eventLine_(lang, ev) {
+  if (!ev) return '';
+  var t = EVENT_TEXT[lang] || EVENT_TEXT.en;
+  return t.first + eventDate_(t, ev.firstSessionDate) + '. ' + t.size(ev.sessionCount, ev.totalHours) + ' ' +
+    (ev.secondSessionDate ? t.second + eventDate_(t, ev.secondSessionDate) + '.' : t.secondTbd);
+}
+
+// Accepts the original 7 string keys, optionally plus a canonical `event` object. noStore: validate only (self-check).
+function parsePayload_(text, noStore) {
+  var p;
+  try { p = JSON.parse(text); } catch (x) { return null; }
+  if (!p || typeof p !== 'object' || Array.isArray(p)) return null;
+  var hasEvent = Object.prototype.hasOwnProperty.call(p, 'event');
+  if (Object.keys(p).length !== PAYLOAD_KEYS.length + (hasEvent ? 1 : 0)) return null;
+  for (var i = 0; i < PAYLOAD_KEYS.length; i++) if (typeof p[PAYLOAD_KEYS[i]] !== 'string') return null;
+  if (!/^[0-9]{8,15}$/.test(p.mobile)) return null;
+  if (p.email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return null;
+  if (p.full_name.length < 2 || p.full_name.length > 100 || /[0-9]/.test(p.full_name)) return null;
+  if (p.expertise.length < 2 || p.expertise.length > 160 || /[0-9]/.test(p.expertise)) return null;
+  if (['he', 'en', 'ru'].indexOf(p.lang) < 0) return null;
+  if (!/^[A-Za-z0-9._-]{1,64}$/.test(p.workshopId) || !/^[A-Za-z0-9._-]{1,64}$/.test(p.consentVersion)) return null;
+  if (hasEvent) {
+    p.event = normalizeEvent_(p.event);
+    if (!p.event) return null;
+    if (!noStore) rememberEvent_(p.workshopId, p.event);
+  }
+  return p;
+}
+
 function registrantMessage_(row, props) {
   var t = TEXT[row.lang] || TEXT.en;
+  var line = eventLine_(TEXT[row.lang] ? row.lang : 'en', loadEvent_(row.workshopId, props));
   var link = calendarLink_(props);
   var fields = ['full_name', 'mobile', 'email', 'expertise'];
   var plain = [t.hi + ' ' + uncell_(row.full_name), '', t.received, '', t.recorded + ':']
     .concat(fields.map(function (f) { return '- ' + t.labels[f] + ': ' + uncell_(row[f]); }))
-    .concat(['', t.event, t.next, t.reg + ': ' + row.registrationId]);
+    .concat(['']).concat(line ? [line] : []).concat([t.next, t.reg + ': ' + row.registrationId]);
   var html = '<div dir="' + t.dir + '"><p>' + esc_(t.hi) + ' ' + esc_(uncell_(row.full_name)) + '</p><p><strong>' + esc_(t.received) + '</strong></p><p>' + esc_(t.recorded) + ':</p><ul>' +
-    fields.map(function (f) { return '<li>' + esc_(t.labels[f]) + ': ' + esc_(uncell_(row[f])) + '</li>'; }).join('') + '</ul><p>' + esc_(t.event) + '</p>';
+    fields.map(function (f) { return '<li>' + esc_(t.labels[f]) + ': ' + esc_(uncell_(row[f])) + '</li>'; }).join('') + '</ul>' + (line ? '<p>' + esc_(line) + '</p>' : '');
   if (link) { plain.push('', t.calendar + ': ' + link); html += '<p><a href="' + esc_(link) + '">' + esc_(t.calendar) + '</a></p>'; }
   html += '<p>' + esc_(t.next) + '</p><p>' + esc_(t.reg) + ': ' + esc_(row.registrationId) + '</p></div>';
   return { to: uncell_(row.email), subject: t.subject, body: plain.join('\n'), htmlBody: html };
 }
+
+// Editor-only check: renders the mail for each language and validates a sample payload. Sends nothing, writes nothing.
+function selfCheckEventMail() {
+  var props = PropertiesService.getScriptProperties();
+  var ev = { firstSessionDate: '2026-11-16', secondSessionDate: null, sessionCount: 2, totalHours: 4, timezone: 'Asia/Jerusalem' };
+  var sample = { workshopId: 'selfcheck', full_name: 'Test Person', mobile: '0501234567', email: 'a@b.co', expertise: 'Law', lang: 'en', consentVersion: 'v1', event: ev };
+  console.log('payload with event valid: ' + !!parsePayload_(JSON.stringify(sample), true));
+  delete sample.event;
+  console.log('old payload valid: ' + !!parsePayload_(JSON.stringify(sample), true));
+  ['he', 'en', 'ru'].forEach(function (l) { console.log(l + ' event line: ' + eventLine_(l, ev)); });
+}
+// ===== EVENT-DETAILS END =====
 
 // Owner mail carries the private sheet link and the reference only; never participant details.
 function ownerMessage_(row, props) {

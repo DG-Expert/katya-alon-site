@@ -141,3 +141,61 @@ test('GAS timeout -> 504, network error -> 503', async () => {
   gas = () => Promise.reject(new Error('net'));
   assert.equal((await run(post(goodBody()))).status, 503);
 });
+
+// ---------- canonical event metadata ----------
+import { readFileSync } from 'node:fs';
+import { EVENT } from '../worker/src/event.generated.js';
+import { parseEvent, render } from '../scripts/sync-event.mjs';
+const yamlText = () => readFileSync(new URL('../content/workshop.yaml', import.meta.url), 'utf8');
+const withEventValue = (yaml, key, value) => {
+  const line = new RegExp(`^(  ${key}:).*$`, 'm');
+  assert.match(yaml, line, `missing event.${key}`);
+  return yaml.replace(line, `$1 ${value}`);
+};
+
+test('Worker signs a payload that carries the canonical event from config', async () => {
+  const res = await run(post(goodBody()));
+  assert.equal(res.status, 200);
+  const sent = JSON.parse(JSON.parse(calls.find(c => !c.url.includes('siteverify')).init.body).payload);
+  assert.deepEqual(sent.event, { firstSessionDate: EVENT.firstSessionDate, secondSessionDate: EVENT.secondSessionDate, sessionCount: EVENT.sessionCount, totalHours: EVENT.totalHours, timezone: EVENT.timezone });
+  assert.equal(sent.workshopId, EVENT.workshopId);
+});
+
+test('browser-supplied event details and foreign workshop ids are rejected', async () => {
+  for (const body of [goodBody({ event: { firstSessionDate: '2030-01-01' } }), goodBody({ firstSessionDate: '2030-01-01' }), goodBody({ workshopId: 'other' })]) {
+    assert.equal((await run(post(body))).status, 422);
+  }
+  assert.equal(calls.length, 0);
+});
+
+test('generated Worker metadata is in sync with content/workshop.yaml and follows YAML edits', () => {
+  assert.deepEqual(parseEvent(yamlText()), EVENT);
+  assert.equal(render(parseEvent(yamlText())), readFileSync(new URL('../worker/src/event.generated.js', import.meta.url), 'utf8'));
+  let edited = withEventValue(yamlText(), 'first_session_date', '"2027-01-10"');
+  edited = withEventValue(edited, 'second_session_date', '"2027-01-17"');
+  edited = withEventValue(edited, 'workshop_id', '"next-2027-01"');
+  edited = withEventValue(edited, 'total_hours', '6');
+  const e = parseEvent(edited);
+  assert.deepEqual([e.firstSessionDate, e.secondSessionDate, e.workshopId, e.totalHours], ['2027-01-10', '2027-01-17', 'next-2027-01', 6]);
+  assert.match(render(e), /2027-01-17/);
+});
+
+test('sync script rejects invalid event config', () => {
+  const beforeFirstSession = new Date(`${parseEvent(yamlText()).firstSessionDate}T00:00:00Z`);
+  beforeFirstSession.setUTCDate(beforeFirstSession.getUTCDate() - 1);
+  const invalid = [
+    ['first_session_date', '"2026-13-45"'], ['session_count', '0'], ['timezone', '"bad zone"'],
+    ['second_session_date', `"${beforeFirstSession.toISOString().slice(0, 10)}"`], ['total_hours', 'abc']
+  ];
+  for (const [key, value] of invalid) {
+    assert.throws(() => parseEvent(withEventValue(yamlText(), key, value)), undefined, `${key}: ${value}`);
+  }
+});
+
+test('workshops.js is wired to the event block (no workshop_id in registration, tokens resolved)', () => {
+  const js = readFileSync(new URL('../js/workshops.js', import.meta.url), 'utf8');
+  assert.match(js, /workshopId: workshopContent\.event\.workshop_id/);
+  assert.ok(!/settings\.workshop_id/.test(js));
+  assert.ok(!/registration:.*workshop_id/.test(yamlText()));
+  assert.ok(!/16\.11\.2026|16 November 2026|16 Nov 2026|16 בנובמבר/.test(yamlText()));
+});

@@ -11,3 +11,6 @@ worker/.env
 worker/.env.*
 node_modules/
 worker/node_modules/
+
+# Private/local Sheet exports (tests must generate sanitized fixtures instead)
+docs/workshop_sheet_export.local.json

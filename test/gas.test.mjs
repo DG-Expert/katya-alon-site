@@ -1,10 +1,23 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import worker from '../worker/src/index.js';
-import { loadGas, envelope, gasPayload, workerEnv, post, goodBody, SECRET } from './helpers.mjs';
+import { EVENT } from '../worker/src/event.generated.js';
+import { loadGas, envelope, gasPayload, gasEvent, oldGasPayload, workerEnv, post, goodBody, SECRET } from './helpers.mjs';
 
 const create = (g, over = {}, opts) => g.call(envelope(gasPayload(over), opts));
 const dataRows = g => g.grid.slice(1);
+const EN_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const RU_MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+const localizedDate = (iso, months) => {
+  const [year, month, day] = iso.split('-').map(Number);
+  return `${day} ${months[month - 1]} ${year}`;
+};
+const addDays = (iso, amount) => {
+  const date = new Date(`${iso}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + amount);
+  return date.toISOString().slice(0, 10);
+};
 
 test('Worker signature is accepted by GAS (integration)', async () => {
   const g = loadGas();
@@ -56,7 +69,7 @@ test('stores row, text format, leading zeros, headers; sends owner + registrant 
   assert.ok(!owner.body.includes('maya@example.com') && !owner.body.includes('0501234567'));
   assert.ok(!reg.body.includes('docs.google.com/spreadsheets') && !reg.htmlBody.includes('spreadsheets'));
   assert.match(reg.body, /not a payment or seat confirmation/);
-  assert.match(reg.body, /16 November 2026/);
+  assert.ok(reg.body.includes(localizedDate(EVENT.firstSessionDate, EN_MONTHS)));
   assert.ok(!/zoom/i.test(reg.body));
 });
 
@@ -160,4 +173,156 @@ test('grows the sheet when the grid is full instead of failing', () => {
   assert.equal(create(g).status, 'created');
   assert.equal(create(g, { email: 'b@example.com', mobile: '0507654321' }).status, 'created');
   assert.equal(dataRows(g).length, 2);
+});
+
+test('auth failures log only a reason code (no secret/payload)', () => {
+  const g = loadGas();
+  const logs = [];
+  g.ctx.console.log = m => logs.push(m);
+  create(g, {}, { secret: 'wrong' });
+  create(g, {}, { ts: Math.floor(Date.now() / 1000) - 400 });
+  g.call('not json');
+  g.call({ v: 2 });
+  assert.deepEqual(logs.map(l => l.split(' ').slice(0, 2).join(' ')), ['auth_fail sig_mismatch', 'auth_fail timestamp', 'auth_fail body_parse', 'auth_fail envelope_shape']);
+  assert.ok(!logs.join('').includes('test-hmac-secret') && !logs.join('').includes('maya'));
+});
+
+test('HMAC is computed over UTF-8 for Hebrew/Russian payloads (regression: signature_mismatch)', () => {
+  const g = loadGas();
+  const res = create(g, { full_name: 'כץ אלון Иван Петров', expertise: 'דיני משפחה / Семейное право' });
+  assert.equal(res.status, 'created');
+  // mock distinguishes the default overload from explicit UTF-8 for non-ASCII input
+  const U = g.ctx.Utilities, text = 'כץ Иван';
+  assert.notDeepEqual(U.computeHmacSha256Signature(text, 'k'), U.computeHmacSha256Signature(text, 'k', U.Charset.UTF_8));
+});
+
+test('GAS source passes Charset.UTF_8 to computeHmacSha256Signature', () => {
+  const src = readFileSync(new URL('../gas/Code.gs', import.meta.url), 'utf8');
+  const calls = src.match(/computeHmacSha256Signature\([^;]*\)/g) || [];
+  assert.ok(calls.length >= 1);
+  for (const c of calls) assert.match(c, /,\s*Utilities\.Charset\.UTF_8\s*\)/);
+});
+
+test('GAS source is clean UTF-8 (no BOM, no mojibake code points)', () => {
+  const src = readFileSync(new URL('../gas/Code.gs', import.meta.url), 'utf8');
+  assert.ok(!src.includes('﻿') && !src.includes('�'));
+  for (const c of src) { const n = c.codePointAt(0); if (n > 127) assert.ok((n >= 0x590 && n <= 0x5ff) || (n >= 0x400 && n <= 0x4ff) || '|״'.includes(c), `unexpected U+${n.toString(16)}`); }
+});
+
+test('MailApp receives readable Hebrew/Russian subject, body and htmlBody', () => {
+  for (const [lang, subj, word] of [['he', 'קיבלנו את פרטיך להכשרה', 'שלום'], ['ru', 'Мы получили ваши данные для обучения', 'Здравствуйте']]) {
+    const g = loadGas();
+    create(g, { lang, email: `${lang}@example.com`, full_name: 'Test' });
+    const m = g.mails.find(x => x.to === `${lang}@example.com`);
+    assert.equal(m.subject, subj);
+    assert.ok(m.body.includes(word) && m.htmlBody.includes(word));
+    assert.ok(!/[─-╿ӦÃ×]/.test(m.subject + m.body + m.htmlBody));
+  }
+  const owner = loadGas(); create(owner, {});
+  const o = owner.mails.find(x => x.to === 'owner@example.com');
+  assert.equal(o.subject, 'הרשמה חדשה להכשרה');
+  assert.match(o.body, /התקבלה הרשמה חדשה/); assert.match(o.htmlBody, /הגיליון הפרטי/);
+});
+
+// ---------- event metadata (single source: content/workshop.yaml) ----------
+const regMail = (g, to) => g.mails.find(m => m.to === to);
+
+test('mail text is generated from event metadata in he/en/ru (no hardcoded dates)', () => {
+  const ev = { firstSessionDate: '2027-03-05', secondSessionDate: '2027-03-12', sessionCount: 3, totalHours: 6 };
+  const cases = [['he', /5 במרץ 2027/, /12 במרץ 2027/, /3 מפגשים, 6 שעות/], ['en', /5 March 2027/, /12 March 2027/, /3 sessions, 6 hours/], ['ru', /5 марта 2027/, /12 марта 2027/, /встреч — 3, всего часов — 6/]];
+  for (const [lang, d1, d2, size] of cases) {
+    const g = loadGas();
+    assert.equal(create(g, { lang, event: gasEvent(ev) }).status, 'created');
+    const m = regMail(g, 'maya@example.com');
+    for (const re of [d1, d2, size]) assert.match(m.body, re);
+    assert.match(m.htmlBody, d1);
+    assert.ok(!/2026/.test(m.body), 'old hardcoded year must not leak');
+  }
+});
+
+test('unknown second session date -> "will be announced" wording; known -> printed', () => {
+  const unknown = { he: /יימסר בהמשך/, en: /second session date will be announced/, ru: /второй встречи будет сообщена/ };
+  for (const lang of ['he', 'en', 'ru']) {
+    const g = loadGas();
+    create(g, { lang });
+    assert.match(regMail(g, 'maya@example.com').body, unknown[lang]);
+  }
+  const g = loadGas();
+  const secondSessionDate = addDays(EVENT.firstSessionDate, 7);
+  create(g, { event: gasEvent({ secondSessionDate }) });
+  const b = regMail(g, 'maya@example.com').body;
+  assert.ok(b.includes(`Second session: ${localizedDate(secondSessionDate, EN_MONTHS)}`));
+  assert.ok(!/will be announced/.test(b));
+});
+
+test('old 7-key payload (pre-change Worker) is still accepted; mail omits event line, no hardcoded date', () => {
+  const g = loadGas();
+  assert.equal(g.call(envelope(oldGasPayload())).status, 'created');
+  const m = regMail(g, 'maya@example.com');
+  assert.match(m.body, /not a payment or seat confirmation/);
+  assert.ok(!/First session:|second session date|sessions, .* hours/.test(m.body));
+  assert.equal(g.mails.length, 2);
+});
+
+test('malicious / malformed event objects are rejected and nothing is stored', () => {
+  const bad = [
+    gasEvent({ extra: 'x' }), { ...gasEvent(), firstSessionDate: undefined }, gasEvent({ firstSessionDate: '2026-02-30' }), gasEvent({ firstSessionDate: '<script>' }),
+    gasEvent({ secondSessionDate: addDays(EVENT.firstSessionDate, -1) }), gasEvent({ sessionCount: 0 }), gasEvent({ sessionCount: 2.5 }), gasEvent({ sessionCount: '2' }),
+    gasEvent({ totalHours: -1 }), gasEvent({ totalHours: 1e9 }), gasEvent({ totalHours: null }), gasEvent({ timezone: 'x; DROP' }), 'str', [], null
+  ];
+  for (const event of bad) {
+    const g = loadGas();
+    assert.equal(create(g, { event }).status, 'invalid', JSON.stringify(event));
+    assert.equal(g.grid.length, 0);
+    assert.equal(Object.keys(g.properties).filter(k => k.startsWith('EVENT:')).length, 0);
+  }
+  const g = loadGas();
+  assert.equal(create(g, { evnt: gasEvent() }).status, 'invalid');
+  assert.equal(create(g, { event: gasEvent(), extra: 1 }).status, 'invalid');
+});
+
+test('event payload is HMAC protected: tampering with event breaks the signature', () => {
+  const g = loadGas();
+  const env = envelope(gasPayload());
+  env.payload = env.payload.replace(EVENT.firstSessionDate, '2030-01-01');
+  assert.equal(g.call(env).status, 'auth');
+});
+
+test('retried mail (trigger, no payload) reuses the stored per-workshop event', () => {
+  const g = loadGas({ failMail: true });
+  create(g, { event: gasEvent({ firstSessionDate: '2027-05-01' }) });
+  g.ctx.MailApp.sendEmail = m => g.mails.push(m);
+  g.ctx.retryPendingMails();
+  assert.match(regMail(g, 'maya@example.com').body, /1 May 2027/);
+});
+
+test('GAS source contains no hardcoded event date; event section is ASCII-only and equals the cloud patch', async () => {
+  const src = readFileSync(new URL('../gas/Code.gs', import.meta.url), 'utf8');
+  assert.ok(!/November 2026|16 \u0431/.test(src));
+  const { buildPatch } = await import('../scripts/make-gas-patch.mjs');
+  const patch = buildPatch(src);
+  assert.ok(!/[^\x00-\x7f]/.test(patch));
+  assert.ok(patch.includes('function parsePayload_') && patch.includes('function registrantMessage_'));
+  assert.ok(!patch.includes('var TEXT') && !patch.includes('function hmacHex_'));
+});
+
+test('cloud patch appended to a pre-change Code.gs (with only the HMAC fix) enables event mails and keeps old payloads working', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const { buildPatch } = await import('../scripts/make-gas-patch.mjs');
+  const head = execFileSync('git', ['show', 'HEAD:gas/Code.gs'], { cwd: new URL('..', import.meta.url), encoding: 'utf8' })
+    .replace('computeHmacSha256Signature(message, secret)', 'computeHmacSha256Signature(message, secret, Utilities.Charset.UTF_8)');
+  assert.ok(head.includes('Charset.UTF_8)'));
+  const live = head + '\n' + buildPatch(readFileSync(new URL('../gas/Code.gs', import.meta.url), 'utf8'));
+  const g = loadGas({ source: live });
+  const secondSessionDate = addDays(EVENT.firstSessionDate, 7);
+  assert.equal(create(g, { lang: 'ru', event: gasEvent({ secondSessionDate }) }).status, 'created');
+  assert.ok(regMail(g, 'maya@example.com').body.includes(`Вторая встреча: ${localizedDate(secondSessionDate, RU_MONTHS)}`));
+  assert.equal(g.call(envelope(oldGasPayload({ email: 'old@example.com', mobile: '0507777777' }))).status, 'created');
+  assert.equal(g.call(envelope(gasPayload({ event: gasEvent({ sessionCount: 0 }), email: 'z@example.com', mobile: '0506666666' }))).status, 'invalid');
+});
+
+test('sender name and replyTo are preserved', () => {
+  const g = loadGas();
+  create(g);
+  for (const m of g.mails) { assert.equal(m.name, 'קטיה אלון | Katya Alon'); assert.equal(m.replyTo, 'katya.shivuk@gmail.com'); }
 });

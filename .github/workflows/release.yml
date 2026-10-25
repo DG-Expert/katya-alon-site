@@ -1,0 +1,177 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-release
+  cancel-in-progress: false
+
+jobs:
+  main-guard:
+    name: Require main branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject non-main dispatches
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Production releases are allowed only from main."
+            exit 1
+          fi
+
+  validate:
+    name: Validate release from a clean checkout
+    needs: main-guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate event and protected registration configuration
+        env:
+          PUSH_BASE: ${{ github.event.before }}
+        run: |
+          base_ref="$PUSH_BASE"
+          if [ -z "$base_ref" ] || [ "$base_ref" = "0000000000000000000000000000000000000000" ]; then
+            base_ref="HEAD^"
+          fi
+          node scripts/validate-workshop.mjs --base-ref "$base_ref"
+
+      - name: Generate Worker event metadata
+        run: node scripts/sync-event.mjs
+
+      - name: Check generated metadata
+        run: node scripts/sync-event.mjs --check
+
+      - name: Run static checks
+        run: |
+          node --check js/*.js scripts/*.mjs test/*.mjs worker/src/*.js
+          git diff --check
+
+      - name: Run regression tests
+        run: node --test test/*.test.mjs
+
+  deploy-worker:
+    name: Deploy Cloudflare Worker
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: Check out validated source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Generate Worker event metadata
+        run: |
+          node scripts/sync-event.mjs
+          node scripts/sync-event.mjs --check
+
+      - name: Require Cloudflare deployment credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN is required in the production environment."
+            exit 1
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::CLOUDFLARE_ACCOUNT_ID is required in the production environment."
+            exit 1
+          fi
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          command: deploy
+
+      - name: Smoke-check Worker CORS preflight
+        run: node scripts/smoke-release.mjs worker
+
+  build-pages:
+    name: Stage GitHub Pages artifact
+    needs: deploy-worker
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Check out validated source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Stage only public static files
+        run: |
+          stage_dir="${RUNNER_TEMP}/pages"
+          mkdir -p "$stage_dir"
+          cp index.html workshops.html "$stage_dir/"
+          cp -R css js assets content "$stage_dir/"
+          if find "$stage_dir" -type l -print -quit | grep -q .; then
+            echo "::error::The Pages artifact must not contain symbolic links."
+            exit 1
+          fi
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/pages
+
+  deploy-pages:
+    name: Deploy GitHub Pages
+    needs: build-pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Check out smoke-test code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Smoke-check deployed Pages site
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+        run: node scripts/smoke-release.mjs pages "$PAGES_URL"

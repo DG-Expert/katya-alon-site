@@ -63,3 +63,5 @@ After an E2E test with the owner's own test data: in `content/workshop.yaml` set
 ## Not verified without accounts
 
 Real Turnstile, Cloudflare rate limiting, Apps Script deployment/redirects, MailApp delivery and Sheet formatting are covered only by mocked automated tests. Run an owner-approved end-to-end test before activation.
+
+> Update: `WORKSHOP_ID` is no longer a Worker variable; the workshop id and event details come from `content/workshop.yaml` (`event:`) via `node scripts/sync-event.mjs` and are signed into the payload. See WORKSHOPS_EDITING.md, "Workshop event details".

@@ -7,7 +7,7 @@ compatibility_date = "2025-01-01"
 ALLOWED_ORIGINS = "https://dg-expert.github.io,https://dev-server.tail6972d4.ts.net:8445"
 TURNSTILE_HOSTNAMES = "dg-expert.github.io,dev-server.tail6972d4.ts.net"
 TURNSTILE_ACTION = "workshop_register"
-WORKSHOP_ID = "lawyers-social-2026-11"
+# Workshop id and event details come from content/workshop.yaml via scripts/sync-event.mjs (worker/src/event.generated.js).
 # Comma-separated approved consent versions. Empty = every registration is rejected (fail closed).
 CONSENT_VERSIONS = "2026-10-v1"
 

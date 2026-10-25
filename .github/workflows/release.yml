@@ -41,6 +41,9 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Install pinned build dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
       - name: Validate event and protected registration configuration
         env:
           PUSH_BASE: ${{ github.event.before }}
@@ -61,6 +64,11 @@ jobs:
         run: |
           node --check js/*.js scripts/*.mjs test/*.mjs worker/src/*.js
           git diff --check
+
+      - name: Prerender Pages HTML from content YAML (fail closed)
+        run: |
+          check_dir="$(mktemp -d)"
+          node scripts/build-pages.mjs "$check_dir"
 
       - name: Run regression tests
         run: node --test test/*.test.mjs
@@ -126,6 +134,14 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install pinned build dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
@@ -135,6 +151,7 @@ jobs:
           mkdir -p "$stage_dir"
           cp index.html workshops.html robots.txt sitemap.xml "$stage_dir/"
           cp -R css js assets content "$stage_dir/"
+          node scripts/build-pages.mjs "$stage_dir"
           if find "$stage_dir" -type l -print -quit | grep -q .; then
             echo "::error::The Pages artifact must not contain symbolic links."
             exit 1

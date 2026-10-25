@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import yaml from 'js-yaml';
-import { escapeHtml, renderHome, renderWorkshops } from '../scripts/build-pages.mjs';
+import { escapeHtml, LANGUAGES, renderHome, renderWorkshops, urlFor } from '../scripts/build-pages.mjs';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const indexHtml = read('index.html');
@@ -17,8 +17,8 @@ const body = html => html.slice(html.indexOf('<body'));
 const h1 = html => html.match(/<h1\b[^>]*>([^<]*)<\/h1>/)?.[1];
 const meta = (html, attr, name) => html.match(new RegExp(`<meta ${attr}="${name}" content="([^"]*)">`))?.[1];
 
-function assertCrawlableHead(html, { title, description, url }) {
-  assert.match(html, /^<!doctype html>\n<html lang="he" dir="rtl"/);
+function assertCrawlableHead(html, { title, description, url, lang = 'he', page }) {
+  assert.match(html, new RegExp(`^<!doctype html>\\n<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`));
   assert.equal(count(html, '<title>'), 1);
   assert.equal(html.match(/<title>([^<]*)<\/title>/)[1], escapeHtml(title));
   assert.equal(count(html, '<meta name="description"'), 1);
@@ -27,16 +27,20 @@ function assertCrawlableHead(html, { title, description, url }) {
   assert.match(html, new RegExp(`<link rel="canonical" href="${url.replaceAll('.', '\\.')}">`));
   assert.equal(meta(html, 'property', 'og:url'), url);
   assert.equal(meta(html, 'property', 'og:type'), 'website');
+  assert.equal(meta(html, 'property', 'og:locale'), { he: 'he_IL', en: 'en_US', ru: 'ru_RU' }[lang]);
   assert.equal(meta(html, 'property', 'og:title'), escapeHtml(title));
   assert.equal(meta(html, 'property', 'og:description'), escapeHtml(description));
   assert.equal(meta(html, 'name', 'twitter:card'), 'summary');
   assert.equal(count(html, 'og:title'), 1);
-  assert.doesNotMatch(html, /hreflang|og:image|application\/ld\+json/);
+  for (const code of LANGUAGES) assert.match(html, new RegExp(`<link rel="alternate" hreflang="${code}" href="${urlFor(code, page)}">`));
+  assert.match(html, new RegExp(`<link rel="alternate" hreflang="x-default" href="${urlFor('he', page)}">`));
+  assert.equal(count(html, 'rel="alternate"'), 4);
+  assert.doesNotMatch(html, /og:image|application\/ld\+json/);
 }
 
 test('home prerender exposes the Hebrew H1, hero and section text without running JS', () => {
   const html = renderHome(indexHtml, contentYaml);
-  assertCrawlableHead(html, { title: content.site.title.he, description: content.hero.description.he, url: 'https://katya-alon.com/' });
+  assertCrawlableHead(html, { title: content.site.title.he, description: content.hero.description.he, url: 'https://katya-alon.com/', page: 'home' });
   assert.equal(h1(html), content.hero.title.he);
   assert.equal(count(html, '<h1'), 1);
 
@@ -64,7 +68,7 @@ test('home prerender exposes the Hebrew H1, hero and section text without runnin
 
 test('workshop prerender exposes the Hebrew hero, program, FAQ and pricing without running JS', () => {
   const html = renderWorkshops(workshopsHtml, workshopYaml);
-  assertCrawlableHead(html, { title: workshop.meta.title.he, description: workshop.meta.description.he, url: 'https://katya-alon.com/workshops.html' });
+  assertCrawlableHead(html, { title: workshop.meta.title.he, description: workshop.meta.description.he, url: 'https://katya-alon.com/workshops.html', page: 'workshops' });
   assert.equal(h1(html), escapeHtml(workshop.hero.title.he));
   assert.equal(count(html, '<h1'), 1);
   assert.match(html, new RegExp(`<body class="[^"]*\\blayout-${workshop.layout}"`));
@@ -89,6 +93,27 @@ test('workshop prerender exposes the Hebrew hero, program, FAQ and pricing witho
   assert.ok(!html.includes(workshop.registration.turnstile_site_key));
 });
 
+test('all six pages contain their source translations, directions, metadata and crawlable language links', () => {
+  for (const lang of LANGUAGES) {
+    const home = renderHome(indexHtml, contentYaml, lang);
+    const page = renderWorkshops(workshopsHtml, workshopYaml, lang);
+    assertCrawlableHead(home, {
+      title: content.site.title[lang], description: content.hero.description[lang], url: urlFor(lang, 'home'), lang, page: 'home'
+    });
+    assertCrawlableHead(page, {
+      title: workshop.meta.title[lang], description: workshop.meta.description[lang], url: urlFor(lang, 'workshops'), lang, page: 'workshops'
+    });
+    assert.equal(h1(home), escapeHtml(content.hero.title[lang]));
+    assert.equal(h1(page), escapeHtml(workshop.hero.title[lang]));
+    assert.ok(body(home).includes(escapeHtml(content.about.paragraphs[0][lang])));
+    assert.ok(body(page).includes(escapeHtml(workshop.content_2.items[0].title[lang])));
+    for (const code of LANGUAGES) {
+      assert.match(home, new RegExp(`<a href="${code === 'he' ? '/' : `/${code}/`}" class="lang-btn [^"]*" id="btn-${code}"`));
+      assert.match(page, new RegExp(`<a href="${code === 'he' ? '/workshops.html' : `/${code}/workshops.html`}" class="lang-btn [^"]*" id="btn-${code}"`));
+    }
+  }
+});
+
 test('unsafe YAML values are HTML-escaped in text and attributes', () => {
   const evil = `<script>alert("x")</script>' onmouseover="x`;
   const quoted = JSON.stringify(evil);
@@ -111,7 +136,9 @@ test('unsafe YAML values are HTML-escaped in text and attributes', () => {
 });
 
 test('missing source copy or unexpected template changes fail the build closed', () => {
-  assert.throws(() => renderHome(indexHtml, contentYaml.replace(/^(  title:\n    he: ).*$/m, '$1""')), /missing Hebrew text/);
+  assert.throws(() => renderHome(indexHtml, contentYaml.replace(/^(  title:\n    he: ).*$/m, '$1""')), /missing (?:text|he translation)/);
+  assert.throws(() => renderHome(indexHtml, contentYaml.replace(/^(    en: )About$/m, '$1""'), 'en'), /missing en translation/);
+  assert.throws(() => renderWorkshops(workshopsHtml, workshopYaml.replace(/(title: \{he: "[^"]+", en: )"[^"]+"/, '$1null'), 'en'), /missing en translation/);
   assert.throws(() => renderHome(indexHtml.replace('id="audience-list"', 'id="audience-gone"'), contentYaml), /#audience-list/);
   assert.throws(() => renderWorkshops(workshopsHtml.replace('<h1 id="workshop-title" class="workshop-title"></h1>', '<h1 id="workshop-title" class="workshop-title">stale</h1>'), workshopYaml), /#workshop-title/);
   assert.throws(() => renderWorkshops(workshopsHtml, workshopYaml.replace(/^layout: .*$/m, 'layout: "other"')), /layout/);

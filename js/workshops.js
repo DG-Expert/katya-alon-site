@@ -74,14 +74,46 @@
     return element;
   }
 
-  function requestedLanguage() {
-    const language = new URLSearchParams(window.location.search).get('lang');
-    return LANGUAGES.includes(language) ? language : 'he';
+  function requestedLanguage(pathname = window.location.pathname) {
+    const match = pathname.match(/^\/(en|ru)(?:\/|$)/);
+    return match ? match[1] : 'he';
   }
 
   function requestedLayout() {
     const layout = new URLSearchParams(window.location.search).get('layout');
     return LAYOUTS.includes(layout) ? layout : null;
+  }
+
+  function homePath(lang) {
+    return lang === 'he' ? '/' : `/${lang}/`;
+  }
+
+  function workshopsPath(lang) {
+    return lang === 'he' ? '/workshops.html' : `/${lang}/workshops.html`;
+  }
+
+  function redirectLegacyLanguage() {
+    const url = new URL(window.location.href);
+    const lang = url.searchParams.get('lang');
+    if (!LANGUAGES.includes(lang)) return false;
+    url.pathname = workshopsPath(lang);
+    url.searchParams.delete('lang');
+    if (url.searchParams.has('layout') && !LAYOUTS.includes(url.searchParams.get('layout'))) {
+      url.searchParams.delete('layout');
+    }
+    window.location.replace(`${url.pathname}${url.search}${url.hash}`);
+    return true;
+  }
+
+  function applyPreviewNoindex() {
+    if (!requestedLayout()) return;
+    let robots = document.querySelector('meta[name="robots"]');
+    if (!robots) {
+      robots = document.createElement('meta');
+      robots.name = 'robots';
+      document.head.append(robots);
+    }
+    robots.content = 'noindex,follow';
   }
 
   function assertTranslation(value, path) {
@@ -156,19 +188,21 @@
       if (!button) return;
       const isActive = lang === currentLang;
       button.classList.toggle('active', isActive);
-      button.setAttribute('aria-pressed', String(isActive));
+      if (isActive) button.setAttribute('aria-current', 'page');
+      else button.removeAttribute('aria-current');
     });
   }
 
   function homeHref(anchor) {
-    return `./index.html?lang=${encodeURIComponent(currentLang)}#${encodeURIComponent(anchor)}`;
+    return `${homePath(currentLang)}#${encodeURIComponent(anchor)}`;
   }
 
   function workshopsHref() {
-    const params = new URLSearchParams({ lang: currentLang });
+    const params = new URLSearchParams();
     const previewLayout = requestedLayout();
     if (previewLayout) params.set('layout', previewLayout);
-    return `./workshops.html?${params.toString()}`;
+    const query = params.toString();
+    return `${workshopsPath(currentLang)}${query ? `?${query}` : ''}`;
   }
 
   function updateNavigation() {
@@ -181,6 +215,12 @@
 
     document.querySelectorAll('[data-workshops-link]').forEach(link => {
       link.href = workshopsHref();
+    });
+
+    const previewLayout = requestedLayout();
+    LANGUAGES.forEach(lang => {
+      const link = document.getElementById(`btn-${lang}`);
+      if (link) link.href = `${workshopsPath(lang)}${previewLayout ? `?layout=${encodeURIComponent(previewLayout)}` : ''}`;
     });
   }
 
@@ -280,10 +320,10 @@
     if (typeof value !== 'string' || !value.startsWith('./assets/') || value.includes('\\')) return '';
 
     try {
-      const allowedRoot = new URL('./assets/', document.baseURI);
-      const candidate = new URL(value, document.baseURI);
+      const allowedRoot = new URL('/assets/', window.location.origin);
+      const candidate = new URL(value.slice(1), window.location.origin);
       const isAllowed = candidate.origin === allowedRoot.origin && candidate.pathname.startsWith(allowedRoot.pathname);
-      return isAllowed ? value : '';
+      return isAllowed ? candidate.pathname : '';
     } catch (_error) {
       return '';
     }
@@ -770,27 +810,7 @@
     }
   }
 
-  function switchLanguage(lang) {
-    if (!LANGUAGES.includes(lang) || lang === currentLang) return;
-    currentLang = lang;
-
-    const url = new URL(window.location.href);
-    url.searchParams.set('lang', lang);
-    if (url.searchParams.has('layout') && !LAYOUTS.includes(url.searchParams.get('layout'))) {
-      url.searchParams.delete('layout');
-    }
-    window.history.replaceState({}, '', url);
-
-    applyDocumentLanguage();
-    if (workshopContent) renderPage();
-    closeMobileMenu();
-  }
-
   function setupNavigation() {
-    document.querySelectorAll('[data-language]').forEach(button => {
-      button.addEventListener('click', () => switchLanguage(button.dataset.language));
-    });
-
     const menuButton = document.getElementById('mobile-menu-button');
     if (menuButton) menuButton.addEventListener('click', toggleMobileMenu);
 
@@ -845,7 +865,7 @@
 
   async function loadWorkshopContent() {
     try {
-      const contentUrl = new URL('./content/workshop.yaml', document.baseURI);
+      const contentUrl = new URL('/content/workshop.yaml', window.location.origin);
       const response = await fetch(contentUrl);
       if (!response.ok) {
         throw new Error(`workshop.yaml returned HTTP ${response.status}`);
@@ -864,7 +884,9 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    if (redirectLegacyLanguage()) return;
     currentLang = requestedLanguage();
+    applyPreviewNoindex();
     applyDocumentLanguage();
     updateNavigation();
     setupNavigation();

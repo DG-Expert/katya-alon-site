@@ -1,10 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Only confirmed Hebrew-default canonical endpoints are listed. Multilingual expansion awaits a separate indexing strategy. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://katya-alon.com/</loc>
+    <xhtml:link rel="alternate" hreflang="he" href="https://katya-alon.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://katya-alon.com/en/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katya-alon.com/ru/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katya-alon.com/" />
   </url>
   <url>
     <loc>https://katya-alon.com/workshops.html</loc>
+    <xhtml:link rel="alternate" hreflang="he" href="https://katya-alon.com/workshops.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://katya-alon.com/en/workshops.html" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katya-alon.com/ru/workshops.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katya-alon.com/workshops.html" />
+  </url>
+  <url>
+    <loc>https://katya-alon.com/en/</loc>
+    <xhtml:link rel="alternate" hreflang="he" href="https://katya-alon.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://katya-alon.com/en/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katya-alon.com/ru/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katya-alon.com/" />
+  </url>
+  <url>
+    <loc>https://katya-alon.com/en/workshops.html</loc>
+    <xhtml:link rel="alternate" hreflang="he" href="https://katya-alon.com/workshops.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://katya-alon.com/en/workshops.html" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katya-alon.com/ru/workshops.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katya-alon.com/workshops.html" />
+  </url>
+  <url>
+    <loc>https://katya-alon.com/ru/</loc>
+    <xhtml:link rel="alternate" hreflang="he" href="https://katya-alon.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://katya-alon.com/en/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katya-alon.com/ru/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katya-alon.com/" />
+  </url>
+  <url>
+    <loc>https://katya-alon.com/ru/workshops.html</loc>
+    <xhtml:link rel="alternate" hreflang="he" href="https://katya-alon.com/workshops.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://katya-alon.com/en/workshops.html" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katya-alon.com/ru/workshops.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katya-alon.com/workshops.html" />
   </url>
 </urlset>

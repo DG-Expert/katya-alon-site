@@ -9,6 +9,35 @@ let siteContent = null;
 let activeServiceIndex = null;
 let activeRecommendationIndex = null;
 let recommendationItemsCache = [];
+const LANGUAGES = ['he', 'en', 'ru'];
+
+function languageFromPath(pathname = window.location.pathname) {
+  const match = pathname.match(/^\/(en|ru)(?:\/|$)/);
+  return match ? match[1] : 'he';
+}
+
+function homePath(lang) {
+  return lang === 'he' ? '/' : `/${lang}/`;
+}
+
+function workshopsPath(lang) {
+  return lang === 'he' ? '/workshops.html' : `/${lang}/workshops.html`;
+}
+
+function redirectLegacyLanguage() {
+  const url = new URL(window.location.href);
+  const lang = url.searchParams.get('lang');
+  if (!LANGUAGES.includes(lang)) return false;
+  url.pathname = homePath(lang);
+  url.searchParams.delete('lang');
+  url.searchParams.delete('layout');
+  window.location.replace(`${url.pathname}${url.search}${url.hash}`);
+  return true;
+}
+
+function rootAssetPath(value) {
+  return typeof value === 'string' && value.startsWith('./assets/') ? value.slice(1) : value;
+}
 
 function t(obj, lang) {
   if (!obj) return '';
@@ -17,7 +46,7 @@ function t(obj, lang) {
 
 async function loadContent() {
   try {
-    const contentUrl = new URL('./content/content.yaml', document.baseURI);
+    const contentUrl = new URL('/content/content.yaml', window.location.origin);
     const response = await fetch(contentUrl);
 
     if (!response.ok) {
@@ -106,7 +135,7 @@ function renderClientsStrip(items) {
 
   const oneSetHtml = items.map(item => {
     const name = typeof item.name === 'object' ? t(item.name, currentLang) : (item.name || '');
-    const logo = item.logo || '';
+    const logo = rootAssetPath(item.logo || '');
 
     return `
       <div class="client-item" aria-label="${name}">
@@ -149,7 +178,7 @@ function renderRecommendationsStrip(items, lang) {
       >
         <span class="recommendation-envelope-box">
           <img
-            src="${item.envelope}"
+            src="${rootAssetPath(item.envelope)}"
             alt=""
             class="recommendation-envelope-image"
             loading="lazy"
@@ -517,16 +546,16 @@ function renderProcess(steps, lang) {
 
   const isHebrew = lang === 'he';
   const arrowSrc = isHebrew
-    ? './assets/images/leftArrow.png'
-    : './assets/images/rightArrow.png';
+    ? '/assets/images/leftArrow.png'
+    : '/assets/images/rightArrow.png';
 
   const bulletImages = [
-    './assets/images/bullet_01.png',
-    './assets/images/bullet_02.png',
-    './assets/images/bullet_03.png',
-    './assets/images/bullet_04.png',
-    './assets/images/bullet_05.png',
-    './assets/images/bullet_06.png'
+    '/assets/images/bullet_01.png',
+    '/assets/images/bullet_02.png',
+    '/assets/images/bullet_03.png',
+    '/assets/images/bullet_04.png',
+    '/assets/images/bullet_05.png',
+    '/assets/images/bullet_06.png'
   ];
 
   container.setAttribute('dir', isHebrew ? 'rtl' : 'ltr');
@@ -676,7 +705,7 @@ function openRecommendationModal(index) {
 
   if (!modal || !image) return;
 
-  image.src = item.screenshot;
+  image.src = rootAssetPath(item.screenshot);
   image.alt = t(siteContent.recommendations.modal_image_alt, currentLang) || 'Recommendation screenshot';
 
   modal.classList.remove('hidden');
@@ -700,31 +729,9 @@ function closeRecommendationModal() {
   activeRecommendationIndex = null;
 }
 
-function switchLang(lang) {
-  if (!['he', 'en', 'ru'].includes(lang)) return;
-
-  currentLang = lang;
-  const html = document.documentElement;
-
-  if (lang === 'he') {
-    html.setAttribute('dir', 'rtl');
-    html.setAttribute('lang', 'he');
-  } else {
-    html.setAttribute('dir', 'ltr');
-    html.setAttribute('lang', lang);
-  }
-
-  ['he', 'en', 'ru'].forEach(code => {
-    const btn = document.getElementById('btn-' + code);
-    if (btn) btn.classList.toggle('active', code === lang);
-  });
-
-  renderContent(lang);
-}
-
 function updateWorkshopLinks(lang) {
   document.querySelectorAll('[data-workshops-link]').forEach(link => {
-    link.href = `./workshops.html?lang=${encodeURIComponent(lang)}`;
+    link.href = workshopsPath(lang);
   });
 }
 
@@ -754,14 +761,10 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (redirectLegacyLanguage()) return;
+  currentLang = languageFromPath();
   document.getElementById('footer-year').textContent = new Date().getFullYear();
-
-  const requestedLang = new URLSearchParams(window.location.search).get('lang');
-  if (['he', 'en', 'ru'].includes(requestedLang)) {
-    switchLang(requestedLang);
-  } else {
-    updateWorkshopLinks(currentLang);
-  }
+  updateWorkshopLinks(currentLang);
 
   const serviceModal = document.getElementById('service-modal');
   if (serviceModal) {

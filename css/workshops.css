@@ -144,15 +144,9 @@ html {
   color: var(--workshop-orange);
 }
 
-.workshop-page.is-loading #workshop-main,
-.workshop-page.is-loading .workshop-footer {
-  opacity: 0;
-}
-
 #workshop-main,
 .workshop-footer {
   opacity: 1;
-  transition: opacity 240ms ease;
 }
 
 #workshop-main:focus {

@@ -19,15 +19,16 @@ async function retry(label, check) {
 
 export async function checkWorker(endpoint, fetchImpl = fetch) {
   if (!/^https:\/\//.test(endpoint)) throw new Error('Worker endpoint must be HTTPS');
-  const origin = 'https://dg-expert.github.io';
-  const response = await fetchImpl(endpoint, {
-    method: 'OPTIONS',
-    headers: { Origin: origin, 'Access-Control-Request-Method': 'POST' },
-    redirect: 'error',
-    signal: AbortSignal.timeout(8000)
-  });
-  if (response.status !== 204) throw new Error(`expected HTTP 204, received ${response.status}`);
-  if (response.headers.get('access-control-allow-origin') !== origin) throw new Error('unexpected Access-Control-Allow-Origin');
+  for (const origin of ['https://dg-expert.github.io', 'https://katya-alon.com']) {
+    const response = await fetchImpl(endpoint, {
+      method: 'OPTIONS',
+      headers: { Origin: origin, 'Access-Control-Request-Method': 'POST' },
+      redirect: 'error',
+      signal: AbortSignal.timeout(8000)
+    });
+    if (response.status !== 204) throw new Error(`expected HTTP 204 for ${origin}, received ${response.status}`);
+    if (response.headers.get('access-control-allow-origin') !== origin) throw new Error(`unexpected Access-Control-Allow-Origin for ${origin}`);
+  }
 }
 
 export async function checkPages(baseUrl, fetchImpl = fetch) {

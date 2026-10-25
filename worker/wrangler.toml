@@ -4,8 +4,8 @@ main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 [vars]
-ALLOWED_ORIGINS = "https://dg-expert.github.io,https://dev-server.tail6972d4.ts.net:8445"
-TURNSTILE_HOSTNAMES = "dg-expert.github.io,dev-server.tail6972d4.ts.net"
+ALLOWED_ORIGINS = "https://dg-expert.github.io,https://dev-server.tail6972d4.ts.net:8445,https://katya-alon.com"
+TURNSTILE_HOSTNAMES = "dg-expert.github.io,dev-server.tail6972d4.ts.net,katya-alon.com"
 TURNSTILE_ACTION = "workshop_register"
 # Workshop id and event details come from content/workshop.yaml via scripts/sync-event.mjs (worker/src/event.generated.js).
 # Comma-separated approved consent versions. Empty = every registration is rejected (fail closed).

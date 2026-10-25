@@ -3,6 +3,7 @@
 // Usage: node scripts/build-pages.mjs <stage-dir>
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import yaml from 'js-yaml';
@@ -14,6 +15,14 @@ export const LANGUAGES = ['he', 'en', 'ru'];
 const LAYOUTS = ['conversion', 'story', 'program'];
 const LOCALES = { he: 'he-IL', en: 'en-GB', ru: 'ru-RU' };
 const OG_LOCALES = { he: 'he_IL', en: 'en_US', ru: 'ru_RU' };
+const PERSON_ID = new URL('#person', SITE_URL).href;
+const WEBSITE_ID = new URL('#website', SITE_URL).href;
+const SOCIAL_IMAGE = {
+  url: new URL('assets/images/katya-1.webp', SITE_URL).href,
+  type: 'image/webp',
+  width: 683,
+  height: 1024
+};
 
 export const routeFor = (lang, page) => {
   if (!LANGUAGES.includes(lang)) throw new Error(`build-pages: unsupported language ${lang}`);
@@ -78,10 +87,38 @@ function replaceOnce(html, pattern, replacement, label) {
   return html.replace(pattern, replacement);
 }
 
-// All arguments must already be HTML-escaped.
-function withHead(html, { title, description, url, lang }) {
+// Title and description are already HTML-escaped; structured-data values are raw source text.
+function jsonLd({ siteName, lang }) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Person',
+        '@id': PERSON_ID,
+        name: 'Katya Alon',
+        url: SITE_URL,
+        image: {
+          '@type': 'ImageObject',
+          url: SOCIAL_IMAGE.url,
+          width: SOCIAL_IMAGE.width,
+          height: SOCIAL_IMAGE.height
+        }
+      },
+      {
+        '@type': 'WebSite',
+        '@id': WEBSITE_ID,
+        url: SITE_URL,
+        name: required(siteName, 'structured data site name'),
+        inLanguage: LOCALES[lang],
+        publisher: { '@id': PERSON_ID }
+      }
+    ]
+  }).replaceAll('<', '\\u003c');
+}
+
+function withHead(html, { title, description, url, lang, siteName, imageAlt }) {
   const stripped = html
-    .replace(/^[ \t]*<meta (?:name="(?:description|twitter:[a-z]+)"|property="og:[a-z]+")[^>]*>\n/gm, '')
+    .replace(/^[ \t]*<meta (?:name="(?:description|twitter:[a-z]+)"|property="og:[a-z_:]+")[^>]*>\n/gm, '')
     .replace(/^[ \t]*<link rel="(?:canonical|alternate)"[^>]*>\n/gm, '');
   const alternates = [...LANGUAGES.map(code => `<link rel="alternate" hreflang="${code}" href="${urlFor(code, url.endsWith('workshops.html') ? 'workshops' : 'home')}">`),
     `<link rel="alternate" hreflang="x-default" href="${urlFor('he', url.endsWith('workshops.html') ? 'workshops' : 'home')}">`];
@@ -95,7 +132,15 @@ function withHead(html, { title, description, url, lang }) {
     `<meta property="og:url" content="${url}">`,
     `<meta property="og:title" content="${title}">`,
     `<meta property="og:description" content="${description}">`,
-    '<meta name="twitter:card" content="summary">'
+    `<meta property="og:image" content="${SOCIAL_IMAGE.url}">`,
+    `<meta property="og:image:secure_url" content="${SOCIAL_IMAGE.url}">`,
+    `<meta property="og:image:type" content="${SOCIAL_IMAGE.type}">`,
+    `<meta property="og:image:width" content="${SOCIAL_IMAGE.width}">`,
+    `<meta property="og:image:height" content="${SOCIAL_IMAGE.height}">`,
+    `<meta property="og:image:alt" content="${escapeHtml(required(imageAlt, 'social image alt'))}">`,
+    '<meta name="twitter:card" content="summary">',
+    `<meta name="twitter:image" content="${SOCIAL_IMAGE.url}">`,
+    `<script type="application/ld+json">${jsonLd({ siteName, lang })}</script>`
   ].join('\n  ');
   return replaceOnce(stripped, /<title>[^<]*<\/title>/, meta, '<title>');
 }
@@ -103,8 +148,9 @@ function withHead(html, { title, description, url, lang }) {
 // Home: runs the real js/main.js renderers against escaped content and a recording DOM stub, so markup never drifts.
 export function renderHome(html, contentYaml, lang = 'he', mainJs = read('js/main.js')) {
   if (!LANGUAGES.includes(lang)) throw new Error(`build-pages: unsupported language ${lang}`);
-  const content = escapeDeep(yaml.load(contentYaml));
-  assertLocaleMaps(content);
+  const rawContent = yaml.load(contentYaml);
+  assertLocaleMaps(rawContent);
+  const content = escapeDeep(rawContent);
   const nodes = new Map();
   const node = key => {
     if (!nodes.has(key)) nodes.set(key, { textContent: '', innerHTML: '', attributes: {}, setAttribute(k, v) { this.attributes[k] = v; } });
@@ -129,7 +175,14 @@ export function renderHome(html, contentYaml, lang = 'he', mainJs = read('js/mai
   out = replaceOnce(out, /<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`, '<html language>');
   out = setPageLinks(out, lang, 'home');
   out = setLanguageLinks(out, lang, 'home');
-  return withHead(out, { title: document.title, description: content.hero.description[lang], url: urlFor(lang, 'home'), lang });
+  return withHead(out, {
+    title: document.title,
+    description: content.hero.description[lang],
+    url: urlFor(lang, 'home'),
+    lang,
+    siteName: rawContent.site.title[lang],
+    imageAlt: rawContent.hero.portrait_placeholder[lang]
+  });
 }
 
 // Workshops: mirrors the Hebrew text-only output of js/workshops.js (renderHero/renderSections/renderPricing/renderInstructor).
@@ -228,7 +281,14 @@ export function renderWorkshops(html, workshopYaml, lang = 'he') {
   out = replaceOnce(out, /<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`, '<html language>');
   out = setPageLinks(out, lang, 'workshops');
   out = setLanguageLinks(out, lang, 'workshops');
-  return withHead(out, { title: text(at('meta.title')), description: text(at('meta.description')), url: urlFor(lang, 'workshops'), lang });
+  return withHead(out, {
+    title: text(at('meta.title')),
+    description: text(at('meta.description')),
+    url: urlFor(lang, 'workshops'),
+    lang,
+    siteName: translated(instructor.title),
+    imageAlt: translated(instructor.image.alt)
+  });
 }
 
 function setLanguageLinks(html, activeLang, page) {
@@ -268,6 +328,20 @@ export function buildPages(stageDir) {
     mkdirSync(outputDir, { recursive: true });
     writeFileSync(join(outputDir, 'index.html'), renderHome(homeTemplate, contentYaml, lang));
     writeFileSync(join(outputDir, 'workshops.html'), renderWorkshops(workshopTemplate, workshopYaml, lang));
+  }
+
+  const cssDir = join(stageDir, 'css');
+  mkdirSync(cssDir, { recursive: true });
+  const tailwindCli = fileURLToPath(new URL('node_modules/tailwindcss/lib/cli.js', ROOT));
+  const result = spawnSync(process.execPath, [
+    tailwindCli,
+    '--config', fileURLToPath(new URL('tailwind.config.cjs', ROOT)),
+    '--input', fileURLToPath(new URL('tailwind.css', import.meta.url)),
+    '--output', join(cssDir, 'tailwind.css'),
+    '--minify'
+  ], { cwd: fileURLToPath(ROOT), encoding: 'utf8' });
+  if (result.status !== 0) {
+    throw new Error(`build-pages: Tailwind CSS compilation failed: ${result.stderr || result.stdout}`);
   }
 }
 

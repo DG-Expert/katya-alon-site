@@ -34,8 +34,8 @@ test('above-the-fold hero content is never hidden behind reveal state', () => {
 
 test('styles load before scripts and deferred dependencies precede application code', () => {
   for (const [html, applicationScript, styles] of [
-    [indexHtml, './js/main.js', ['./css/styles.css']],
-    [workshopsHtml, './js/workshops.js', ['./css/styles.css', './css/workshops.css']]
+    [indexHtml, '/js/main.js', ['/css/styles.css']],
+    [workshopsHtml, '/js/workshops.js', ['/css/styles.css', '/css/workshops.css']]
   ]) {
     const pageHead = head(html);
     assertOrdered(pageHead, [

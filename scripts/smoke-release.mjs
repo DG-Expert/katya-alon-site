@@ -32,12 +32,21 @@ export async function checkWorker(endpoint, fetchImpl = fetch) {
 }
 
 export async function checkPages(baseUrl, fetchImpl = fetch) {
-  const url = new URL('./workshops.html', baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
-  if (url.protocol !== 'https:') throw new Error('Pages URL must be HTTPS');
-  const response = await fetchImpl(url, { redirect: 'follow', signal: AbortSignal.timeout(8000) });
-  if (!response.ok) throw new Error(`expected a successful response, received ${response.status}`);
-  const body = await response.text();
-  if (!/<html[\s>]/i.test(body) || !/workshop/i.test(body)) throw new Error('Pages response is not the workshop HTML');
+  const root = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const pages = [
+    ['', 'he'], ['workshops.html', 'he'],
+    ['en/', 'en'], ['en/workshops.html', 'en'],
+    ['ru/', 'ru'], ['ru/workshops.html', 'ru']
+  ];
+  for (const [path, lang] of pages) {
+    const url = new URL(path, root);
+    if (url.protocol !== 'https:') throw new Error('Pages URL must be HTTPS');
+    const response = await fetchImpl(url, { redirect: 'follow', signal: AbortSignal.timeout(8000) });
+    if (!response.ok) throw new Error(`${path || '/'} expected a successful response, received ${response.status}`);
+    const body = await response.text();
+    if (!new RegExp(`<html lang="${lang}"`).test(body)) throw new Error(`${path || '/'} returned the wrong language HTML`);
+    if (!/<link rel="canonical" href="https:\/\/katya-alon\.com\//.test(body)) throw new Error(`${path || '/'} has no production canonical`);
+  }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

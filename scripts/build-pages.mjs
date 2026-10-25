@@ -1,7 +1,7 @@
-// Prerenders the Hebrew default of index.html and workshops.html into a Pages staging directory (build/deploy time).
+// Prerenders all canonical language variants of index.html and workshops.html into a Pages staging directory.
 // Source HTML and content/*.yaml stay the only truth; the output is never committed. JS still hydrates/replaces the same nodes.
 // Usage: node scripts/build-pages.mjs <stage-dir>
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
@@ -10,7 +10,19 @@ import yaml from 'js-yaml';
 const ROOT = new URL('../', import.meta.url);
 const read = path => readFileSync(new URL(path, ROOT), 'utf8');
 export const SITE_URL = 'https://katya-alon.com/';
+export const LANGUAGES = ['he', 'en', 'ru'];
 const LAYOUTS = ['conversion', 'story', 'program'];
+const LOCALES = { he: 'he-IL', en: 'en-GB', ru: 'ru-RU' };
+const OG_LOCALES = { he: 'he_IL', en: 'en_US', ru: 'ru_RU' };
+
+export const routeFor = (lang, page) => {
+  if (!LANGUAGES.includes(lang)) throw new Error(`build-pages: unsupported language ${lang}`);
+  if (!['home', 'workshops'].includes(page)) throw new Error(`build-pages: unsupported page ${page}`);
+  const prefix = lang === 'he' ? '/' : `/${lang}/`;
+  return page === 'home' ? prefix : `${prefix}workshops.html`;
+};
+
+export const urlFor = (lang, page) => new URL(routeFor(lang, page), SITE_URL).href;
 
 export const escapeHtml = value => String(value)
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
@@ -21,8 +33,20 @@ const escapeDeep = value => (typeof value === 'string' ? escapeHtml(value)
   : value);
 
 function required(value, label) {
-  if (typeof value !== 'string' || !value.trim()) throw new Error(`build-pages: missing Hebrew text for ${label}`);
+  if (typeof value !== 'string' || !value.trim()) throw new Error(`build-pages: missing text for ${label}`);
   return value;
+}
+
+function assertLocaleMaps(value, path = 'content', { allowEmpty = false } = {}) {
+  if (!value || typeof value !== 'object') return;
+  if (LANGUAGES.some(lang => Object.hasOwn(value, lang))) {
+    for (const lang of LANGUAGES) {
+      if (typeof value[lang] !== 'string' || (!allowEmpty && !value[lang].trim())) {
+        throw new Error(`build-pages: missing ${lang} translation for ${path}`);
+      }
+    }
+  }
+  for (const [key, nested] of Object.entries(value)) assertLocaleMaps(nested, `${path}.${key}`, { allowEmpty });
 }
 
 // Replaces the inner HTML of every empty element carrying `attr="key"`; every such element must be filled.
@@ -55,14 +79,19 @@ function replaceOnce(html, pattern, replacement, label) {
 }
 
 // All arguments must already be HTML-escaped.
-function withHead(html, { title, description, url }) {
-  const stripped = html.replace(/^[ \t]*<meta (?:name="(?:description|twitter:[a-z]+)"|property="og:[a-z]+")[^>]*>\n/gm, '');
+function withHead(html, { title, description, url, lang }) {
+  const stripped = html
+    .replace(/^[ \t]*<meta (?:name="(?:description|twitter:[a-z]+)"|property="og:[a-z]+")[^>]*>\n/gm, '')
+    .replace(/^[ \t]*<link rel="(?:canonical|alternate)"[^>]*>\n/gm, '');
+  const alternates = [...LANGUAGES.map(code => `<link rel="alternate" hreflang="${code}" href="${urlFor(code, url.endsWith('workshops.html') ? 'workshops' : 'home')}">`),
+    `<link rel="alternate" hreflang="x-default" href="${urlFor('he', url.endsWith('workshops.html') ? 'workshops' : 'home')}">`];
   const meta = [
     `<title>${required(title, 'title')}</title>`,
     `<meta name="description" content="${required(description, 'description')}">`,
     `<link rel="canonical" href="${url}">`,
+    ...alternates,
     '<meta property="og:type" content="website">',
-    '<meta property="og:locale" content="he_IL">',
+    `<meta property="og:locale" content="${OG_LOCALES[lang]}">`,
     `<meta property="og:url" content="${url}">`,
     `<meta property="og:title" content="${title}">`,
     `<meta property="og:description" content="${description}">`,
@@ -72,8 +101,10 @@ function withHead(html, { title, description, url }) {
 }
 
 // Home: runs the real js/main.js renderers against escaped content and a recording DOM stub, so markup never drifts.
-export function renderHome(html, contentYaml, mainJs = read('js/main.js')) {
+export function renderHome(html, contentYaml, lang = 'he', mainJs = read('js/main.js')) {
+  if (!LANGUAGES.includes(lang)) throw new Error(`build-pages: unsupported language ${lang}`);
   const content = escapeDeep(yaml.load(contentYaml));
+  assertLocaleMaps(content);
   const nodes = new Map();
   const node = key => {
     if (!nodes.has(key)) nodes.set(key, { textContent: '', innerHTML: '', attributes: {}, setAttribute(k, v) { this.attributes[k] = v; } });
@@ -90,24 +121,29 @@ export function renderHome(html, contentYaml, mainJs = read('js/main.js')) {
   };
   const context = vm.createContext({ document, window: { innerWidth: 0, addEventListener() {} }, console, __content: content });
   vm.runInContext(mainJs, context, { filename: 'js/main.js' });
-  vm.runInContext('siteContent = __content; renderContent("he");', context);
+  vm.runInContext(`siteContent = __content; currentLang = "${lang}"; renderContent("${lang}");`, context);
 
   let out = fillByAttr(html, 'data-content', key => node(key).textContent);
   for (const id of containers) out = fillById(out, id, required(node(`#${id}`).innerHTML, `#${id}`));
   out = replaceOnce(out, /<div id="process-list" /, `<div id="process-list" dir="${node('#process-list').attributes.dir}" `, '#process-list');
-  return withHead(out, { title: document.title, description: content.hero.description.he, url: SITE_URL });
+  out = replaceOnce(out, /<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`, '<html language>');
+  out = setPageLinks(out, lang, 'home');
+  out = setLanguageLinks(out, lang, 'home');
+  return withHead(out, { title: document.title, description: content.hero.description[lang], url: urlFor(lang, 'home'), lang });
 }
 
 // Workshops: mirrors the Hebrew text-only output of js/workshops.js (renderHero/renderSections/renderPricing/renderInstructor).
-export function renderWorkshops(html, workshopYaml) {
+export function renderWorkshops(html, workshopYaml, lang = 'he') {
+  if (!LANGUAGES.includes(lang)) throw new Error(`build-pages: unsupported language ${lang}`);
   const w = yaml.load(workshopYaml);
+  assertLocaleMaps(w, 'workshop', { allowEmpty: true });
   if (!LAYOUTS.includes(w?.layout)) throw new Error('build-pages: workshop layout must be conversion, story, or program');
   const event = w.event;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(event?.first_session_date)) throw new Error('build-pages: event.first_session_date is required');
 
   const date = new Date(`${event.first_session_date}T00:00:00Z`);
-  const part = options => new Intl.DateTimeFormat('he-IL', { timeZone: 'UTC', ...options }).formatToParts(date)
-    .filter(p => ['day', 'month', 'year', 'literal'].includes(p.type)).map(p => p.value).join('').trim();
+  const part = options => new Intl.DateTimeFormat(LOCALES[lang], { timeZone: 'UTC', ...options }).formatToParts(date)
+    .filter(p => ['day', 'month', 'year', 'literal'].includes(p.type)).map(p => p.value).join('').replace(/\s*г\.$/, '').trim();
   const tokens = {
     'event.sessions': String(event.session_count),
     'event.hours': String(event.total_hours),
@@ -115,10 +151,10 @@ export function renderWorkshops(html, workshopYaml) {
     'event.date_short': part({ day: 'numeric', month: 'short', year: 'numeric' }),
     'event.date_long': part({ day: 'numeric', month: 'long', year: 'numeric' })
   };
-  const he = value => (typeof value === 'string' ? value : value?.he || value?.en || value?.ru || '')
+  const translated = value => (typeof value === 'string' ? value : value?.[lang] || '')
     .replace(/\{(event\.[a-z_]+)\}/g, (match, key) => (key in tokens ? tokens[key] : match));
   const at = path => path.split('.').reduce((v, k) => (v && Object.hasOwn(v, k) ? v[k] : undefined), w);
-  const text = value => escapeHtml(he(value));
+  const text = value => escapeHtml(translated(value));
   const tag = (name, className, value) => `<${name}${className ? ` class="${className}"` : ''}>${text(value)}</${name}>`;
 
   let out = fillByAttr(html, 'data-copy', key => text(at(key)));
@@ -158,10 +194,10 @@ export function renderWorkshops(html, workshopYaml) {
 
   const pricing = w.pricing;
   if (sections.pricing === true && pricing) {
-    const price = amount => (Number.isFinite(Number(amount)) ? new Intl.NumberFormat('he-IL').format(Number(amount)) : '');
-    const fill = (template, amount) => he(template)
+    const price = amount => (Number.isFinite(Number(amount)) ? new Intl.NumberFormat(LOCALES[lang]).format(Number(amount)) : '');
+    const fill = (template, amount) => translated(template)
       .replaceAll('{price}', price(amount)).replaceAll('{total}', price(pricing.current_price)).replaceAll('{count}', price(pricing.session_count))
-      .replaceAll('{currency}', he(pricing.currency)).replaceAll('{vat}', he(pricing.vat_text));
+      .replaceAll('{currency}', translated(pricing.currency)).replaceAll('{vat}', translated(pricing.vat_text));
     setText('pricing-kicker', pricing.kicker);
     setText('pricing-title', pricing.title);
     setText('pricing-intro', pricing.intro);
@@ -179,7 +215,7 @@ export function renderWorkshops(html, workshopYaml) {
   if (sections.instructor === true && instructor) {
     setText('instructor-kicker', instructor.kicker);
     setText('instructor-title', instructor.title);
-    setText('instructor-caption', `${he(instructor.title)}, ${he(instructor.role)}`);
+    setText('instructor-caption', `${translated(instructor.title)}, ${translated(instructor.role)}`);
     set('instructor-bio', (instructor.paragraphs || []).map(p => tag('p', '', p)).join(''));
   }
 
@@ -189,12 +225,50 @@ export function renderWorkshops(html, workshopYaml) {
 
   const unresolved = out.match(/\{(?:event\.[a-z_]+|price|total|count|currency|vat)\}/);
   if (unresolved) throw new Error(`build-pages: unresolved token ${unresolved[0]} in workshops.html`);
-  return withHead(out, { title: text(at('meta.title')), description: text(at('meta.description')), url: `${SITE_URL}workshops.html` });
+  out = replaceOnce(out, /<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`, '<html language>');
+  out = setPageLinks(out, lang, 'workshops');
+  out = setLanguageLinks(out, lang, 'workshops');
+  return withHead(out, { title: text(at('meta.title')), description: text(at('meta.description')), url: urlFor(lang, 'workshops'), lang });
+}
+
+function setLanguageLinks(html, activeLang, page) {
+  let out = html;
+  for (const lang of LANGUAGES) {
+    const active = lang === activeLang;
+    const pattern = new RegExp(`<a href="[^"]*" class="lang-btn ([^"]*)" id="btn-${lang}"(?: aria-current="page")?>`);
+    out = replaceOnce(out, pattern, (_match, classes) => {
+      const nextClasses = classes.split(/\s+/).filter(value => value && value !== 'active');
+      if (active) nextClasses.push('active');
+      return `<a href="${routeFor(lang, page)}" class="lang-btn ${nextClasses.join(' ')}" id="btn-${lang}"${active ? ' aria-current="page"' : ''}>`;
+    }, `#btn-${lang}`);
+  }
+  return out;
+}
+
+function setPageLinks(html, lang, page) {
+  return html.replace(/<a\b[^>]*>/g, tag => {
+    let href;
+    if (tag.includes('data-workshops-link')) href = routeFor(lang, 'workshops');
+    if (page === 'workshops' && tag.includes('data-home-anchor=')) {
+      const anchor = tag.match(/data-home-anchor="([^"]+)"/)?.[1];
+      href = `${routeFor(lang, 'home')}#${anchor}`;
+    }
+    if (page === 'workshops' && tag.includes('id="brand-link"')) href = `${routeFor(lang, 'home')}#hero`;
+    return href ? tag.replace(/href="[^"]*"/, `href="${href}"`) : tag;
+  });
 }
 
 export function buildPages(stageDir) {
-  writeFileSync(join(stageDir, 'index.html'), renderHome(read('index.html'), read('content/content.yaml')));
-  writeFileSync(join(stageDir, 'workshops.html'), renderWorkshops(read('workshops.html'), read('content/workshop.yaml')));
+  const homeTemplate = read('index.html');
+  const workshopTemplate = read('workshops.html');
+  const contentYaml = read('content/content.yaml');
+  const workshopYaml = read('content/workshop.yaml');
+  for (const lang of LANGUAGES) {
+    const outputDir = lang === 'he' ? stageDir : join(stageDir, lang);
+    mkdirSync(outputDir, { recursive: true });
+    writeFileSync(join(outputDir, 'index.html'), renderHome(homeTemplate, contentYaml, lang));
+    writeFileSync(join(outputDir, 'workshops.html'), renderWorkshops(workshopTemplate, workshopYaml, lang));
+  }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -204,5 +278,5 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     process.exit(2);
   }
   buildPages(stageDir);
-  console.log(`Prerendered index.html and workshops.html into ${stageDir}`);
+  console.log(`Prerendered six canonical pages into ${stageDir}`);
 }

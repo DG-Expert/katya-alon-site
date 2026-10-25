@@ -11,23 +11,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/styles.css">
-  <link rel="stylesheet" href="./css/workshops.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/workshops.css">
   <!-- Tailwind Play CDN stays parser-blocking until it can be replaced by a static build without FOUC. -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-  <script defer src="./js/workshops.js"></script>
+  <script defer src="/js/workshops.js"></script>
 </head>
 <body class="min-h-full page-theme workshop-page layout-conversion">
   <a href="#workshop-main" class="workshop-skip-link" data-copy="accessibility.skip_to_content"></a>
 
   <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b site-header-theme workshop-header">
     <div class="workshop-shell workshop-header-inner">
-      <a id="brand-link" href="./index.html?lang=he#hero" class="site-logo-link" data-aria-copy="nav.home">
+      <a id="brand-link" href="/#hero" class="site-logo-link" data-aria-copy="nav.home">
         <img
           id="brand-logo"
-          src="./assets/images/Kate%20NoBackground%20Logo.png"
+          src="/assets/images/Kate%20NoBackground%20Logo.png"
           alt=""
           class="site-logo"
           width="500"
@@ -36,20 +36,20 @@
       </a>
 
       <nav class="hidden lg:flex items-center lg:gap-5 text-sm font-light nav-text-theme" data-aria-copy="nav.navigation_label">
-        <a href="./index.html?lang=he#about" class="nav-link" data-home-anchor="about" data-copy="nav.about"></a>
-        <a href="./index.html?lang=he#services" class="nav-link" data-home-anchor="services" data-copy="nav.services"></a>
-        <a href="./index.html?lang=he#process" class="nav-link" data-home-anchor="process" data-copy="nav.process"></a>
-        <a href="./index.html?lang=he#contact" class="nav-link" data-home-anchor="contact" data-copy="nav.contact"></a>
-        <a href="./workshops.html?lang=he" class="nav-link workshop-nav-active" aria-current="page" data-workshops-link data-copy="nav.workshops"></a>
+        <a href="/#about" class="nav-link" data-home-anchor="about" data-copy="nav.about"></a>
+        <a href="/#services" class="nav-link" data-home-anchor="services" data-copy="nav.services"></a>
+        <a href="/#process" class="nav-link" data-home-anchor="process" data-copy="nav.process"></a>
+        <a href="/#contact" class="nav-link" data-home-anchor="contact" data-copy="nav.contact"></a>
+        <a href="/workshops.html" class="nav-link workshop-nav-active" aria-current="page" data-workshops-link data-copy="nav.workshops"></a>
       </nav>
 
       <div class="flex items-center gap-3 sm:gap-4">
         <div class="flex items-center gap-1 text-sm border rounded-full px-2 sm:px-3 py-1.5 lang-switcher-theme" role="group" data-aria-copy="nav.language_label">
-          <button type="button" class="lang-btn px-2 py-0.5 rounded active" data-language="he" id="btn-he">HE</button>
+          <a href="/workshops.html" class="lang-btn px-2 py-0.5 rounded active" id="btn-he" aria-current="page">HE</a>
           <span class="separator-theme" aria-hidden="true">|</span>
-          <button type="button" class="lang-btn px-2 py-0.5 rounded" data-language="en" id="btn-en">EN</button>
+          <a href="/en/workshops.html" class="lang-btn px-2 py-0.5 rounded" id="btn-en">EN</a>
           <span class="separator-theme" aria-hidden="true">|</span>
-          <button type="button" class="lang-btn px-2 py-0.5 rounded" data-language="ru" id="btn-ru">RU</button>
+          <a href="/ru/workshops.html" class="lang-btn px-2 py-0.5 rounded" id="btn-ru">RU</a>
         </div>
 
         <button
@@ -67,11 +67,11 @@
 
     <div id="mobile-nav" class="hidden lg:hidden border-t px-5 pb-5 mobile-nav-theme workshop-mobile-nav">
       <nav class="workshop-shell flex flex-col gap-3 text-sm pt-4 nav-text-theme" data-aria-copy="nav.navigation_label">
-        <a href="./index.html?lang=he#about" class="py-1" data-home-anchor="about" data-copy="nav.about"></a>
-        <a href="./index.html?lang=he#services" class="py-1" data-home-anchor="services" data-copy="nav.services"></a>
-        <a href="./index.html?lang=he#process" class="py-1" data-home-anchor="process" data-copy="nav.process"></a>
-        <a href="./index.html?lang=he#contact" class="py-1" data-home-anchor="contact" data-copy="nav.contact"></a>
-        <a href="./workshops.html?lang=he" class="py-1 workshop-nav-active" aria-current="page" data-workshops-link data-copy="nav.workshops"></a>
+        <a href="/#about" class="py-1" data-home-anchor="about" data-copy="nav.about"></a>
+        <a href="/#services" class="py-1" data-home-anchor="services" data-copy="nav.services"></a>
+        <a href="/#process" class="py-1" data-home-anchor="process" data-copy="nav.process"></a>
+        <a href="/#contact" class="py-1" data-home-anchor="contact" data-copy="nav.contact"></a>
+        <a href="/workshops.html" class="py-1 workshop-nav-active" aria-current="page" data-workshops-link data-copy="nav.workshops"></a>
       </nav>
     </div>
   </header>

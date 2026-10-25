@@ -25,7 +25,7 @@ select {
 
 .page-theme {
   background-color: #FAF8F5;
-  background-image: url('../assets/images/main-bg.webp');
+  background-image: url('/assets/images/main-bg.webp');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -76,7 +76,7 @@ body {
   min-width: 220px;
   min-height: 64px;
   padding: 0 28px;
-  background-image: url('../assets/images/button-abs.svg');
+  background-image: url('/assets/images/button-abs.svg');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -91,7 +91,7 @@ body {
 }
 
 .cta-image-button:hover {
-  background-image: url('../assets/images/button-abs.svg');
+  background-image: url('/assets/images/button-abs.svg');
   background-color: transparent;
   transform: translateY(-1px) scale(1.02);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
@@ -178,7 +178,17 @@ body {
 }
 
 .lang-btn {
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s ease;
+}
+
+.lang-btn:focus-visible {
+  outline: 3px solid #008b96;
+  outline-offset: 2px;
 }
 
 .lang-btn.active {
@@ -542,7 +552,7 @@ body {
 }
 
 .service-card-base {
-  background-image: url('../assets/images/card-bg-light.webp');
+  background-image: url('/assets/images/card-bg-light.webp');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -1216,7 +1226,7 @@ body {
   width: 100%;
   min-height: var(--process-card-height);
   padding: 1.22rem 1.16rem 1.28rem;
-  background-image: url('../assets/images/main_form_screen_block_btn.png');
+  background-image: url('/assets/images/main_form_screen_block_btn.png');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;

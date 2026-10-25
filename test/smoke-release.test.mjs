@@ -14,12 +14,17 @@ test('Worker smoke check sends only OPTIONS and verifies both exact CORS origins
   await assert.rejects(() => checkWorker('https://worker.example.test/api/register', async () => new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*' } })), /unexpected/);
 });
 
-test('Pages smoke check requests workshops.html and validates the response', async () => {
-  let requested;
+test('Pages smoke check requests and validates all six canonical paths', async () => {
+  const requested = [];
   await checkPages('https://example.test/project/', async url => {
-    requested = String(url);
-    return new Response('<!doctype html><html><title>Workshop</title></html>', { status: 200 });
+    requested.push(String(url));
+    const lang = String(url).includes('/en/') ? 'en' : String(url).includes('/ru/') ? 'ru' : 'he';
+    return new Response(`<!doctype html><html lang="${lang}"><head><link rel="canonical" href="https://katya-alon.com/${lang === 'he' ? '' : `${lang}/`}"></head></html>`, { status: 200 });
   });
-  assert.equal(requested, 'https://example.test/project/workshops.html');
+  assert.deepEqual(requested, [
+    'https://example.test/project/', 'https://example.test/project/workshops.html',
+    'https://example.test/project/en/', 'https://example.test/project/en/workshops.html',
+    'https://example.test/project/ru/', 'https://example.test/project/ru/workshops.html'
+  ]);
   await assert.rejects(() => checkPages('http://example.test/', async () => new Response('')), /HTTPS/);
 });

@@ -1,5 +1,3 @@
-# OWNER WARNING (non-visible): source copy conflicts on early-bird date (8.11 vs 10.11).
-# This private preview uses 10.11.2026; owner must confirm before publication.
 layout: "story"
 sections: {content_1: true, content_2: true, power_image: true, content_3: true, pricing: true, instructor: true}
 # Public, fail-closed registration configuration. Do not place credentials or private URLs here.

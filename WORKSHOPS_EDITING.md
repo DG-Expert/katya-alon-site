@@ -42,7 +42,7 @@ Use the real YAML booleans `true` or `false`, without quotes. A `false` section 
 
 `pricing` and `instructor` are optional reusable blocks. The pricing values are deliberately numeric under `pricing.original_price`, `pricing.current_price`, and `pricing.per_session_price`; keep them in sync (currently 4000, 3000, and 1500 × 2). Edit the localized price labels, VAT text, deadline, and post-deadline copy in the same `pricing` object.
 
-Important: the supplied source conflicts between an 8 November and 10 November early-bird deadline. The preview intentionally shows **10.11.2026** consistently. The owner must decide the public deadline before publication; promotional price dates are manual content and must be updated or removed when the deadline passes.
+The early-bird deadline is confirmed by the owner: the special price applies through **10.11.2026 inclusive**; from **11.11.2026** the full price applies. Promotional price dates are manual content and must be updated or removed when the deadline passes.
 
 ## Images
 

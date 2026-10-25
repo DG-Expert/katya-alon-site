@@ -17,7 +17,7 @@ Status: **design only**. Nothing here is implemented or verified. Each stage end
 - `worker/src/validate.js`: single `EVENT.workshopId` compared with `body.workshopId`; `CONSENT_VERSIONS` from `wrangler.toml` `[vars]`.
 - `gas/Code.gs`: dedup keyed on `workshopId` + hashed email/mobile; `EVENT:<workshopId>` Script Property stores event per id.
 - No `.github/`, no `package.json`. Tests: `node --test test/*.test.mjs` (Node 24, no deps). Add no npm dependencies unless the owner approves (YAML AST needs one; see 4.2).
-- Free-text coupling that the Sheet cannot guard automatically: `pricing.deadline` / `after_deadline` contain literal dates; `content_3.intro`, `pricing.intro/includes` contain number words; calendar link and email subject are not YAML-driven; the YAML header comment notes an unresolved early-bird date conflict (8.11 vs 10.11) – owner must confirm before any publication.
+- Free-text coupling that the Sheet cannot guard automatically: `pricing.deadline` / `after_deadline` contain literal dates; `content_3.intro`, `pricing.intro/includes` contain number words; calendar link and email subject are not YAML-driven. The early-bird date is owner-confirmed: 10.11.2026 inclusive, full price from 11.11.2026.
 
 ## 2. Architecture (recommended)
 
@@ -124,4 +124,4 @@ Phase 1 must not be described to the user as "fully automatic".
 
 ## 9. Open decisions for the owner
 
-1. Add a YAML AST dependency (`yaml`)? 2. Payload transport (dispatch input vs file upload). 3. Admin proxy now or later. 4. Policy for consent text change detection. 5. Early-bird date conflict (8.11 vs 10.11) – resolve before any publish. 6. How previous workshop ids are declared. 7. Who is the PR reviewer/merger.
+1. Add a YAML AST dependency (`yaml`)? 2. Payload transport (dispatch input vs file upload). 3. Admin proxy now or later. 4. Policy for consent text change detection. 5. How previous workshop ids are declared. 6. Who is the PR reviewer/merger.

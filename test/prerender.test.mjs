@@ -30,12 +30,27 @@ function assertCrawlableHead(html, { title, description, url, lang = 'he', page 
   assert.equal(meta(html, 'property', 'og:locale'), { he: 'he_IL', en: 'en_US', ru: 'ru_RU' }[lang]);
   assert.equal(meta(html, 'property', 'og:title'), escapeHtml(title));
   assert.equal(meta(html, 'property', 'og:description'), escapeHtml(description));
+  assert.equal(meta(html, 'property', 'og:image'), 'https://katya-alon.com/assets/images/katya-1.webp');
+  assert.equal(meta(html, 'property', 'og:image:secure_url'), 'https://katya-alon.com/assets/images/katya-1.webp');
+  assert.equal(meta(html, 'property', 'og:image:type'), 'image/webp');
+  assert.equal(meta(html, 'property', 'og:image:width'), '683');
+  assert.equal(meta(html, 'property', 'og:image:height'), '1024');
+  assert.ok(meta(html, 'property', 'og:image:alt'));
   assert.equal(meta(html, 'name', 'twitter:card'), 'summary');
+  assert.equal(meta(html, 'name', 'twitter:image'), 'https://katya-alon.com/assets/images/katya-1.webp');
   assert.equal(count(html, 'og:title'), 1);
+  assert.equal(count(html, 'type="application/ld+json"'), 1);
+  const structuredData = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
+  assert.equal(structuredData['@context'], 'https://schema.org');
+  assert.deepEqual(structuredData['@graph'].map(entry => entry['@type']), ['Person', 'WebSite']);
+  assert.equal(structuredData['@graph'][0]['@id'], 'https://katya-alon.com/#person');
+  assert.equal(structuredData['@graph'][0].name, 'Katya Alon');
+  assert.equal(structuredData['@graph'][1]['@id'], 'https://katya-alon.com/#website');
+  assert.equal(structuredData['@graph'][1].inLanguage, { he: 'he-IL', en: 'en-GB', ru: 'ru-RU' }[lang]);
+  assert.deepEqual(structuredData['@graph'][1].publisher, { '@id': 'https://katya-alon.com/#person' });
   for (const code of LANGUAGES) assert.match(html, new RegExp(`<link rel="alternate" hreflang="${code}" href="${urlFor(code, page)}">`));
   assert.match(html, new RegExp(`<link rel="alternate" hreflang="x-default" href="${urlFor('he', page)}">`));
   assert.equal(count(html, 'rel="alternate"'), 4);
-  assert.doesNotMatch(html, /og:image|application\/ld\+json/);
 }
 
 test('home prerender exposes the Hebrew H1, hero and section text without running JS', () => {
@@ -120,7 +135,7 @@ test('unsafe YAML values are HTML-escaped in text and attributes', () => {
   const home = renderHome(indexHtml, contentYaml
     .replace(/^(  title:\n    he: ).*$/m, `$1${quoted}`)
     .replace(/^(  description:\n    he: ).*$/m, `$1${quoted}`)
-    .replace(/^(    he: )קטיה אלון$/m, `$1${quoted}`));
+    .replace(/^(hero:\n  title:\n    he: ).*$/m, `$1${quoted}`));
   const page = renderWorkshops(workshopsHtml, workshopYaml
     .replace(/^(  title: \{he: )"[^"]*"/m, `$1${quoted}`)
     .replace(/^(  eyebrow: \{he: )"[^"]*"/m, `$1${quoted}`));

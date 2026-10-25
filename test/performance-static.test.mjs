@@ -34,19 +34,19 @@ test('above-the-fold hero content is never hidden behind reveal state', () => {
 
 test('styles load before scripts and deferred dependencies precede application code', () => {
   for (const [html, applicationScript, styles] of [
-    [indexHtml, '/js/main.js', ['/css/styles.css']],
-    [workshopsHtml, '/js/workshops.js', ['/css/styles.css', '/css/workshops.css']]
+    [indexHtml, '/js/main.js', ['/css/styles.css', '/css/tailwind.css']],
+    [workshopsHtml, '/js/workshops.js', ['/css/styles.css', '/css/workshops.css', '/css/tailwind.css']]
   ]) {
     const pageHead = head(html);
     assertOrdered(pageHead, [
       'fonts.googleapis.com/css2',
       ...styles,
-      'cdn.tailwindcss.com/3.4.17',
       'lucide.min.js',
       'js-yaml.min.js',
       applicationScript
     ]);
-    assert.match(pageHead, /<script src="https:\/\/cdn\.tailwindcss\.com\/3\.4\.17"><\/script>/);
+    assert.match(pageHead, /<link rel="stylesheet" href="\/css\/tailwind\.css">/);
+    assert.doesNotMatch(pageHead, /cdn\.tailwindcss\.com|tailwind\.config/);
     assert.match(pageHead, new RegExp(`<script defer src="${applicationScript.replaceAll('.', '\\.')}"></script>`));
     assert.match(pageHead, /<script defer src="[^"]*lucide\.min\.js"><\/script>/);
     assert.match(pageHead, /<script defer src="[^"]*js-yaml\.min\.js"><\/script>/);

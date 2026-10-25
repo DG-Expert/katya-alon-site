@@ -91,7 +91,13 @@ test('Pages staging ships prerendered HTML, crawl-control files and nothing priv
       assert.equal((html.match(/rel="alternate"/g) || []).length, 4);
       assert.doesNotMatch(html, /HMAC|SECRET|CLOUDFLARE_|GAS_URL|script\.google|workers\.dev|turnstile_site_key/i);
       assert.doesNotMatch(html, /(?:href|src)="\.\//);
+      assert.match(html, /<meta property="og:image" content="https:\/\/katya-alon\.com\/assets\/images\/katya-1\.webp">/);
+      assert.match(html, /<script type="application\/ld\+json">/);
+      assert.doesNotMatch(html, /cdn\.tailwindcss\.com/);
     }
+    const tailwindCss = readFileSync(join(stage, 'css', 'tailwind.css'), 'utf8');
+    assert.ok(tailwindCss.length > 1_000, 'compiled Tailwind CSS should contain the used utilities');
+    assert.match(tailwindCss, /\.lg\\:hidden/);
   } finally {
     rmSync(runnerTemp, { recursive: true, force: true });
   }

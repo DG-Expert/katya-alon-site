@@ -428,8 +428,8 @@
       .replaceAll('{currency}', currency)
       .replaceAll('{vat}', vat);
     const original = document.getElementById('pricing-original'); original.replaceChildren(createElement('del', '', fill(pricing.original_label, pricing.original_price)));
-    setText('pricing-current', fill(pricing.current_label, pricing.current_price)); setText('pricing-session', fill(pricing.session_label, pricing.per_session_price)); setText('pricing-breakdown', fill(pricing.breakdown_label, pricing.per_session_price));
-    setText('pricing-includes', translate(pricing.includes)); setText('pricing-deadline', translate(pricing.deadline)); setText('pricing-after', fill(pricing.after_deadline, pricing.original_price)); setText('pricing-cta', translate(pricing.cta));
+    setText('pricing-current', fill(pricing.current_label, pricing.current_price)); setText('pricing-breakdown', fill(pricing.breakdown_label, pricing.per_session_price));
+    setText('pricing-deadline', translate(pricing.deadline)); setText('pricing-after', fill(pricing.after_deadline, pricing.original_price)); setText('pricing-cta', translate(pricing.cta));
   }
 
   function renderInstructor() {

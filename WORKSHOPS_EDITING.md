@@ -40,7 +40,7 @@ sections:
 
 Use the real YAML booleans `true` or `false`, without quotes. A `false` section is omitted entirely and leaves no empty spacing. `content_1: false` also hides the first CTA; `content_2: false` hides the second CTA. The final registration demo form is always present and has no toggle.
 
-`pricing` and `instructor` are optional reusable blocks. The pricing values are deliberately numeric under `pricing.original_price`, `pricing.current_price`, and `pricing.per_session_price`; keep them in sync (currently 4000, 3000, and 1500 × 2). Edit the localized price labels, VAT text, deadline, and post-deadline copy in the same `pricing` object.
+`pricing` and `instructor` are optional reusable blocks. The pricing values are deliberately numeric under `pricing.original_price`, `pricing.current_price`, and `pricing.per_session_price`; keep them in sync (currently 4000, 3000, and 1500 × 2). Edit the localized price labels, VAT text, deadline, and post-deadline copy in the same `pricing` object. `pricing.session_label` and `pricing.includes` are legacy fields retained solely for the 143-path Sheets publisher schema; the frontend no longer renders them. Do not remove or rename those YAML keys.
 
 The early-bird deadline is confirmed by the owner: the special price applies through **10.11.2026 inclusive**; from **11.11.2026** the full price applies. Promotional price dates are manual content and must be updated or removed when the deadline passes.
 
@@ -102,7 +102,7 @@ Every translated leaf below is an object with exactly `he`, `en`, and `ru` strin
 | `content_3.items[]` | Supporting question rows |
 | `content_3.items[].question/answer.{he,en,ru}` | One question and answer |
 | `pricing.original_price/current_price/per_session_price` | Numeric price inputs; no currency symbols in these values |
-| `pricing.currency/vat_text/...{he,en,ru}` | Localized price labels, deadline, and CTA |
+| `pricing.currency/vat_text/...{he,en,ru}` | Localized price labels, deadline, and CTA; `pricing.session_label` and `pricing.includes` are legacy Sheets-schema fields and are not rendered |
 | `instructor.kicker/title/role/paragraphs.{he,en,ru}` | Instructor copy |
 | `instructor.image.src`, `instructor.image.alt.{he,en,ru}` | Local local portrait and alt text |
 | `form.kicker/title/intro.{he,en,ru}` | Final form-section copy |

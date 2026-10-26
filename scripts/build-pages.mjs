@@ -256,9 +256,7 @@ export function renderWorkshops(html, workshopYaml, lang = 'he') {
     setText('pricing-intro', pricing.intro);
     set('pricing-original', `<del>${escapeHtml(fill(pricing.original_label, pricing.original_price))}</del>`);
     setText('pricing-current', fill(pricing.current_label, pricing.current_price));
-    setText('pricing-session', fill(pricing.session_label, pricing.per_session_price));
     setText('pricing-breakdown', fill(pricing.breakdown_label, pricing.per_session_price));
-    setText('pricing-includes', pricing.includes);
     setText('pricing-deadline', pricing.deadline);
     setText('pricing-after', fill(pricing.after_deadline, pricing.original_price));
     setText('pricing-cta', pricing.cta);

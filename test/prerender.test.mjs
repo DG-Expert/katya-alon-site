@@ -108,6 +108,30 @@ test('workshop prerender exposes the Hebrew hero, program, FAQ and pricing witho
   assert.ok(!html.includes(workshop.registration.turnstile_site_key));
 });
 
+test('all workshop layouts omit legacy pricing lines and retain the detailed breakdown', () => {
+  for (const layout of ['conversion', 'story', 'program']) {
+    const layoutYaml = workshopYaml.replace(/^layout:.*$/m, `layout: ${layout}`);
+    for (const lang of LANGUAGES) {
+      const page = renderWorkshops(workshopsHtml, layoutYaml, lang);
+      const locale = { he: 'he-IL', en: 'en-GB', ru: 'ru-RU' }[lang];
+      const number = value => new Intl.NumberFormat(locale).format(value);
+      assert.match(page, new RegExp(`\\blayout-${layout}\\b`));
+      assert.doesNotMatch(page, /pricing-(?:session|includes)/);
+      assert.ok(page.includes(escapeHtml(workshop.pricing.breakdown_label[lang]
+        .replaceAll('{price}', number(workshop.pricing.per_session_price))
+        .replaceAll('{count}', number(workshop.pricing.session_count))
+        .replaceAll('{total}', number(workshop.pricing.current_price))
+        .replaceAll('{currency}', workshop.pricing.currency[lang])
+        .replaceAll('{vat}', workshop.pricing.vat_text[lang]))));
+      assert.ok(!page.includes(escapeHtml(workshop.pricing.session_label[lang])), 'legacy session label is absent');
+      assert.ok(!page.includes(escapeHtml(workshop.pricing.includes[lang])), 'legacy includes text is absent');
+    }
+  }
+  for (const renderer of ['js/workshops.js', 'scripts/build-pages.mjs']) {
+    assert.doesNotMatch(read(renderer), /pricing-(?:session|includes)/);
+  }
+});
+
 test('all six pages contain their source translations, directions, metadata and crawlable language links', () => {
   for (const lang of LANGUAGES) {
     const home = renderHome(indexHtml, contentYaml, lang);

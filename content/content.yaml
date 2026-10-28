@@ -372,9 +372,9 @@ services:
         en: "You choose: I manage the advertising for you, or I teach you to do it yourselves."
         ru: "Вы выбираете: я веду рекламу за вас или учу вас делать это самостоятельно."
       results:
-        # Pending media handoff: keep false until the four optimized originals exist under assets/images/paid-advertising/
-        # (test/paid-advertising.test.mjs then verifies every file). Image 1143 (January leads) is intentionally excluded.
-        enabled: false
+        # Four unchanged originals (full = lossless WebP, -768/-1152 = thumbnails) live in assets/images/paid-advertising/;
+        # test/paid-advertising.test.mjs verifies every file. Image 1143 (January leads) is intentionally excluded.
+        enabled: true
         title:
           he: דוגמאות לתוצאות מקמפיינים
           en: Examples of Campaign Results
@@ -392,6 +392,10 @@ services:
             he: סגירה
             en: Close
             ru: Закрыть
+          pan:
+            he: התמונה המוגדלת, אפשר לגלול ולהזיז
+            en: Enlarged image, scroll or drag to pan
+            ru: Увеличенное изображение, прокрутите или перетащите
           open:
             he: להגדלת התמונה
             en: Enlarge image
@@ -400,6 +404,7 @@ services:
         - slug: pos-systems
           src: /assets/images/paid-advertising/pos-systems.webp
           thumb: /assets/images/paid-advertising/pos-systems-768.webp
+          thumb_2x: /assets/images/paid-advertising/pos-systems-1152.webp
           width: 1536
           height: 1024
           caption:
@@ -413,6 +418,7 @@ services:
         - slug: dental-clinic
           src: /assets/images/paid-advertising/dental-clinic.webp
           thumb: /assets/images/paid-advertising/dental-clinic-768.webp
+          thumb_2x: /assets/images/paid-advertising/dental-clinic-1152.webp
           width: 1536
           height: 1024
           caption:
@@ -426,6 +432,7 @@ services:
         - slug: landing-page-traffic
           src: /assets/images/paid-advertising/landing-page-traffic.webp
           thumb: /assets/images/paid-advertising/landing-page-traffic-768.webp
+          thumb_2x: /assets/images/paid-advertising/landing-page-traffic-1152.webp
           width: 1536
           height: 1024
           caption:
@@ -439,6 +446,7 @@ services:
         - slug: video-campaign
           src: /assets/images/paid-advertising/video-campaign.webp
           thumb: /assets/images/paid-advertising/video-campaign-768.webp
+          thumb_2x: /assets/images/paid-advertising/video-campaign-1152.webp
           width: 1536
           height: 1024
           caption:

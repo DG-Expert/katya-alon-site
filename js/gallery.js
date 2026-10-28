@@ -12,17 +12,18 @@
       opener = link;
       image.src = link.href;
       image.alt = link.querySelector('img').alt;
-      document.body.classList.add('viewer-open');
+      document.documentElement.classList.add('viewer-open');
       viewer.showModal();
+      viewer.querySelector('.results-viewer-scroll').scrollTo(0, 0);
       viewer.querySelector('[data-gallery-close]').focus();
     } else if (event.target === viewer || event.target.closest?.('[data-gallery-close]')) {
       viewer.close();
     }
   });
 
-  // Escape closes natively (dialog); focus returns to the thumbnail that opened it.
+  // One cleanup for every close route (Escape, button, backdrop): unlock page scroll and return focus to the thumbnail.
   viewer.addEventListener('close', () => {
-    document.body.classList.remove('viewer-open');
+    document.documentElement.classList.remove('viewer-open');
     image.removeAttribute('src');
     opener?.focus();
   });

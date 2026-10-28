@@ -1,6 +1,7 @@
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs';
+import vm from 'node:vm';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import yaml from 'js-yaml';
@@ -77,9 +78,57 @@ test('results gallery: order, exclusion of the January chart, and media files wh
   }
 });
 
-test('viewer script: dialog based, Escape/close, focus return, scroll lock', () => {
-  const js = readFileSync(new URL('js/gallery.js', ROOT), 'utf8');
-  for (const s of ['showModal', 'preventDefault', 'data-gallery-close', "opener?.focus()", 'viewer-open']) assert.ok(js.includes(s), s);
+test('gallery images: real sizes, lossless full view, responsive thumbnails, lazy loading', () => {
+  assert.equal(page.results.enabled, true);
+  const dims = path => { const b = readFileSync(new URL(path.slice(1), ROOT)); assert.equal(b.toString('ascii', 0, 4), 'RIFF'); assert.equal(b.toString('ascii', 8, 12), 'WEBP'); return b; };
+  for (const item of page.results.items) {
+    for (const f of [item.src, item.thumb, item.thumb_2x]) dims(f);
+    assert.ok(dims(item.src).toString('ascii', 12, 16) === 'VP8L', `${item.slug} full view must be lossless`);
+    assert.ok(statSync(new URL(item.thumb.slice(1), ROOT)).size < statSync(new URL(item.src.slice(1), ROOT)).size / 5);
+  }
+  for (const lang of LANGUAGES) {
+    const out = html(lang);
+    const grid = out.match(/<div class="results-grid">[\s\S]*?<\/div><dialog/)[0];
+    assert.equal(grid.split('loading="lazy"').length - 1, 4);
+    assert.equal(grid.split('srcset="').length - 1, 4);
+    assert.equal(out.split('width="768" height="512"').length - 1, 4);
+    assert.ok(out.includes(`aria-label="${page.results.viewer.close[lang]}"`));
+    assert.ok(out.indexOf('pos-systems') < out.indexOf('dental-clinic') && out.indexOf('dental-clinic') < out.indexOf('landing-page-traffic') && out.indexOf('landing-page-traffic') < out.indexOf('video-campaign'));
+  }
+});
+
+// Lifecycle regression: every close route ends in the dialog "close" event; Escape fires it natively, button/backdrop call viewer.close().
+test('viewer lifecycle: all close routes unlock page scroll and return focus to the opening thumbnail', () => {
+  const listeners = {}; const classes = new Set();
+  const focused = [];
+  const mk = () => ({ listeners: {}, addEventListener(t, f) { this.listeners[t] = f; } });
+  const thumb = { href: '/full.webp', querySelector: () => ({ alt: 'alt text' }), focus() { focused.push('thumb'); } };
+  const closeBtn = { focus() { focused.push('close'); } };
+  const image = { attrs: { src: 'x' }, removeAttribute(k) { delete this.attrs[k]; }, set src(v) { this.attrs.src = v; } };
+  const viewer = { ...mk(), open: false, querySelector: sel => (sel === '[data-gallery-image]' ? image : sel === '[data-gallery-close]' ? closeBtn : { scrollTo() {} }),
+    showModal() { this.open = true; }, close() { if (this.open) { this.open = false; this.listeners.close(); } } };
+  const documentStub = { querySelector: () => viewer, addEventListener: (t, f) => { listeners[t] = f; }, documentElement: { classList: { add: c => classes.add(c), remove: c => classes.delete(c) } } };
+  vm.runInNewContext(readFileSync(new URL('js/gallery.js', ROOT), 'utf8'), { document: documentStub });
+  const click = target => listeners.click({ target, preventDefault() {} });
+  const open = () => { click({ closest: sel => (sel === '[data-gallery-link]' ? thumb : null) }); assert.ok(viewer.open && classes.has('viewer-open')); };
+  const routes = {
+    escape: () => viewer.close(),
+    button: () => click({ closest: sel => (sel === '[data-gallery-close]' ? closeBtn : null) }),
+    backdrop: () => click(viewer)
+  };
+  for (const [name, close] of Object.entries(routes)) for (let n = 0; n < 2; n++) {
+    focused.length = 0; open(); close();
+    assert.ok(!viewer.open && !classes.has('viewer-open'), `${name}: page scroll must unlock`);
+    assert.equal(focused.at(-1), 'thumb', `${name}: focus must return to the thumbnail`);
+    assert.equal(image.attrs.src, undefined);
+  }
+});
+
+test('viewer CSS keeps the close control outside the scrolling area and locks only while open', () => {
+  const css = readFileSync(new URL('css/articles.css', ROOT), 'utf8');
+  assert.match(css, /\.results-viewer-bar \{[^}]*flex: none/);
+  assert.match(css, /\.results-viewer-scroll \{[^}]*overflow: auto[^}]*overscroll-behavior: contain/);
+  assert.match(css, /html\.viewer-open, html\.viewer-open body \{ overflow: hidden/);
 });
 
 test('local CSS/JS URLs stay content-hashed (build-time check via release script) and metadata is intact', () => {

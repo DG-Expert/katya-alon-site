@@ -57,6 +57,22 @@ test('all 24 pages expose one H1, main and top-level footer with valid local lin
       }
     }
 
+    const social = ['https://www.instagram.com/kate_alon_marketing/', 'https://www.facebook.com/share/1QT8QYg3Gn/'];
+    const allPages = lang => [outputPath(stage, lang, 'home'), outputPath(stage, lang, 'workshops'), outputPath(stage, lang, 'articles'),
+      ...source.articles.map(article => outputPath(stage, lang, 'article', article.slug))];
+    for (const lang of LANGUAGES) {
+      for (const file of allPages(lang)) {
+        const footer = readFileSync(file, 'utf8').match(/<footer\b[\s\S]*<\/footer>/)[0];
+        for (const [index, href] of social.entries()) {
+          const label = escapeHtml(site.footer[index ? 'facebook' : 'instagram'][lang]);
+          assert.ok(footer.includes(`<a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>`) ||
+            footer.includes(`<a href="${href}" target="_blank" rel="noopener noreferrer" data-site-copy="footer.${index ? 'facebook' : 'instagram'}">${label}</a>`) ||
+            footer.includes(`<a href="${href}" target="_blank" rel="noopener noreferrer" data-content="footer.${index ? 'facebook' : 'instagram'}">${label}</a>`),
+          `${file}: ${href}`);
+        }
+      }
+    }
+
     const generated = [];
     for (const lang of LANGUAGES) {
       generated.push(outputPath(stage, lang, 'home'), outputPath(stage, lang, 'workshops'), outputPath(stage, lang, 'articles'));

@@ -312,7 +312,18 @@ body {
   }
 
   .nav-link {
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .site-primary-nav {
+    gap: 0.625rem;
+  }
+}
+
+/* Long Russian labels must not push the language switcher off-screen on laptops. */
+@media (min-width: 1200px) {
+  .nav-link {
+    font-size: clamp(1rem, 1.2vw, 1.25rem);
   }
 }
 
@@ -323,7 +334,31 @@ body {
 
 .hero-title-theme {
   color: #ECDFE0;
-  line-height: 1.15;
+  max-width: 42rem;
+  margin: 0 0 1.5rem;
+  text-wrap: balance;
+}
+
+.hero-name,
+.hero-professional-title {
+  display: block;
+}
+
+.hero-name {
+  font-size: clamp(2.75rem, 5vw, 4.75rem);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.hero-professional-title {
+  max-width: 38rem;
+  margin-top: 1rem;
+  color: #DFECEB;
+  font-size: clamp(1.1rem, 2vw, 1.55rem);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: normal;
 }
 
 .hero-subtitle-theme {
@@ -336,13 +371,29 @@ body {
 
 @media (min-width: 768px) and (max-width: 1279px) {
   #hero .portrait-placeholder {
-    height: 56vh;
+    height: min(60vh, 34rem);
+  }
+
+  #hero .hero-portrait-image {
+    object-position: 50% 16%;
+  }
+
+  #hero .hero-name {
+    font-size: clamp(2.55rem, 4.6vw, 3.5rem);
+  }
+
+  #hero .hero-professional-title {
+    font-size: clamp(1rem, 1.75vw, 1.25rem);
   }
 }
 
 @media (min-width: 1280px) {
   #hero .portrait-placeholder {
     height: 80vh;
+  }
+
+  #hero .hero-portrait-image {
+    object-position: 50% 20%;
   }
 }
 
@@ -810,11 +861,11 @@ body {
   transition: transform 0.28s ease, box-shadow 0.28s ease;
 }
 
-/* ---------- Tablet and desktop radial activation ---------- */
+/* ---------- Desktop radial activation ---------- */
 
-@media (min-width: 900px) {
+@media (min-width: 1200px) {
   #services.services-layout-radial .services-diagram {
-    min-height: 820px;
+    min-height: 880px;
   }
 
   #services.services-layout-radial .services-diagram-lines {
@@ -849,7 +900,7 @@ body {
   #services.services-layout-radial .services-list {
     position: relative;
     display: block;
-    min-height: 820px;
+    min-height: 880px;
   }
 
   #services.services-layout-radial .service-row {
@@ -889,7 +940,7 @@ body {
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1440px) {
   #services.services-layout-radial .services-diagram {
     min-height: 920px;
   }
@@ -944,7 +995,7 @@ body {
   }
 }
 
-/* ---------- Phones only ---------- */
+/* ---------- Non-radial layouts ---------- */
 
 @media (max-width: 899px) {
   .services-diagram-lines,
@@ -972,6 +1023,38 @@ body {
   .service-card-content {
     min-height: 150px;
     transform: none !important;
+  }
+}
+
+/* Wide non-radial layouts (landscape tablets, large touch screens) use bounded two-column cards. */
+@media (min-width: 900px) {
+  #services:not(.services-layout-radial) .services-diagram-wrap {
+    max-width: 60rem;
+    margin-inline: auto;
+  }
+
+  #services:not(.services-layout-radial) .services-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  #services:not(.services-layout-radial) .service-row,
+  #services:not(.services-layout-radial) .service-card-shell {
+    height: 100%;
+    transform: none !important;
+  }
+
+  #services:not(.services-layout-radial) .service-card-content {
+    min-height: 11rem;
+    height: 100%;
+    transform: none !important;
+  }
+
+  #services:not(.services-layout-radial) .service-row:last-child:nth-child(odd) {
+    width: min(100%, 29rem);
+    grid-column: 1 / -1;
+    justify-self: center;
   }
 }
 
@@ -1659,12 +1742,12 @@ body {
   font-size: 0.8rem;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1200px) {
   #services.services-layout-radial .service-card-pos-1 { top: 20px; left: 50%; right: auto; transform: translateX(-50%); }
   #services.services-layout-radial .service-card-pos-2 { top: 270px; left: 0; right: auto; }
   #services.services-layout-radial .service-card-pos-3 { top: 270px; right: 0; left: auto; }
-  #services.services-layout-radial .service-card-pos-4 { bottom: 25px; left: 80px; right: auto; }
-  #services.services-layout-radial .service-card-pos-5 { bottom: 25px; right: 80px; left: auto; }
+  #services.services-layout-radial .service-card-pos-4 { top: auto; bottom: 25px; left: 80px; right: auto; }
+  #services.services-layout-radial .service-card-pos-5 { top: auto; bottom: 25px; right: 80px; left: auto; }
 }
 
 @media (max-width: 1023px) {

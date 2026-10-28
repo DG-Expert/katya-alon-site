@@ -73,9 +73,11 @@
   <section id="hero" class="pt-28 pb-16 md:pt-36 md:pb-24">
     <div class="max-w-6xl mx-auto px-5">
       <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 hero-title-theme"
-            data-content="hero.title"></h1>
+        <div class="hero-copy">
+          <h1 class="hero-title-theme">
+            <span class="hero-name" data-content="hero.name"></span>
+            <span class="hero-professional-title" data-content="hero.professional_title"></span>
+          </h1>
 
           <p class="text-xl md:text-2xl leading-relaxed mb-6 max-w-2xl hero-subtitle-theme"
             data-content="hero.subtitle"></p>
@@ -94,7 +96,7 @@
              <img
               src="/assets/images/katya-1.webp"
               alt="Katya Alon"
-              class="w-full h-full object-cover rounded-2xl"
+              class="hero-portrait-image w-full h-full object-cover rounded-2xl"
               width="683"
               height="1024"
               fetchpriority="high"
@@ -363,7 +365,7 @@
         <div class="footer-intro"><p class="footer-brand-name">Katya Alon</p><p data-content="footer.summary"></p></div>
         <nav aria-labelledby="footer-nav-title"><h2 id="footer-nav-title" data-content="footer.navigation_label"></h2><ul><li><a href="/" data-home-link data-content="footer.home"></a></li><li><a href="/#about" data-home-anchor="about" data-content="nav.about"></a></li><li><a href="/#process" data-home-anchor="process" data-content="nav.process"></a></li></ul></nav>
         <nav aria-labelledby="footer-services-title"><h2 id="footer-services-title" data-content="footer.services_label"></h2><ul><li><a href="/#services" data-home-anchor="services" data-content="nav.services"></a></li><li><a href="/workshops.html" data-workshops-link data-content="nav.workshops"></a></li><li><a href="/articles/" data-articles-link data-content="nav.articles"></a></li></ul></nav>
-        <div aria-labelledby="footer-contact-title"><h2 id="footer-contact-title" data-content="footer.contact_label"></h2><ul><li><a href="https://wa.me/972547838645" data-content="footer.whatsapp"></a></li><li><a href="mailto:katya.shivuk@gmail.com"><span data-content="footer.email"></span>: katya.shivuk@gmail.com</a></li><li><a href="/workshops.html#registration-privacy" data-workshops-link data-privacy-fragment data-content="footer.privacy_notice"></a></li></ul></div>
+        <div aria-labelledby="footer-contact-title"><h2 id="footer-contact-title" data-content="footer.contact_label"></h2><ul><li><a href="https://wa.me/972547838645" data-content="footer.whatsapp"></a></li><li><a href="mailto:katya.shivuk@gmail.com"><span data-content="footer.email"></span>: katya.shivuk@gmail.com</a></li><li><a href="https://www.instagram.com/kate_alon_marketing/" target="_blank" rel="noopener noreferrer" data-content="footer.instagram"></a></li><li><a href="https://www.facebook.com/share/1QT8QYg3Gn/" target="_blank" rel="noopener noreferrer" data-content="footer.facebook"></a></li><li><a href="/workshops.html#registration-privacy" data-workshops-link data-privacy-fragment data-content="footer.privacy_notice"></a></li></ul></div>
       </div>
       <div class="footer-bottom"><p><span class="font-medium">Katya Alon</span> &copy; <span id="footer-year">2026</span></p><p data-content="footer.rights"></p></div>
     </div>

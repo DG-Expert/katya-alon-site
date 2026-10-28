@@ -14,7 +14,8 @@ const workshop = yaml.load(workshopYaml);
 
 const count = (html, needle) => html.split(needle).length - 1;
 const body = html => html.slice(html.indexOf('<body'));
-const h1 = html => html.match(/<h1\b[^>]*>([^<]*)<\/h1>/)?.[1];
+const h1 = html => html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]+>/g, ' ').replace(/[ \t\n]+/g, ' ').trim();
+const homeH1 = lang => escapeHtml(`${content.hero.name[lang]} ${content.hero.professional_title[lang]}`);
 const meta = (html, attr, name) => html.match(new RegExp(`<meta ${attr}="${name}" content="([^"]*)">`))?.[1];
 
 function assertCrawlableHead(html, { title, description, url, lang = 'he', page }) {
@@ -56,7 +57,7 @@ function assertCrawlableHead(html, { title, description, url, lang = 'he', page 
 test('home prerender exposes the Hebrew H1, hero and section text without running JS', () => {
   const html = renderHome(indexHtml, contentYaml);
   assertCrawlableHead(html, { title: content.site.title.he, description: content.site.description.he, url: 'https://katya-alon.com/', page: 'home' });
-  assert.equal(h1(html), content.hero.title.he);
+  assert.equal(h1(html), homeH1('he'));
   assert.equal(count(html, '<h1'), 1);
 
   const page = body(html);
@@ -142,7 +143,7 @@ test('the original six pages contain their source translations, directions, meta
     assertCrawlableHead(page, {
       title: workshop.meta.title[lang], description: workshop.meta.description[lang], url: urlFor(lang, 'workshops'), lang, page: 'workshops'
     });
-    assert.equal(h1(home), escapeHtml(content.hero.title[lang]));
+    assert.equal(h1(home), homeH1(lang));
     assert.equal(h1(page), escapeHtml(workshop.hero.title[lang]));
     assert.ok(body(home).includes(escapeHtml(content.about.paragraphs[0][lang])));
     assert.ok(body(page).includes(escapeHtml(workshop.content_2.items[0].title[lang])));
@@ -159,7 +160,7 @@ test('unsafe YAML values are HTML-escaped in text and attributes', () => {
   const home = renderHome(indexHtml, contentYaml
     .replace(/^(  title:\n    he: ).*$/m, `$1${quoted}`)
     .replace(/^(  description:\n    he: ).*$/m, `$1${quoted}`)
-    .replace(/^(hero:\n  title:\n    he: ).*$/m, `$1${quoted}`));
+    .replace(/^(hero:\n  name:\n    he: ).*$/m, `$1${quoted}`));
   const page = renderWorkshops(workshopsHtml, workshopYaml
     .replace(/^(  title: \{he: )"[^"]*"/m, `$1${quoted}`)
     .replace(/^(  eyebrow: \{he: )"[^"]*"/m, `$1${quoted}`));
@@ -169,7 +170,7 @@ test('unsafe YAML values are HTML-escaped in text and attributes', () => {
     assert.ok(!html.includes(`' onmouseover="x`), 'attribute breakout leaked');
     assert.ok(html.includes('&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;&#39; onmouseover=&quot;x'));
   }
-  assert.equal(h1(home), escapeHtml(evil));
+  assert.equal(h1(home), `${escapeHtml(evil)} ${escapeHtml(content.hero.professional_title.he)}`);
   assert.equal(meta(home, 'name', 'description'), escapeHtml(evil));
   assert.equal(meta(page, 'property', 'og:title'), escapeHtml(evil));
 });

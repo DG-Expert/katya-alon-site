@@ -13,11 +13,12 @@
   <script defer src="/js/main.js"></script>
 </head>
 <body class="h-full w-full overflow-auto page-theme">
+  <a href="#main-content" class="site-skip-link">דלגו לתוכן הראשי</a>
 
   <!-- ═══════════ Header / Navigation ═══════════ -->
   <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b site-header-theme">
     <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
-      <a href="#hero" class="site-logo-link" aria-label="Katya Alon home">
+      <a href="/" class="site-logo-link" aria-label="Katya Alon home" data-home-link>
         <img
           src="/assets/images/katya-logo-96.webp"
           srcset="/assets/images/katya-logo-96.webp 1x, /assets/images/katya-logo-192.webp 2x"
@@ -29,12 +30,13 @@
       </a>
 
       <!-- Desktop nav — text filled from content.yaml -->
-      <nav class="hidden lg:flex items-center md:gap-4 lg:gap-6 text-sm font-light nav-text-theme">
+      <nav class="hidden lg:flex items-center gap-4 text-sm font-light nav-text-theme site-primary-nav" aria-label="Primary navigation">
         <a href="#about" class="nav-link" data-content="nav.about"></a>
         <a href="#services" class="nav-link" data-content="nav.services"></a>
         <a href="#process" class="nav-link" data-content="nav.process"></a>
         <a href="#contact" class="nav-link" data-content="nav.contact"></a>
         <a href="/workshops.html" class="nav-link" data-content="nav.workshops" data-workshops-link></a>
+        <a href="/articles/" class="nav-link" data-content="nav.articles" data-articles-link></a>
       </nav>
 
       <div class="flex items-center gap-4">
@@ -47,7 +49,7 @@
           <a href="/ru/" class="lang-btn px-2 py-0.5 rounded" id="btn-ru">RU</a>
         </div>
 
-        <button class="lg:hidden" onclick="toggleMobile()" aria-label="Toggle menu">
+        <button id="mobile-menu-button" type="button" class="lg:hidden site-menu-button" onclick="toggleMobile()" aria-label="Toggle menu" aria-controls="mobile-nav" aria-expanded="false">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
       </div>
@@ -61,6 +63,7 @@
         <a href="#process" onclick="closeMobile()" class="py-1" data-content="nav.process"></a>
         <a href="#contact" onclick="closeMobile()" class="py-1" data-content="nav.contact"></a>
         <a href="/workshops.html" onclick="closeMobile()" class="py-1" data-content="nav.workshops" data-workshops-link></a>
+        <a href="/articles/" onclick="closeMobile()" class="py-1" data-content="nav.articles" data-articles-link></a>
       </nav>
     </div>
   </header>
@@ -138,6 +141,7 @@
             data-content="about.title"></h2>
           <!-- About paragraphs rendered dynamically -->
           <div id="about-paragraphs" class="space-y-4"></div>
+          <ul id="trust-facts" class="trust-facts" aria-label="Experience"></ul>
         </div>
       </div>
     </div>
@@ -161,12 +165,11 @@
           >
             <circle class="services-lines-core" cx="600" cy="450" r="18"></circle>
 
-            <line class="services-lines-path services-line-1" x1="600" y1="450" x2="355" y2="220"></line>
-            <line class="services-lines-path services-line-2" x1="600" y1="450" x2="845" y2="220"></line>
-            <line class="services-lines-path services-line-3" x1="600" y1="450" x2="290" y2="455"></line>
-            <line class="services-lines-path services-line-4" x1="600" y1="450" x2="910" y2="455"></line>
-            <line class="services-lines-path services-line-5" x1="600" y1="450" x2="355" y2="690"></line>
-            <line class="services-lines-path services-line-6" x1="600" y1="450" x2="845" y2="690"></line>
+            <line class="services-lines-path services-line-1" x1="600" y1="450" x2="600" y2="145"></line>
+            <line class="services-lines-path services-line-2" x1="600" y1="450" x2="285" y2="355"></line>
+            <line class="services-lines-path services-line-3" x1="600" y1="450" x2="915" y2="355"></line>
+            <line class="services-lines-path services-line-4" x1="600" y1="450" x2="355" y2="700"></line>
+            <line class="services-lines-path services-line-5" x1="600" y1="450" x2="845" y2="700"></line>
           </svg>
 
           <div class="services-center">
@@ -326,6 +329,17 @@
     </div>
   </section>
 
+  <section id="articles" class="py-20 md:py-28 articles-home-section" aria-labelledby="articles-home-title">
+    <div class="max-w-6xl mx-auto px-5">
+      <div class="text-center mb-12 fade-up">
+        <h2 id="articles-home-title" class="text-3xl md:text-4xl font-bold mb-4" data-content="articles_section.title"></h2>
+        <p class="font-light max-w-3xl mx-auto" data-content="articles_section.intro"></p>
+      </div>
+      <div id="home-articles-list" class="articles-card-grid fade-up"></div>
+      <p class="articles-all-link-wrap"><a class="cta-secondary cta-image-button" href="/articles/" data-articles-link data-content="articles_section.all_articles"></a></p>
+    </div>
+  </section>
+
   <!-- ═══════════ Final CTA Section ═══════════ -->
   <section id="contact" class="py-20 md:py-28">
     <div class="max-w-3xl mx-auto px-5 text-center fade-up">
@@ -343,10 +357,15 @@
   </main>
 
   <!-- ═══════════ Footer ═══════════ -->
-  <footer class="py-8 border-t footer-theme">
-    <div class="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <p class="text-xs footer-brand-muted"><span class="font-medium footer-brand-name">Katya Alon</span> &copy; <span id="footer-year">2026</span></p>
-      <p class="text-xs footer-rights-muted" data-content="footer.rights"></p>
+  <footer class="site-footer footer-theme">
+    <div class="max-w-6xl mx-auto px-5">
+      <div class="footer-grid">
+        <div class="footer-intro"><p class="footer-brand-name">Katya Alon</p><p data-content="footer.summary"></p></div>
+        <nav aria-labelledby="footer-nav-title"><h2 id="footer-nav-title" data-content="footer.navigation_label"></h2><ul><li><a href="/" data-home-link data-content="footer.home"></a></li><li><a href="/#about" data-home-anchor="about" data-content="nav.about"></a></li><li><a href="/#process" data-home-anchor="process" data-content="nav.process"></a></li></ul></nav>
+        <nav aria-labelledby="footer-services-title"><h2 id="footer-services-title" data-content="footer.services_label"></h2><ul><li><a href="/#services" data-home-anchor="services" data-content="nav.services"></a></li><li><a href="/workshops.html" data-workshops-link data-content="nav.workshops"></a></li><li><a href="/articles/" data-articles-link data-content="nav.articles"></a></li></ul></nav>
+        <div aria-labelledby="footer-contact-title"><h2 id="footer-contact-title" data-content="footer.contact_label"></h2><ul><li><a href="https://wa.me/972547838645" data-content="footer.whatsapp"></a></li><li><a href="mailto:katya.shivuk@gmail.com"><span data-content="footer.email"></span>: katya.shivuk@gmail.com</a></li><li><a href="/workshops.html#registration-privacy" data-workshops-link data-privacy-fragment data-content="footer.privacy_notice"></a></li></ul></div>
+      </div>
+      <div class="footer-bottom"><p><span class="font-medium">Katya Alon</span> &copy; <span id="footer-year">2026</span></p><p data-content="footer.rights"></p></div>
     </div>
   </footer>
 </body>

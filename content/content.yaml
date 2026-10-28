@@ -1,8 +1,12 @@
 site:
   title:
-    he: Katya Alon, אסטרטגיה שיווקית ותוכן
-    en: Katya Alon, Marketing Strategy & Content
-    ru: Катя Алон, Маркетинговая стратегия и контент
+    he: קטיה אלון | יועצת שיווקית ואסטרטגיה שיווקית לעסקים
+    en: Katya Alon | Marketing Consultant and Business Marketing Strategy
+    ru: Катя Алон | Маркетинговый консультант и стратегия для бизнеса
+  description:
+    he: קטיה אלון, יועצת שיווקית עם 20 שנות ניסיון. ייעוץ ואסטרטגיה שיווקית, ניהול סושיאל, פרסום ממומן והדרכות לשיווק באינסטגרם ובפייסבוק.
+    en: Katya Alon is a marketing consultant with 20 years of experience, offering marketing consulting and strategy, social media management, paid advertising, and Instagram and Facebook training.
+    ru: Катя Алон, маркетинговый консультант с 20-летним опытом. Консалтинг и маркетинговая стратегия, ведение соцсетей, платная реклама и обучение продвижению в Instagram и Facebook.
 
 nav:
   about:
@@ -25,20 +29,24 @@ nav:
     he: סדנאות
     en: Workshops
     ru: Мастер-классы
+  articles:
+    he: מאמרים וטיפים לשיווק עסקים
+    en: Business Marketing Articles and Tips
+    ru: Статьи и советы по маркетингу бизнеса
 
 hero:
   title:
-    he: קטיה אלון — אסטרטגיה שיווקית ותוכן
-    en: Katya Alon — Marketing Strategy & Content
-    ru: Катя Алон — Маркетинговая стратегия и контент
+    he: קטיה אלון | יועצת שיווקית, אסטרטגיה שיווקית ושיווק ברשתות החברתיות
+    en: Katya Alon | Marketing Consultant, Marketing Strategy and Social Media Marketing
+    ru: Катя Алон | Маркетинговый консультант, маркетинговая стратегия и продвижение в социальных сетях
   subtitle:
-    he: שיווק נכון הוא לא ניחוש ,אלא מערכת מדויקת שמביאה תוצאות.
-    en: Marketing is not guessing, but a precise system that brings results.
-    ru: Правильный маркетинг, это не гадание на кофейной гуще, а точная система, приносящая результаты.
+    he: אני עוזרת לבעלי עסקים להפוך את הרשתות החברתיות לכלי שיווקי שמביא לקוחות ומייצר הזדמנויות עסקיות.
+    en: I help business owners turn social media into a marketing tool that brings clients and creates business opportunities.
+    ru: Я помогаю владельцам бизнеса превратить социальные сети в маркетинговый инструмент, который приводит клиентов и создаёт деловые возможности.
   description:
-    he: אני עוזרת לעסקים לבנות אסטרטגיה ברורה, למשוך את הקהל הנכון ולהפוך פעילות ברשתות למנוע יציב של לקוחות ומכירות.
-    en: I help businesses build a clear strategy, attract the right audience, and turn online activity into a stable engine of customers and sales.
-    ru: Я помогаю компаниям разрабатывать четкую стратегию, привлекать целевую аудиторию и превращать онлайн-активность в стабильный источник клиентов и продаж.
+    he: עם 20 שנות ניסיון בשיווק ו-10 שנות ניסיון ברשתות החברתיות, אני מציעה ייעוץ שיווקי, בניית אסטרטגיה שיווקית, ניהול סושיאל, פרסום ממומן והדרכות לבעלי עסקים שרוצים ללמוד לשווק את העסק שלהם בעצמם.
+    en: With 20 years of marketing experience and 10 years of social media experience, I offer marketing consulting, marketing strategy, social media management, paid advertising, and training for business owners who want to learn to market their business independently.
+    ru: Имея 20 лет опыта в маркетинге и 10 лет опыта в социальных сетях, я предлагаю маркетинговый консалтинг, разработку стратегии, ведение соцсетей, платную рекламу и обучение владельцев бизнеса, которые хотят самостоятельно продвигать своё дело.
   cta_primary:
     he: לקביעת פגישת ייעוץ
     en: Book a Consultation
@@ -149,25 +157,18 @@ about:
     en: Second photo of Katya
     ru: Второе фото Кати
   paragraphs:
-  - he: יועצת אסטרטגית ומומחית לשיווק דיגיטלי, עם ניסיון בעבודה עם עסקים במגוון תחומים ובניית מערכות שיווק שמביאות תוצאות בפועל.
-      הגישה שלי משלבת חשיבה אסטרטגית, הבנה עמוקה של קהל והתמקדות בתהליכים שמייצרים צמיחה יציבה לאורך זמן.
-      מעבר לליווי, אני מכשירה בעלי עסקים לנהל שיווק נכון בעצמם דרך קורס מעשי ומובנה, המבוסס על שיטות עבודה מדויקות וכלים שעובדים בשטח.
-
-    en: A strategic consultant and digital marketing expert, with experience working with businesses in a variety of fields and building marketing systems that bring results in practice.
-      My approach combines strategic thinking, a deep understanding of the audience, and a focus on processes that produce stable growth over time.
-      Beyond coaching, I train business owners to manage their own marketing properly through a practical and structured course, based on precise working methods and tools that work in the field.
-    ru: я стратегический консультант и эксперт по цифровому маркетингу, имею опыт работы с компаниями в различных областях и создания маркетинговых систем, приносящих результаты на практике.
-      Мой подход сочетает в себе стратегическое мышление, глубокое понимание целевой аудитории и ориентацию на процессы, обеспечивающие стабильный рост в долгосрочной перспективе.
-      Помимо коучинга, я обучаю владельцев бизнеса правильному управлению собственным маркетингом с помощью практического и структурированного курса, основанного на точных методах работы и инструментах, которые эффективны на практике.
-  - he: אני מאמינה ששיווק טוב הוא לא רק פרסום או נראות יפה. שיווק טוב מתחיל מהבנה
-      אמיתית של העסק, של הערך שלו, ושל הדרך הנכונה לדבר אל האנשים שהוא רוצה להגיע
-      אליהם.
-    en: I believe good marketing is not just about promotion or attractive visuals.
-      Good marketing starts with a real understanding of the business, its value,
-      and the right way to speak to the people it wants to reach.
-    ru: Я уверена, что хороший маркетинг , это не только реклама или красивая визуальная
-      подача. Хороший маркетинг начинается с настоящего понимания бизнеса, его ценности
-      и того, как правильно говорить с людьми, до которых он хочет дойти.
+  - he: אני קטיה אלון, יועצת ואסטרטגית שיווקית, עם 20 שנות ניסיון בתחום השיווק ו-10 שנות ניסיון בשיווק ברשתות החברתיות.
+    en: I am Katya Alon, a marketing consultant and strategist with 20 years of experience in marketing and 10 years of experience in social media marketing.
+    ru: Я Катя Алон, маркетинговый консультант и стратег с 20-летним опытом в маркетинге и 10-летним опытом продвижения в социальных сетях.
+  - he: במהלך השנים עבדתי עם יותר מ-50 עסקים מתחומים שונים, וליוויתי בעלי עסקים בתהליכי בניית אסטרטגיה שיווקית, יצירת תוכן, קידום אורגני ופרסום ממומן.
+    en: Over the years, I have worked with more than 50 businesses across different fields and guided business owners through marketing strategy, content creation, organic promotion, and paid advertising.
+    ru: За эти годы я работала более чем с 50 компаниями из разных сфер и сопровождала владельцев бизнеса в разработке маркетинговой стратегии, создании контента, органическом продвижении и платной рекламе.
+  - he: לצד ניהול השיווק עבור עסקים, אני מתמחה גם בהדרכות ובליווי אישי לבעלי עסקים שרוצים ללמוד לקדם את עצמם באופן עצמאי.
+    en: Alongside managing marketing for businesses, I also specialise in training and personal guidance for business owners who want to learn to promote themselves independently.
+    ru: Наряду с ведением маркетинга для компаний я специализируюсь на обучении и индивидуальном сопровождении владельцев бизнеса, которые хотят научиться продвигать себя самостоятельно.
+  - he: אני מאמינה ששיווק נכון מתחיל בהבנה עסקית ובאסטרטגיה, ולא רק ביצירת פוסטים וסרטונים.
+    en: I believe effective marketing begins with business understanding and strategy, not only with creating posts and videos.
+    ru: Я считаю, что эффективный маркетинг начинается с понимания бизнеса и стратегии, а не только с создания постов и видео.
 
 services:
   title:
@@ -176,13 +177,15 @@ services:
     ru: Что я делаю
   items:
   - title:
-      he: בניית אסטרטגיה שיווקית
-      en: Marketing Strategy
-      ru: Маркетинговая стратегия
+      he: ייעוץ ואסטרטגיה שיווקית
+      en: Marketing Consulting and Strategy
+      ru: Маркетинговый консалтинг и стратегия
+    display_order: 1
+    anchor: service-marketing-strategy
     description:
-      he: יצירת כיוון ברור שמחבר בין מטרות העסק, הקהל והמסר, והופך את הרשתות החברתיות לכלי שמוביל לצמיחה ומכירות.
-      en: Creating a clear direction that connects the business goals, the audience, and the message, and turns social media into a tool that drives growth and sales.
-      ru: Создание чёткого направления, которое соединяет цели бизнеса, аудиторию и сообщение, и превращает социальные сети в инструмент роста и продаж.
+      he: בניית אסטרטגיה שיווקית מותאמת לעסק, חידוד המסרים ותכנון הפעילות השיווקית ברשתות החברתיות.
+      en: Building a marketing strategy tailored to the business, refining the messaging, and planning social media marketing activity.
+      ru: Разработка маркетинговой стратегии под задачи бизнеса, уточнение сообщений и планирование продвижения в социальных сетях.
     details:
       summary:
         he: 'אם אתם פועלים ברשתות החברתיות אבל לא רואים תוצאות, הבעיה היא לא בתוכן, אלא בהיעדר אסטרטגיה ברורה.'
@@ -234,13 +237,15 @@ services:
           en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
           ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
   - title:
-      he: יצירת תוכן
-      en: Content Creation
-      ru: Создание контента
+      he: ניהול סושיאל ויצירת תוכן
+      en: Social Media Management and Content Creation
+      ru: Ведение социальных сетей и создание контента
+    display_order: 3
+    anchor: service-social-media-content
     description:
-      he: כתיבה ובניית תוכן מדויק שמייצג את העסק בצורה מקצועית.
-      en: Writing and developing precise content that represents the business professionally.
-      ru: Создание и написание точного контента, который профессионально представляет бизнес.
+      he: תכנון, יצירה וניהול תוכן מקצועי לעסקים ברשתות החברתיות.
+      en: Planning, creating, and managing professional social media content for businesses.
+      ru: Планирование, создание и ведение профессионального контента для бизнеса в социальных сетях.
     details:
       summary:
         he: 'תוכן הוא לא רק נראות, הוא הכלי שמושך את הקהל הנכון והופך אותו ללקוחות.'
@@ -292,13 +297,15 @@ services:
           en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
           ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
   - title:
-      he: פרסום ממומן שמביא תוצאות
-      en: Paid Advertising
-      ru: Платная реклама
+      he: פרסום ממומן בפייסבוק ובאינסטגרם
+      en: Paid Advertising on Facebook and Instagram
+      ru: Платная реклама в Facebook и Instagram
+    display_order: 4
+    anchor: service-paid-advertising
     description:
-      he: לא עוד קמפיינים שמבזבזים תקציב, אלא מהלכים מדויקים שמביאים פניות ומכירות.
-      en: No more campaigns that waste budget, only precise moves that generate leads and sales.
-      ru: Больше никаких кампаний, которые сливают бюджет, только точные действия, которые приводят обращения и продажи.
+      he: בניית קמפיינים, ניהול פרסום ממומן במערכת Meta Ads Manager והדרכות אישיות לבעלי עסקים שרוצים ללמוד לנהל קמפיינים בעצמם.
+      en: Building campaigns, managing paid advertising in Meta Ads Manager, and personal training for business owners who want to learn to manage campaigns independently.
+      ru: Создание кампаний, ведение платной рекламы в Meta Ads Manager и индивидуальное обучение владельцев бизнеса, которые хотят самостоятельно управлять кампаниями.
     details:
       summary:
         he: 'המטרה היא לא רק חשיפה, אלא להביא את הקהל הנכון ולהפוך אותו ללקוחות.'
@@ -353,6 +360,7 @@ services:
       he: ניהול דפי סושיאל
       en: Social Media Management
       ru: Ведение социальных сетей
+    enabled: false
     description:
       he: ניהול סושיאל שמייצר נוכחות ותוצאות
       en: Social Media Management That Builds Presence and Results
@@ -408,13 +416,15 @@ services:
           en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
           ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
   - title:
-      he: ייעוץ אישי
-      en: Personal Consulting
-      ru: Личные консультации
+      he: ליווי והדרכה אישית לבעלי עסקים
+      en: Personal Guidance and Training for Business Owners
+      ru: Индивидуальное сопровождение и обучение владельцев бизнеса
+    display_order: 2
+    anchor: service-personal-guidance
     description:
-      he: ייעוץ שיווקי ממוקד לעסקים
-      en: Focused Marketing Consulting for Businesses
-      ru: Точечный маркетинговый консалтинг для бизнеса
+      he: לימוד מעשי של שיווק באינסטגרם ובפייסבוק, בניית תוכן וניהול עצמאי של הרשתות החברתיות.
+      en: Practical training in Instagram and Facebook marketing, content creation, and independent social media management.
+      ru: Практическое обучение маркетингу в Instagram и Facebook, созданию контента и самостоятельному ведению социальных сетей.
     details:
       summary:
         he: 'אם אתם מרגישים בלבול, חוסר כיוון או תקיעות, ייעוץ נכון יכול לעשות סדר ולהראות בדיוק מה צריך לעשות.'
@@ -452,23 +462,6 @@ services:
       - he: 'ביטחון בהחלטות שיווקיות'
         en: 'Confidence in marketing decisions'
         ru: 'Уверенность в маркетинговых решениях'
-      video:
-        title:
-          he: סרטון הסבר על הייעוץ האישי
-          en: Short video about the personal consultation
-          ru: Короткое видео о личной консультации
-        description:
-          he: החלף את הקישור הזה בסרטון אמיתי מתוך YouTube, Vimeo או Google Drive
-            משותף.
-          en: Replace this link with a real video from YouTube, Vimeo, or a shared
-            Google Drive file.
-          ru: Замените эту ссылку на реальное видео из YouTube, Vimeo или общего файла
-            Google Drive.
-        link_label:
-          he: פתיחת הסרטון
-          en: Open video
-          ru: Открыть видео
-        url: https://example.com/katya-consulting-video
       body:
       - he: רוצים לבנות אסטרטגיה שמביאה תוצאות?
         en: Want to build a strategy that delivers results?
@@ -483,13 +476,15 @@ services:
           en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
           ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
   - title:
-      he: קורס שיווק חכם
-      en: Smart Marketing Course
-      ru: Курс Умный маркетинг
+      he: הרצאות וסדנאות בשיווק דיגיטלי
+      en: Digital Marketing Lectures and Workshops
+      ru: Лекции и мастер-классы по цифровому маркетингу
+    display_order: 5
+    anchor: service-workshops
     description:
-      he: קורס מעשי לבעלי עסקים שרוצים לקחת שליטה על השיווק, לבנות אסטרטגיה נכונה ולהביא לקוחות דרך הרשתות החברתיות.
-      en: A practical course for business owners who want to take control of their marketing, build the right strategy, and attract clients through social media.
-      ru: Практический курс для владельцев бизнеса, которые хотят взять под контроль свой маркетинг, выстроить правильную стратегию и привлекать клиентов через социальные сети.
+      he: הרצאות והדרכות מקצועיות לחברות, ארגונים וקבוצות בעלי עסקים בנושאי שיווק דיגיטלי, אסטרטגיה שיווקית ורשתות חברתיות.
+      en: Professional lectures and training for companies, organisations, and groups of business owners on digital marketing, marketing strategy, and social media.
+      ru: Профессиональные лекции и обучение для компаний, организаций и групп владельцев бизнеса по цифровому маркетингу, маркетинговой стратегии и социальным сетям.
     details:
       summary:
         he: "אם אתם רוצים להבין איך שיווק באמת עובד, להפסיק לפעול בניחוש, ולבנות מערכת שיווקית מדויקת, הקורס הזה נועד עבורכם."
@@ -654,11 +649,9 @@ process:
       en: Analysis and refinement
       ru: Анализ и уточнение
     description:
-      he: מחדדים את הקהל, המסרים, הבידול והדרך שבה נכון להציג את העסק.
-      en: We sharpen the audience, messaging, differentiation, and the right way to
-        present the business.
-      ru: Уточняем аудиторию, сообщения, отличие от конкурентов и правильный способ
-        представить бизнес.
+      he: מחדדים את המסרים, מזהים את היתרונות של העסק ובונים אסטרטגיה שיווקית שמאפשרת להגיע לקהל רחב ורלוונטי.
+      en: We refine the messaging, identify the business's strengths, and build a marketing strategy that makes it possible to reach a broad, relevant audience.
+      ru: Мы уточняем сообщения, определяем преимущества бизнеса и строим маркетинговую стратегию, которая помогает охватить широкую и релевантную аудиторию.
   - number: 3
     title:
       he: בניית כיוון שיווקי
@@ -734,7 +727,74 @@ final_cta:
     en: Chat on WhatsApp
     ru: Перейти в WhatsApp
 
+articles_section:
+  title:
+    he: מאמרים וטיפים
+    en: Articles and Tips
+    ru: Статьи и советы
+  intro:
+    he: מדריכים מעשיים על אסטרטגיה שיווקית, אינסטגרם, פייסבוק ופרסום ממומן לעסקים.
+    en: Practical guides to marketing strategy, Instagram, Facebook, and paid advertising for businesses.
+    ru: Практические материалы о маркетинговой стратегии, Instagram, Facebook и платной рекламе для бизнеса.
+  all_articles:
+    he: לכל המאמרים והטיפים
+    en: View all articles and tips
+    ru: Все статьи и советы
+  read_article:
+    he: לקריאת המאמר
+    en: Read article
+    ru: Читать статью
+
+trust_facts:
+  - value: "20"
+    label:
+      he: שנות ניסיון בשיווק
+      en: years of marketing experience
+      ru: лет опыта в маркетинге
+  - value: "10"
+    label:
+      he: שנות ניסיון ברשתות החברתיות
+      en: years of social media experience
+      ru: лет опыта в социальных сетях
+  - value: "50+"
+    label:
+      he: עסקים מתחומים שונים
+      en: businesses across different fields
+      ru: компаний из разных сфер
+
 footer:
+  summary:
+    he: ייעוץ ואסטרטגיה שיווקית, ניהול סושיאל, פרסום ממומן והדרכות לבעלי עסקים.
+    en: Marketing consulting and strategy, social media management, paid advertising, and training for business owners.
+    ru: Маркетинговый консалтинг и стратегия, ведение соцсетей, платная реклама и обучение владельцев бизнеса.
+  navigation_label:
+    he: ניווט באתר
+    en: Site navigation
+    ru: Навигация по сайту
+  services_label:
+    he: שירותים ותוכן
+    en: Services and content
+    ru: Услуги и материалы
+  contact_label:
+    he: יצירת קשר
+    en: Contact
+    ru: Контакты
+  home:
+    he: דף הבית
+    en: Home
+    ru: Главная
+  privacy_notice:
+    he: מידע על פרטיות ההרשמה לסדנה
+    en: Workshop registration privacy information
+    ru: Информация о конфиденциальности регистрации на мастер-класс
+  whatsapp:
+    he: WhatsApp
+    en: WhatsApp
+    ru: WhatsApp
+  email:
+    he: דוא״ל
+    en: Email
+    ru: Электронная почта
   rights:
     he: כל הזכויות שמורות
     en: All rights reserved

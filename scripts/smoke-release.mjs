@@ -2,6 +2,7 @@
 // Usage: node scripts/smoke-release.mjs worker | pages <base-url>
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import yaml from 'js-yaml';
 import { parseTopLevelFlowMap } from './validate-workshop.mjs';
 
 const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -33,11 +34,16 @@ export async function checkWorker(endpoint, fetchImpl = fetch) {
 
 export async function checkPages(baseUrl, fetchImpl = fetch) {
   const root = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
-  const pages = [
-    ['', 'he'], ['workshops.html', 'he'],
-    ['en/', 'en'], ['en/workshops.html', 'en'],
-    ['ru/', 'ru'], ['ru/workshops.html', 'ru']
-  ];
+  const articles = yaml.load(readFileSync(new URL('../content/articles.yaml', import.meta.url), 'utf8')).articles;
+  const pages = ['he', 'en', 'ru'].flatMap(lang => {
+    const prefix = lang === 'he' ? '' : `${lang}/`;
+    return [
+      [`${prefix}`, lang],
+      [`${prefix}workshops.html`, lang],
+      [`${prefix}articles/`, lang],
+      ...articles.map(article => [`${prefix}articles/${article.slug}/`, lang])
+    ];
+  });
   for (const [path, lang] of pages) {
     const url = new URL(path, root);
     if (url.protocol !== 'https:') throw new Error('Pages URL must be HTTPS');

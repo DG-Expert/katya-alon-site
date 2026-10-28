@@ -55,7 +55,7 @@ function assertCrawlableHead(html, { title, description, url, lang = 'he', page 
 
 test('home prerender exposes the Hebrew H1, hero and section text without running JS', () => {
   const html = renderHome(indexHtml, contentYaml);
-  assertCrawlableHead(html, { title: content.site.title.he, description: content.hero.description.he, url: 'https://katya-alon.com/', page: 'home' });
+  assertCrawlableHead(html, { title: content.site.title.he, description: content.site.description.he, url: 'https://katya-alon.com/', page: 'home' });
   assert.equal(h1(html), content.hero.title.he);
   assert.equal(count(html, '<h1'), 1);
 
@@ -68,7 +68,7 @@ test('home prerender exposes the Hebrew H1, hero and section text without runnin
   ]) assert.ok(page.includes(escapeHtml(text)), `missing: ${text}`);
 
   // Each service heading/summary appears once: no hidden duplicate copies, and the modal stays empty until clicked.
-  for (const item of content.services.items) {
+  for (const item of content.services.items.filter(item => item.enabled !== false)) {
     assert.equal(count(page, `>${escapeHtml(item.title.he)}<`), 1);
     assert.equal(count(page, escapeHtml(item.description.he)), 1);
   }
@@ -76,7 +76,7 @@ test('home prerender exposes the Hebrew H1, hero and section text without runnin
   assert.match(page, /<div id="process-list" dir="rtl" /);
   assert.doesNotMatch(page, /data-content="[^"]+"[^>]*>\s*</, 'every data-content node must be prerendered');
   // Interactive hooks used by hydration stay intact.
-  assert.equal(count(page, 'onclick="openServiceModal('), content.services.items.length);
+  assert.equal(count(page, 'onclick="openServiceModal('), 5);
   assert.match(page, /<div id="clients-strip"><\/div>/);
   assert.match(page, /<div id="recommendations-strip"><\/div>/);
 });
@@ -132,12 +132,12 @@ test('all workshop layouts omit legacy pricing lines and retain the detailed bre
   }
 });
 
-test('all six pages contain their source translations, directions, metadata and crawlable language links', () => {
+test('the original six pages contain their source translations, directions, metadata and crawlable language links', () => {
   for (const lang of LANGUAGES) {
     const home = renderHome(indexHtml, contentYaml, lang);
     const page = renderWorkshops(workshopsHtml, workshopYaml, lang);
     assertCrawlableHead(home, {
-      title: content.site.title[lang], description: content.hero.description[lang], url: urlFor(lang, 'home'), lang, page: 'home'
+      title: content.site.title[lang], description: content.site.description[lang], url: urlFor(lang, 'home'), lang, page: 'home'
     });
     assertCrawlableHead(page, {
       title: workshop.meta.title[lang], description: workshop.meta.description[lang], url: urlFor(lang, 'workshops'), lang, page: 'workshops'

@@ -1543,6 +1543,142 @@ body {
   color: rgba(195, 194, 197, 0.5);
 }
 
+/* ==================================================
+   14A. SHARED CONTENT, ARTICLES AND ACCESSIBLE FOOTER
+   ================================================== */
+
+.site-skip-link {
+  position: fixed;
+  inset-inline-start: 1rem;
+  top: 0.5rem;
+  z-index: 200;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: #17121f;
+  background: #fff;
+  transform: translateY(-150%);
+}
+
+.site-skip-link:focus { transform: translateY(0); }
+
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid #d7b8ff;
+  outline-offset: 3px;
+}
+
+.site-menu-button {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-primary-nav { white-space: nowrap; }
+
+.hero-title-theme { text-wrap: balance; }
+
+.trust-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.trust-facts li {
+  padding: 1rem 0.75rem;
+  border: 1px solid rgba(215, 184, 255, 0.25);
+  border-radius: 0.875rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.trust-facts strong,
+.trust-facts span { display: block; }
+.trust-facts strong { color: #d7b8ff; font-size: 1.6rem; line-height: 1; }
+.trust-facts span { margin-top: 0.55rem; color: #dfeceb; font-size: 0.82rem; line-height: 1.35; }
+
+.service-row { scroll-margin-top: 7rem; }
+
+.articles-home-section {
+  color: #dfeceb;
+  background: rgba(17, 12, 26, 0.45);
+  border-block: 1px solid rgba(201, 163, 163, 0.2);
+}
+
+.articles-home-section h2 { color: #ecdfE0; }
+
+.articles-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.article-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 1.5rem;
+  border: 1px solid rgba(215, 184, 255, 0.22);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.article-card h3 { color: #ecdfE0; font-size: 1.25rem; line-height: 1.4; }
+.article-card p { margin: 1rem 0 1.25rem; color: #dfeceb; line-height: 1.7; }
+.article-card-link { margin-top: auto; color: #d7b8ff; font-weight: 600; }
+.articles-all-link-wrap { margin-top: 2rem; text-align: center; }
+
+.site-footer {
+  padding-block: 3rem 1.5rem;
+  border-top: 1px solid rgba(201, 163, 163, 0.4);
+  color: #dfeceb;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1.4fr) repeat(3, minmax(9rem, 1fr));
+  gap: 2rem;
+}
+
+.footer-grid h2,
+.footer-grid .footer-brand-name { margin: 0 0 0.85rem; color: #ecdfE0; font-size: 1rem; font-weight: 700; }
+.footer-intro p:last-child { max-width: 30rem; line-height: 1.7; }
+.footer-grid ul { display: grid; gap: 0.65rem; margin: 0; padding: 0; list-style: none; }
+.footer-grid a { color: #dfeceb; text-decoration-thickness: 1px; text-underline-offset: 0.25em; }
+.footer-grid a:hover { color: #d7b8ff; text-decoration: underline; }
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(201, 163, 163, 0.24);
+  color: #c9c4ce;
+  font-size: 0.8rem;
+}
+
+@media (min-width: 900px) {
+  #services.services-layout-radial .service-card-pos-1 { top: 20px; left: 50%; right: auto; transform: translateX(-50%); }
+  #services.services-layout-radial .service-card-pos-2 { top: 270px; left: 0; right: auto; }
+  #services.services-layout-radial .service-card-pos-3 { top: 270px; right: 0; left: auto; }
+  #services.services-layout-radial .service-card-pos-4 { bottom: 25px; left: 80px; right: auto; }
+  #services.services-layout-radial .service-card-pos-5 { bottom: 25px; right: 80px; left: auto; }
+}
+
+@media (max-width: 1023px) {
+  .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .trust-facts,
+  .articles-card-grid,
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; }
+  .article-card { padding: 1.25rem; }
+}
+
 
 /* ==================================================
    15. SERVICE MODAL (MODERN BLOCK IN HTML)

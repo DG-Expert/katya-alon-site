@@ -21,6 +21,7 @@
   };
 
   let workshopContent = null;
+  let siteShellContent = null;
   let currentLang = 'he';
   let currentLayout = 'conversion';
   let revealObserver = null;
@@ -90,6 +91,10 @@
 
   function workshopsPath(lang) {
     return lang === 'he' ? '/workshops.html' : `/${lang}/workshops.html`;
+  }
+
+  function articlesPath(lang) {
+    return lang === 'he' ? '/articles/' : `/${lang}/articles/`;
   }
 
   function redirectLegacyLanguage() {
@@ -217,6 +222,14 @@
       link.href = workshopsHref();
     });
 
+    document.querySelectorAll('[data-articles-link]').forEach(link => {
+      link.href = articlesPath(currentLang);
+    });
+
+    document.querySelectorAll('[data-home-link]').forEach(link => {
+      link.href = homePath(currentLang);
+    });
+
     const previewLayout = requestedLayout();
     LANGUAGES.forEach(lang => {
       const link = document.getElementById(`btn-${lang}`);
@@ -235,6 +248,19 @@
 
     const brandLogo = document.getElementById('brand-logo');
     if (brandLogo) brandLogo.alt = translatedAt('nav.brand_alt');
+  }
+
+  function renderSiteShell() {
+    if (!siteShellContent) return;
+    const at = path => path.split('.').reduce((value, key) => (
+      value && Object.prototype.hasOwnProperty.call(value, key) ? value[key] : undefined
+    ), siteShellContent);
+    document.querySelectorAll('[data-site-copy]').forEach(element => {
+      element.textContent = translate(at(element.dataset.siteCopy));
+    });
+    document.querySelectorAll('[data-site-aria]').forEach(element => {
+      element.setAttribute('aria-label', translate(at(element.dataset.siteAria)));
+    });
   }
 
   function renderMeta() {
@@ -878,14 +904,14 @@
   async function loadWorkshopContent() {
     try {
       const contentUrl = new URL('/content/workshop.yaml', window.location.origin);
-      const response = await fetch(contentUrl);
-      if (!response.ok) {
-        throw new Error(`workshop.yaml returned HTTP ${response.status}`);
-      }
-
-      const yamlText = await response.text();
-      workshopContent = jsyaml.load(yamlText);
+      const siteContentUrl = new URL('/content/content.yaml', window.location.origin);
+      const [response, siteResponse] = await Promise.all([fetch(contentUrl), fetch(siteContentUrl)]);
+      if (!response.ok) throw new Error(`workshop.yaml returned HTTP ${response.status}`);
+      if (!siteResponse.ok) throw new Error(`content.yaml returned HTTP ${siteResponse.status}`);
+      workshopContent = jsyaml.load(await response.text());
+      siteShellContent = jsyaml.load(await siteResponse.text());
       validateContent(workshopContent);
+      renderSiteShell();
       renderPage();
       setupForm();
       scheduleTurnstile();

@@ -315,6 +315,153 @@ services:
       he: בניית קמפיינים, ניהול פרסום ממומן במערכת Meta Ads Manager והדרכות אישיות לבעלי עסקים שרוצים ללמוד לנהל קמפיינים בעצמם.
       en: Building campaigns, managing paid advertising in Meta Ads Manager, and personal training for business owners who want to learn to manage campaigns independently.
       ru: Создание кампаний, ведение платной рекламы в Meta Ads Manager и индивидуальное обучение владельцев бизнеса, которые хотят самостоятельно управлять кампаниями.
+    # Opt-in rich layout (renderService): used only by this page. The home card/modal keep using `details`.
+    page:
+      # H1 = first + accent (the accent part is wrapped in a span for the blue-purple emphasis).
+      heading:
+        he: פרסום ממומן
+        en: Paid Advertising
+        ru: Платная реклама
+      heading_accent:
+        he: בפייסבוק ובאינסטגרם
+        en: on Facebook and Instagram
+        ru: в Facebook и Instagram
+      options:
+      - title:
+          he: ניהול פרסום ממומן לעסקים
+          en: Paid Advertising Management for Businesses
+          ru: Ведение платной рекламы для бизнеса
+        paragraphs:
+        - he: אני מציעה שירות מקצועי של בנייה וניהול קמפיינים ממומנים בפייסבוק ובאינסטגרם, בהתאמה למטרות העסק, לקהל הרלוונטי ולתקציב הפרסום.
+          en: I offer a professional service of building and managing paid campaigns on Facebook and Instagram, tailored to the business goals, the relevant audience and the advertising budget.
+          ru: Я предлагаю профессиональную услугу по созданию и ведению платных рекламных кампаний в Facebook и Instagram с учётом целей бизнеса, релевантной аудитории и рекламного бюджета.
+        - he: השירות כולל תכנון אסטרטגיית פרסום, הקמת קמפיינים במערכת Meta Ads Manager, מעקב אחר ביצועים וביצוע אופטימיזציה לשיפור התוצאות.
+          en: The service includes planning an advertising strategy, setting up campaigns in Meta Ads Manager, tracking performance and optimizing to improve results.
+          ru: Услуга включает планирование рекламной стратегии, запуск кампаний в Meta Ads Manager, отслеживание показателей и оптимизацию для улучшения результатов.
+        cta:
+          label:
+            he: לשיחה על ניהול קמפיינים
+            en: Talk about campaign management
+            ru: Обсудить ведение кампаний
+          href:
+            he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20על%20ניהול%20פרסום%20ממומן%20לעסקים."
+            en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20details%20about%20paid%20advertising%20management%20for%20businesses."
+            ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20узнать%20подробнее%20о%20ведении%20платной%20рекламы%20для%20бизнеса."
+      - title:
+          he: הדרכה אישית לפרסום ממומן
+          en: Personal Paid Advertising Training
+          ru: Индивидуальное обучение платной рекламе
+        paragraphs:
+        - he: רוצים ללמוד לנהל את הפרסום הממומן של העסק בעצמכם ולחסוך בעלויות הניהול?
+          en: Want to learn to manage your business's paid advertising yourself and save on management costs?
+          ru: Хотите научиться самостоятельно вести платную рекламу своего бизнеса и сэкономить на расходах на управление?
+        - he: אני מציעה הדרכה אישית ומעשית שבה תלמדו לעבוד עם מערכת Meta Ads Manager, להקים קמפיינים, להגדיר תקציבים, להבין את הנתונים ולנהל את הפרסום שלכם באופן עצמאי.
+          en: I offer practical one-on-one training in which you will learn to work with Meta Ads Manager, set up campaigns, define budgets, understand the data and manage your advertising independently.
+          ru: Я предлагаю практическое индивидуальное обучение, на котором вы научитесь работать с Meta Ads Manager, запускать кампании, задавать бюджеты, понимать данные и самостоятельно вести свою рекламу.
+        cta:
+          label:
+            he: לפרטים על הדרכה אישית
+            en: Details about personal training
+            ru: Подробнее об индивидуальном обучении
+          href:
+            he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20על%20הדרכה%20אישית%20לפרסום%20ממומן."
+            en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20details%20about%20personal%20training%20in%20paid%20advertising."
+            ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20узнать%20подробнее%20об%20индивидуальном%20обучении%20платной%20рекламе."
+      statement:
+        he: "אתם בוחרים: אני מנהלת עבורכם את הפרסום, או מלמדת אתכם לעשות את זה בעצמכם."
+        en: "You choose: I manage the advertising for you, or I teach you to do it yourselves."
+        ru: "Вы выбираете: я веду рекламу за вас или учу вас делать это самостоятельно."
+      results:
+        # Four unchanged originals (full = lossless WebP, -768/-1152 = thumbnails) live in assets/images/paid-advertising/;
+        # test/paid-advertising.test.mjs verifies every file. Image 1143 (January leads) is intentionally excluded.
+        enabled: true
+        title:
+          he: דוגמאות לתוצאות מקמפיינים
+          en: Examples of Campaign Results
+          ru: Примеры результатов рекламных кампаний
+        intro:
+          he: לחצו על תמונה כדי להגדיל אותה.
+          en: Select an image to enlarge it. The text inside the images is in Hebrew.
+          ru: Нажмите на изображение, чтобы увеличить его. Текст на изображениях на иврите.
+        note:
+          he: הדוגמאות מציגות תוצאות מקמפיינים קודמים. התוצאות משתנות בין עסקים וקמפיינים ואין התחייבות לתוצאה זהה.
+          en: The examples show results from previous campaigns. Results vary between businesses and campaigns, and an identical result is not guaranteed.
+          ru: Примеры показывают результаты прошлых кампаний. Результаты различаются в зависимости от бизнеса и кампании, одинаковый результат не гарантируется.
+        viewer:
+          close:
+            he: סגירה
+            en: Close
+            ru: Закрыть
+          pan:
+            he: התמונה המוגדלת, אפשר לגלול ולהזיז
+            en: Enlarged image, scroll or drag to pan
+            ru: Увеличенное изображение, прокрутите или перетащите
+          open:
+            he: להגדלת התמונה
+            en: Enlarge image
+            ru: Увеличить изображение
+        items:
+        - slug: pos-systems
+          src: /assets/images/paid-advertising/pos-systems.webp
+          thumb: /assets/images/paid-advertising/pos-systems-768.webp
+          thumb_2x: /assets/images/paid-advertising/pos-systems-1152.webp
+          width: 1536
+          height: 1024
+          caption:
+            he: מערכות קופה לעסקים
+            en: Point-of-sale systems for businesses
+            ru: Кассовые системы для бизнеса
+          alt:
+            he: צילום מסך של דוח קמפיין ממומן עבור מערכות קופה לעסקים
+            en: Screenshot of a paid campaign report for point-of-sale systems for businesses (text in Hebrew)
+            ru: Скриншот отчёта платной кампании для кассовых систем для бизнеса (текст на иврите)
+        - slug: dental-clinic
+          src: /assets/images/paid-advertising/dental-clinic.webp
+          thumb: /assets/images/paid-advertising/dental-clinic-768.webp
+          thumb_2x: /assets/images/paid-advertising/dental-clinic-1152.webp
+          width: 1536
+          height: 1024
+          caption:
+            he: פניות למרפאת שיניים
+            en: Inquiries for a dental clinic
+            ru: Обращения в стоматологическую клинику
+          alt:
+            he: צילום מסך של דוח קמפיין ממומן עבור פניות למרפאת שיניים
+            en: Screenshot of a paid campaign report for inquiries to a dental clinic (text in Hebrew)
+            ru: Скриншот отчёта платной кампании по обращениям в стоматологическую клинику (текст на иврите)
+        - slug: landing-page-traffic
+          src: /assets/images/paid-advertising/landing-page-traffic.webp
+          thumb: /assets/images/paid-advertising/landing-page-traffic-768.webp
+          thumb_2x: /assets/images/paid-advertising/landing-page-traffic-1152.webp
+          width: 1536
+          height: 1024
+          caption:
+            he: תנועה לדף נחיתה
+            en: Landing page traffic
+            ru: Трафик на посадочную страницу
+          alt:
+            he: צילום מסך של דוח קמפיין ממומן להבאת תנועה לדף נחיתה
+            en: Screenshot of a paid campaign report driving traffic to a landing page (text in Hebrew)
+            ru: Скриншот отчёта платной кампании по привлечению трафика на посадочную страницу (текст на иврите)
+        - slug: video-campaign
+          src: /assets/images/paid-advertising/video-campaign.webp
+          thumb: /assets/images/paid-advertising/video-campaign-768.webp
+          thumb_2x: /assets/images/paid-advertising/video-campaign-1152.webp
+          width: 1536
+          height: 1024
+          caption:
+            he: חשיפה לתוכן וידאו
+            en: Video content exposure
+            ru: Охват видеоконтента
+          alt:
+            he: צילום מסך של דוח קמפיין ממומן לחשיפה של תוכן וידאו
+            en: Screenshot of a paid campaign report for video content exposure (text in Hebrew)
+            ru: Скриншот отчёта платной кампании по охвату видеоконтента (текст на иврите)
+      contact:
+        text:
+          he: רוצים לדבר על הפרסום הממומן של העסק?
+          en: Want to talk about your business's paid advertising?
+          ru: Хотите обсудить платную рекламу вашего бизнеса?
     details:
       summary:
         he: 'המטרה היא לא רק חשיפה, אלא להביא את הקהל הנכון ולהפוך אותו ללקוחות.'

@@ -72,7 +72,9 @@ test('15 service pages are prerendered with unique localized SEO, schema, links 
       const t = value => escapeHtml(value[lang]);
       assert.match(html, new RegExp(`^<!doctype html>\\n<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`));
       assert.equal(count(html, '<h1'), 1);
-      assert.ok(html.includes(`<h1>${t(service.title)}</h1>`));
+      // The opt-in paid-advertising layout splits the H1 around an emphasis span; the plain text must still equal the title.
+      assert.equal(html.match(/<h1>([\s\S]*?)<\/h1>/)[1].replace(/<[^>]+>/g, ''), service.page ? `${t(service.page.heading)} ${t(service.page.heading_accent)}` : t(service.title));
+      assert.equal(service.page ? t(service.title) : null, service.page ? `${t(service.page.heading)} ${t(service.page.heading_accent)}` : null);
       const title = html.match(/<title>([^<]*)<\/title>/)[1];
       assert.equal(title, `${t(service.title)} | ${t(site.hero.name)}`);
       assert.equal(meta(html, 'name', 'description'), t(service.description));
@@ -96,11 +98,11 @@ test('15 service pages are prerendered with unique localized SEO, schema, links 
       assert.deepEqual(graph[3].itemListElement.map(item => item.item), [urlFor(lang, 'home'), url]);
 
       const main = html.match(/<main\b[\s\S]*<\/main>/)[0];
-      for (const value of [service.details.summary, ...service.details.tech_points, ...service.details.second_tech_points, ...service.details.body]) {
+      for (const value of service.page ? [] : [service.details.summary, ...service.details.tech_points, ...service.details.second_tech_points, ...service.details.body]) {
         assert.ok(main.includes(t(value)), `${lang}/${service.slug}: missing ${value[lang]}`);
       }
-      assert.ok(main.includes(`<h2>${t(site.services.includes_title)}</h2>`) && main.includes(`<h2>${t(site.services.results_title)}</h2>`));
-      assert.equal(count(main, 'href="https://wa.me/'), 1);
+      assert.equal(main.includes(`<h2>${t(site.services.includes_title)}</h2>`) && main.includes(`<h2>${t(site.services.results_title)}</h2>`), !service.page);
+      assert.equal(count(main, 'href="https://wa.me/'), service.page ? 3 : 1);
       assert.ok(main.includes(`<a href="${t(service.details.contact_cta.href)}" class="cta-primary cta-image-button text-sm font-medium">${t(service.details.contact_cta.label)}</a>`));
       assert.ok(main.includes(`<li><a href="${routeFor(lang, 'home')}">${t(site.nav.home)}</a></li><li aria-current="page">${t(service.title)}</li>`), 'breadcrumbs');
       for (const other of services.filter(item => item !== service)) {

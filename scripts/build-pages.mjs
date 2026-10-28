@@ -483,6 +483,24 @@ function serviceExtraGraph(site, service, lang) {
   ];
 }
 
+// Opt-in layout for a service with a `page` block (paid-advertising): two option cards, shared statement, optional results gallery, contact CTA.
+function richServicePage(page, contact, text, lang) {
+  const cta = option => `<a href="${text(option.cta.href)}" class="cta-primary cta-image-button text-sm font-medium">${text(option.cta.label)}</a>`;
+  const cards = page.options.map(option => `<section class="service-option"><h2>${text(option.title)}</h2>${option.paragraphs.map(p => `<p>${text(p)}</p>`).join('')}<p class="service-option-cta">${cta(option)}</p></section>`).join('');
+  const { results } = page;
+  const figures = results.enabled ? results.items.map(item => `<figure class="results-item"><figcaption>${text(item.caption)}</figcaption><a class="results-frame" href="${item.src}" data-gallery-link aria-label="${text(results.viewer.open)}: ${text(item.caption)}"><img src="${item.thumb}" srcset="${item.thumb} 768w, ${item.thumb_2x} 1152w" sizes="(min-width: 861px) 512px, calc(100vw - 4.5rem)" width="768" height="${Math.round(768 * item.height / item.width)}" alt="${text(item.alt)}" loading="lazy" decoding="async"></a></figure>`).join('') : '';
+  const gallery = results.enabled ? `<section class="service-results" aria-labelledby="results-title"><h2 id="results-title">${text(results.title)}</h2><p class="results-intro">${text(results.intro)}</p><div class="results-grid">${figures}</div>`
+    + `<dialog class="results-viewer" data-gallery-viewer aria-label="${text(results.title)}"><div class="results-viewer-bar"><button type="button" class="results-viewer-close" data-gallery-close aria-label="${text(results.viewer.close)}">×</button></div><div class="results-viewer-scroll" tabindex="0" role="group" aria-label="${text(results.viewer.pan)}"><img alt="" data-gallery-image width="1536" height="1024"></div></dialog>`
+    + `<p class="results-note">${text(results.note)}</p></section>` : '';
+  const firstLine = text(page.heading);
+  const accent = text(page.heading_accent);
+  return {
+    title: `${firstLine} <span class="service-accent">${accent}</span>`,
+    body: `<div class="service-options">${cards}</div><p class="service-statement"><strong>${text(page.statement)}</strong></p>${gallery}`
+      + `<section class="service-contact"><p>${text(page.contact.text)}</p><p><a href="${text(contact.href)}" class="cta-primary cta-image-button text-sm font-medium">${text(contact.label)}</a></p></section>`
+  };
+}
+
 // Service detail page: the same YAML item that feeds the home-page card and modal.
 export function renderService(template, contentYaml, articlesYaml, slug, lang = 'he') {
   const site = yaml.load(contentYaml);
@@ -501,13 +519,14 @@ export function renderService(template, contentYaml, articlesYaml, slug, lang = 
     + `<section class="service-panel"><h2>${text(ui.results_title)}</h2>${points(details.second_tech_points)}</section>`
     + details.body.map(paragraph => `<p>${text(paragraph)}</p>`).join('')
     + `<p class="service-cta"><a href="${text(cta.href)}" class="cta-primary cta-image-button text-sm font-medium">${text(cta.label)}</a></p>`;
-  const out = replaceTemplate(template, {
+  const rich = service.page ? richServicePage(service.page, details.contact_cta, text, lang) : null;
+  const out = replaceTemplate(rich ? template.replace('article-reading', 'article-wide').replace('\n        <p class="service-lead">{{DESCRIPTION}}</p>', '').replace('<script defer src="/js/nav.js"></script>', '<script defer src="/js/nav.js"></script>\n  <script defer src="/js/gallery.js"></script>') : template, {
     HEADER: shellHeader(site, lang, 'service', slug),
     FOOTER: shellFooter(site, lang),
     BREADCRUMBS: `<nav class="article-breadcrumbs" aria-label="${BREADCRUMB_LABEL[lang]}"><ol><li><a href="${routeFor(lang, 'home')}">${text(site.nav.home)}</a></li><li aria-current="page">${text(service.title)}</li></ol></nav>`,
-    TITLE: text(service.title),
+    TITLE: rich ? rich.title : text(service.title),
     DESCRIPTION: text(service.description),
-    BODY: body,
+    BODY: rich ? rich.body : body,
     RELATED: related('more-services-title', ui.more_title, services.filter(item => item !== service).map(item => [routeFor(lang, 'service', item.slug), item.title]))
       + related('related-articles-title', ui.articles_title, articles.filter(article => article.service_anchor === service.anchor)
         .sort((a, b) => a.order - b.order).map(article => [routeFor(lang, 'article', article.slug), article.title]))

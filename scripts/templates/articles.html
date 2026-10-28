@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="he" dir="rtl" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Articles</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/articles.css">
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <script defer src="/js/articles.js"></script>
+</head>
+<body class="min-h-full page-theme article-page">
+  {{HEADER}}
+  <main id="main-content" class="articles-main">
+    <div class="article-shell">
+      <header class="articles-index-header">
+        <h1>{{TITLE}}</h1>
+        <p>{{DESCRIPTION}}</p>
+      </header>
+      <div class="articles-index-grid">{{ARTICLES}}</div>
+    </div>
+  </main>
+  {{FOOTER}}
+</body>
+</html>

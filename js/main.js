@@ -6,6 +6,7 @@
 
 let currentLang = 'he';
 let siteContent = null;
+let siteArticles = null;
 let activeServiceIndex = null;
 let activeRecommendationIndex = null;
 let recommendationItemsCache = [];
@@ -22,6 +23,14 @@ function homePath(lang) {
 
 function workshopsPath(lang) {
   return lang === 'he' ? '/workshops.html' : `/${lang}/workshops.html`;
+}
+
+function articlesPath(lang) {
+  return lang === 'he' ? '/articles/' : `/${lang}/articles/`;
+}
+
+function articlePath(lang, slug) {
+  return `${articlesPath(lang)}${slug}/`;
 }
 
 function redirectLegacyLanguage() {
@@ -47,14 +56,12 @@ function t(obj, lang) {
 async function loadContent() {
   try {
     const contentUrl = new URL('/content/content.yaml', window.location.origin);
-    const response = await fetch(contentUrl);
-
-    if (!response.ok) {
-      throw new Error(`Failed to load content.yaml: ${response.status} ${response.statusText} (${contentUrl})`);
-    }
-
-    const yamlText = await response.text();
-    siteContent = jsyaml.load(yamlText);
+    const articlesUrl = new URL('/content/articles.yaml', window.location.origin);
+    const [contentResponse, articlesResponse] = await Promise.all([fetch(contentUrl), fetch(articlesUrl)]);
+    if (!contentResponse.ok) throw new Error(`Failed to load content.yaml: ${contentResponse.status}`);
+    if (!articlesResponse.ok) throw new Error(`Failed to load articles.yaml: ${articlesResponse.status}`);
+    siteContent = jsyaml.load(await contentResponse.text());
+    siteArticles = jsyaml.load(await articlesResponse.text());
     renderContent(currentLang);
   } catch (err) {
     console.error('Failed to load content:', err);
@@ -72,7 +79,8 @@ function renderContent(lang) {
   document.querySelectorAll('[data-content="nav.process"]').forEach(el => el.textContent = t(c.nav.process, lang));
   document.querySelectorAll('[data-content="nav.contact"]').forEach(el => el.textContent = t(c.nav.contact, lang));
   document.querySelectorAll('[data-content="nav.workshops"]').forEach(el => el.textContent = t(c.nav.workshops, lang));
-  updateWorkshopLinks(lang);
+  document.querySelectorAll('[data-content="nav.articles"]').forEach(el => el.textContent = t(c.nav.articles, lang));
+  updatePageLinks(lang);
 
   setText('hero.title', t(c.hero.title, lang));
   setText('hero.subtitle', t(c.hero.subtitle, lang));
@@ -88,6 +96,7 @@ function renderContent(lang) {
   setText('about.title', t(c.about.title, lang));
   setText('about.photo_placeholder', t(c.about.photo_placeholder, lang));
   renderAboutParagraphs(c.about.paragraphs, lang);
+  renderTrustFacts(c.trust_facts, lang);
 
   setText('services.title', t(c.services.title, lang));
   renderServices(c.services.items, lang);
@@ -111,6 +120,19 @@ function renderContent(lang) {
   setText('final_cta.cta_primary', t(c.final_cta.cta_primary, lang));
   setText('final_cta.cta_secondary', t(c.final_cta.cta_secondary, lang));
 
+  setText('articles_section.title', t(c.articles_section.title, lang));
+  setText('articles_section.intro', t(c.articles_section.intro, lang));
+  setText('articles_section.all_articles', t(c.articles_section.all_articles, lang));
+  renderHomeArticles(siteArticles?.articles, lang);
+
+  setText('footer.summary', t(c.footer.summary, lang));
+  setText('footer.navigation_label', t(c.footer.navigation_label, lang));
+  setText('footer.services_label', t(c.footer.services_label, lang));
+  setText('footer.contact_label', t(c.footer.contact_label, lang));
+  setText('footer.home', t(c.footer.home, lang));
+  setText('footer.privacy_notice', t(c.footer.privacy_notice, lang));
+  setText('footer.whatsapp', t(c.footer.whatsapp, lang));
+  setText('footer.email', t(c.footer.email, lang));
   setText('footer.rights', t(c.footer.rights, lang));
 
   if (activeServiceIndex !== null) {
@@ -209,18 +231,30 @@ function renderAboutParagraphs(paragraphs, lang) {
   ).join('');
 }
 
+function renderTrustFacts(facts, lang) {
+  const container = document.getElementById('trust-facts');
+  if (!container || !facts) return;
+  container.innerHTML = facts.map(fact => `<li><strong>${fact.value}</strong><span>${t(fact.label, lang)}</span></li>`).join('');
+}
+
 function renderServices(items, lang) {
   const container = document.getElementById('services-list');
   if (!container || !items) return;
 
-  container.innerHTML = items.map((item, index) => {
+  const visibleItems = items
+    .map((item, sourceIndex) => ({ item, sourceIndex }))
+    .filter(({ item }) => item.enabled !== false)
+    .sort((a, b) => a.item.display_order - b.item.display_order);
+
+  container.innerHTML = visibleItems.map(({ item, sourceIndex }, index) => {
     const positionClass = `service-card-pos-${index + 1}`;
     return `
       <button
+        id="${item.anchor}"
         type="button"
         class="service-row fade-up visible service-card-theme text-start cursor-pointer ${positionClass}"
-        data-service-index="${index}"
-        onclick="openServiceModal(${index})"
+        data-service-index="${sourceIndex}"
+        onclick="openServiceModal(${sourceIndex})"
       >
         <span class="service-card-shell">
           <span class="service-card-base" aria-hidden="true"></span>
@@ -257,13 +291,12 @@ function setupServicesDiagram() {
   if (!section || !diagram || !list) return;
 
   const cards = Array.from(list.querySelectorAll('.service-row'));
-  const isRadial = window.innerWidth >= SERVICES_RADIAL_BREAKPOINT && cards.length === 6;
+  const isRadial = window.innerWidth >= SERVICES_RADIAL_BREAKPOINT && cards.length === 5;
 
   section.classList.toggle('services-layout-radial', isRadial);
   clearServicesDiagramEffect();
 
-  cards.forEach((card, index) => {
-    card.dataset.serviceIndex = String(index);
+  cards.forEach((card) => {
     resetServiceCardHolographic(card);
   });
 
@@ -545,6 +578,19 @@ function renderAudience(items, lang) {
   ).join('');
 }
 
+function renderHomeArticles(items, lang) {
+  const container = document.getElementById('home-articles-list');
+  if (!container || !items) return;
+  const selected = [...items].sort((a, b) => a.order - b.order).slice(0, 3);
+  container.innerHTML = selected.map(article => `
+    <article class="article-card">
+      <h3><a href="${articlePath(lang, article.slug)}">${t(article.title, lang)}</a></h3>
+      <p>${t(article.meta_description, lang)}</p>
+      <a class="article-card-link" href="${articlePath(lang, article.slug)}">${t(siteContent.articles_section.read_article, lang)}</a>
+    </article>
+  `).join('');
+}
+
 function renderProcess(steps, lang) {
   const container = document.getElementById('process-list');
   if (!container || !steps) return;
@@ -734,18 +780,32 @@ function closeRecommendationModal() {
   activeRecommendationIndex = null;
 }
 
-function updateWorkshopLinks(lang) {
+function updatePageLinks(lang) {
   document.querySelectorAll('[data-workshops-link]').forEach(link => {
-    link.href = workshopsPath(lang);
+    link.href = `${workshopsPath(lang)}${link.hasAttribute('data-privacy-fragment') ? '#registration-privacy' : ''}`;
+  });
+  document.querySelectorAll('[data-articles-link]').forEach(link => {
+    link.href = articlesPath(lang);
+  });
+  document.querySelectorAll('[data-home-link]').forEach(link => {
+    link.href = homePath(lang);
+  });
+  document.querySelectorAll('[data-home-anchor]').forEach(link => {
+    link.href = `${homePath(lang)}#${link.dataset.homeAnchor}`;
   });
 }
 
 function toggleMobile() {
-  document.getElementById('mobile-nav').classList.toggle('hidden');
+  const menu = document.getElementById('mobile-nav');
+  const button = document.getElementById('mobile-menu-button');
+  const willOpen = menu.classList.contains('hidden');
+  menu.classList.toggle('hidden');
+  button?.setAttribute('aria-expanded', String(willOpen));
 }
 
 function closeMobile() {
   document.getElementById('mobile-nav').classList.add('hidden');
+  document.getElementById('mobile-menu-button')?.setAttribute('aria-expanded', 'false');
 }
 
 function initAnimations() {
@@ -769,7 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (redirectLegacyLanguage()) return;
   currentLang = languageFromPath();
   document.getElementById('footer-year').textContent = new Date().getFullYear();
-  updateWorkshopLinks(currentLang);
+  updatePageLinks(currentLang);
 
   const serviceModal = document.getElementById('service-modal');
   if (serviceModal) {

@@ -35,10 +35,14 @@ nav:
     ru: Статьи и советы по маркетингу бизнеса
 
 hero:
-  title:
-    he: קטיה אלון | יועצת שיווקית, אסטרטגיה שיווקית ושיווק ברשתות החברתיות
-    en: Katya Alon | Marketing Consultant, Marketing Strategy and Social Media Marketing
-    ru: Катя Алон | Маркетинговый консультант, маркетинговая стратегия и продвижение в социальных сетях
+  name:
+    he: קטיה אלון
+    en: Katya Alon
+    ru: Катя Алон
+  professional_title:
+    he: יועצת שיווקית · אסטרטגיה שיווקית · שיווק ברשתות החברתיות
+    en: Marketing Consultant · Marketing Strategy · Social Media Marketing
+    ru: Маркетинговый консультант · Маркетинговая стратегия · Продвижение в социальных сетях
   subtitle:
     he: אני עוזרת לבעלי עסקים להפוך את הרשתות החברתיות לכלי שיווקי שמביא לקוחות ומייצר הזדמנויות עסקיות.
     en: I help business owners turn social media into a marketing tool that brings clients and creates business opportunities.
@@ -795,6 +799,14 @@ footer:
     he: דוא״ל
     en: Email
     ru: Электронная почта
+  instagram:
+    he: אינסטגרם — קטיה אלון
+    en: Instagram — Katya Alon
+    ru: Instagram — Катя Алон
+  facebook:
+    he: פייסבוק — קטיה אלון
+    en: Facebook — Katya Alon
+    ru: Facebook — Катя Алон
   rights:
     he: כל הזכויות שמורות
     en: All rights reserved

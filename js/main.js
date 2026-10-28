@@ -82,7 +82,8 @@ function renderContent(lang) {
   document.querySelectorAll('[data-content="nav.articles"]').forEach(el => el.textContent = t(c.nav.articles, lang));
   updatePageLinks(lang);
 
-  setText('hero.title', t(c.hero.title, lang));
+  setText('hero.name', t(c.hero.name, lang));
+  setText('hero.professional_title', t(c.hero.professional_title, lang));
   setText('hero.subtitle', t(c.hero.subtitle, lang));
   setText('hero.description', t(c.hero.description, lang));
   setText('hero.cta_primary', t(c.hero.cta_primary, lang));
@@ -133,6 +134,8 @@ function renderContent(lang) {
   setText('footer.privacy_notice', t(c.footer.privacy_notice, lang));
   setText('footer.whatsapp', t(c.footer.whatsapp, lang));
   setText('footer.email', t(c.footer.email, lang));
+  setText('footer.instagram', t(c.footer.instagram, lang));
+  setText('footer.facebook', t(c.footer.facebook, lang));
   setText('footer.rights', t(c.footer.rights, lang));
 
   if (activeServiceIndex !== null) {
@@ -274,7 +277,15 @@ function renderServices(items, lang) {
   setupServicesDiagram();
 }
 
-const SERVICES_RADIAL_BREAKPOINT = 900;
+const SERVICES_RADIAL_BREAKPOINT = 1200;
+const SERVICES_RADIAL_CARD_COUNT = 5;
+
+// The radial scene needs a wide viewport and hover; touch tablets get the bounded card grid.
+function shouldUseServicesRadial(cards) {
+  return window.innerWidth >= SERVICES_RADIAL_BREAKPOINT
+    && cards.length === SERVICES_RADIAL_CARD_COUNT
+    && Boolean(window.matchMedia?.('(hover: hover) and (pointer: fine)').matches);
+}
 
 const servicesSceneState = {
   activeIndex: -1,
@@ -291,7 +302,7 @@ function setupServicesDiagram() {
   if (!section || !diagram || !list) return;
 
   const cards = Array.from(list.querySelectorAll('.service-row'));
-  const isRadial = window.innerWidth >= SERVICES_RADIAL_BREAKPOINT && cards.length === 5;
+  const isRadial = shouldUseServicesRadial(cards);
 
   section.classList.toggle('services-layout-radial', isRadial);
   clearServicesDiagramEffect();
@@ -319,7 +330,7 @@ function handleServicesDiagramResize() {
   if (!section || !list) return;
 
   const cards = Array.from(list.querySelectorAll('.service-row'));
-  const isRadial = window.innerWidth >= SERVICES_RADIAL_BREAKPOINT && cards.length === 6;
+  const isRadial = shouldUseServicesRadial(cards);
 
   section.classList.toggle('services-layout-radial', isRadial);
 
@@ -341,7 +352,7 @@ function handleServicesDiagramPointerMove(event) {
   }
 
   const cards = Array.from(list.querySelectorAll('.service-row'));
-  if (window.innerWidth < SERVICES_RADIAL_BREAKPOINT || cards.length !== 6) {
+  if (!shouldUseServicesRadial(cards)) {
     clearServicesDiagramEffect();
     return;
   }

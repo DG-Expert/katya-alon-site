@@ -82,7 +82,7 @@ Every translated leaf below is an object with exactly `he`, `en`, and `ru` strin
 | `nav.open_menu.{he,en,ru}` | Closed mobile-menu button label |
 | `nav.close_menu.{he,en,ru}` | Open mobile-menu button label |
 | `nav.home.{he,en,ru}` | Logo/home-link accessible label |
-| `nav.about/services/process/contact/workshops.{he,en,ru}` | Navigation labels |
+| `nav.about/services/process/contact/workshops.{he,en,ru}` | Not displayed: every page, including this one, uses the shared top navigation from `nav.*` in `content/content.yaml` |
 | `layout_labels.conversion/story/program.{he,en,ru}` | Hero preview label for each layout |
 | `hero.eyebrow/title/subtitle/description.{he,en,ru}` | Main workshop hero copy |
 | `hero.details_kicker/details_heading.{he,en,ru}` | Hero detail-panel headings |

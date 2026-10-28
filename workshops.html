@@ -14,6 +14,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
   <script defer src="/js/workshops.js"></script>
+  <script defer src="/js/nav.js"></script>
 </head>
 <body class="min-h-full page-theme workshop-page layout-conversion">
   <a href="#workshop-main" class="workshop-skip-link" data-copy="accessibility.skip_to_content"></a>
@@ -32,14 +33,8 @@
         >
       </a>
 
-      <nav class="hidden lg:flex items-center lg:gap-5 text-sm font-light nav-text-theme" data-aria-copy="nav.navigation_label">
-        <a href="/#about" class="nav-link" data-home-anchor="about" data-copy="nav.about"></a>
-        <a href="/#services" class="nav-link" data-home-anchor="services" data-copy="nav.services"></a>
-        <a href="/#process" class="nav-link" data-home-anchor="process" data-copy="nav.process"></a>
-        <a href="/#contact" class="nav-link" data-home-anchor="contact" data-copy="nav.contact"></a>
-        <a href="/workshops.html" class="nav-link workshop-nav-active" aria-current="page" data-workshops-link data-copy="nav.workshops"></a>
-        <a href="/articles/" class="nav-link" data-articles-link data-site-copy="nav.articles"></a>
-      </nav>
+      <!-- Filled at build time by scripts/build-pages.mjs (siteNav) from content/content.yaml -->
+      <nav id="site-nav-desktop" class="hidden lg:flex items-center lg:gap-5 text-sm font-light nav-text-theme" data-aria-copy="nav.navigation_label"></nav>
 
       <div class="flex items-center gap-3 sm:gap-4">
         <div class="flex items-center gap-1 text-sm border rounded-full px-2 sm:px-3 py-1.5 lang-switcher-theme" role="group" data-aria-copy="nav.language_label">
@@ -64,14 +59,7 @@
     </div>
 
     <div id="mobile-nav" class="hidden lg:hidden border-t px-5 pb-5 mobile-nav-theme workshop-mobile-nav">
-      <nav class="workshop-shell flex flex-col gap-3 text-sm pt-4 nav-text-theme" data-aria-copy="nav.navigation_label">
-        <a href="/#about" class="py-1" data-home-anchor="about" data-copy="nav.about"></a>
-        <a href="/#services" class="py-1" data-home-anchor="services" data-copy="nav.services"></a>
-        <a href="/#process" class="py-1" data-home-anchor="process" data-copy="nav.process"></a>
-        <a href="/#contact" class="py-1" data-home-anchor="contact" data-copy="nav.contact"></a>
-        <a href="/workshops.html" class="py-1 workshop-nav-active" aria-current="page" data-workshops-link data-copy="nav.workshops"></a>
-        <a href="/articles/" class="py-1" data-articles-link data-site-copy="nav.articles"></a>
-      </nav>
+      <nav id="site-nav-mobile" class="workshop-shell flex flex-col gap-3 text-sm pt-4 nav-text-theme" data-aria-copy="nav.navigation_label"></nav>
     </div>
   </header>
 
@@ -278,7 +266,7 @@
       <div class="footer-grid">
         <div class="footer-intro"><p class="footer-brand-name">Katya Alon</p><p data-site-copy="footer.summary"></p></div>
         <nav data-site-aria="footer.navigation_label" aria-labelledby="workshop-footer-nav"><h2 id="workshop-footer-nav" data-site-copy="footer.navigation_label"></h2><ul><li><a href="/" data-home-link data-site-copy="footer.home"></a></li><li><a href="/#about" data-home-anchor="about" data-site-copy="nav.about"></a></li><li><a href="/#process" data-home-anchor="process" data-site-copy="nav.process"></a></li></ul></nav>
-        <nav aria-labelledby="workshop-footer-services"><h2 id="workshop-footer-services" data-site-copy="footer.services_label"></h2><ul><li><a href="/#services" data-home-anchor="services" data-site-copy="nav.services"></a></li><li><a href="/workshops.html" data-workshops-link data-site-copy="nav.workshops"></a></li><li><a href="/articles/" data-articles-link data-site-copy="nav.articles"></a></li></ul></nav>
+        <nav aria-labelledby="workshop-footer-services"><h2 id="workshop-footer-services" data-site-copy="footer.services_label"></h2><ul><li><a href="/#services" data-home-anchor="services" data-site-copy="nav.services"></a></li><li><a href="/workshops.html" data-workshops-link data-site-copy="nav.workshops"></a></li><li><a href="/articles/" data-articles-link data-site-copy="footer.articles"></a></li></ul></nav>
         <div aria-labelledby="workshop-footer-contact"><h2 id="workshop-footer-contact" data-site-copy="footer.contact_label"></h2><ul><li><a href="https://wa.me/972547838645" data-site-copy="footer.whatsapp"></a></li><li><a href="mailto:katya.shivuk@gmail.com"><span data-site-copy="footer.email"></span>: katya.shivuk@gmail.com</a></li><li><a href="https://www.instagram.com/kate_alon_marketing/" target="_blank" rel="noopener noreferrer" data-site-copy="footer.instagram"></a></li><li><a href="https://www.facebook.com/share/1QT8QYg3Gn/" target="_blank" rel="noopener noreferrer" data-site-copy="footer.facebook"></a></li><li><a href="#registration-privacy" data-site-copy="footer.privacy_notice"></a></li></ul></div>
       </div>
       <div class="footer-bottom"><p><span class="font-medium">Katya Alon</span> &copy; <span id="footer-year"></span></p><p data-site-copy="footer.rights"></p></div>

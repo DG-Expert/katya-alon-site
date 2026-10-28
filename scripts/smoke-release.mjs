@@ -3,6 +3,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
+import { enabledServices } from './build-pages.mjs';
 import { parseTopLevelFlowMap } from './validate-workshop.mjs';
 
 const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -35,13 +36,15 @@ export async function checkWorker(endpoint, fetchImpl = fetch) {
 export async function checkPages(baseUrl, fetchImpl = fetch) {
   const root = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   const articles = yaml.load(readFileSync(new URL('../content/articles.yaml', import.meta.url), 'utf8')).articles;
+  const services = enabledServices(yaml.load(readFileSync(new URL('../content/content.yaml', import.meta.url), 'utf8')));
   const pages = ['he', 'en', 'ru'].flatMap(lang => {
     const prefix = lang === 'he' ? '' : `${lang}/`;
     return [
       [`${prefix}`, lang],
       [`${prefix}workshops.html`, lang],
       [`${prefix}articles/`, lang],
-      ...articles.map(article => [`${prefix}articles/${article.slug}/`, lang])
+      ...articles.map(article => [`${prefix}articles/${article.slug}/`, lang]),
+      ...services.map(service => [`${prefix}services/${service.slug}/`, lang])
     ];
   });
   for (const [path, lang] of pages) {

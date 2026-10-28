@@ -33,6 +33,10 @@ function articlePath(lang, slug) {
   return `${articlesPath(lang)}${slug}/`;
 }
 
+function servicePath(lang, slug) {
+  return `${homePath(lang)}services/${slug}/`;
+}
+
 function redirectLegacyLanguage() {
   const url = new URL(window.location.href);
   const lang = url.searchParams.get('lang');
@@ -77,9 +81,7 @@ function renderContent(lang) {
   document.querySelectorAll('[data-content="nav.about"]').forEach(el => el.textContent = t(c.nav.about, lang));
   document.querySelectorAll('[data-content="nav.services"]').forEach(el => el.textContent = t(c.nav.services, lang));
   document.querySelectorAll('[data-content="nav.process"]').forEach(el => el.textContent = t(c.nav.process, lang));
-  document.querySelectorAll('[data-content="nav.contact"]').forEach(el => el.textContent = t(c.nav.contact, lang));
   document.querySelectorAll('[data-content="nav.workshops"]').forEach(el => el.textContent = t(c.nav.workshops, lang));
-  document.querySelectorAll('[data-content="nav.articles"]').forEach(el => el.textContent = t(c.nav.articles, lang));
   updatePageLinks(lang);
 
   setText('hero.name', t(c.hero.name, lang));
@@ -100,6 +102,8 @@ function renderContent(lang) {
   renderTrustFacts(c.trust_facts, lang);
 
   setText('services.title', t(c.services.title, lang));
+  setText('services.includes_title', t(c.services.includes_title, lang));
+  setText('services.results_title', t(c.services.results_title, lang));
   renderServices(c.services.items, lang);
 
   setText('audience.title', t(c.audience.title, lang));
@@ -131,6 +135,7 @@ function renderContent(lang) {
   setText('footer.services_label', t(c.footer.services_label, lang));
   setText('footer.contact_label', t(c.footer.contact_label, lang));
   setText('footer.home', t(c.footer.home, lang));
+  setText('footer.articles', t(c.footer.articles, lang));
   setText('footer.privacy_notice', t(c.footer.privacy_notice, lang));
   setText('footer.whatsapp', t(c.footer.whatsapp, lang));
   setText('footer.email', t(c.footer.email, lang));
@@ -683,8 +688,7 @@ function openServiceModal(index) {
   const item = siteContent.services.items[index];
   const details = item.details || {};
 
-  const contactWrap = document.getElementById('modal-contact-wrap');
-  const contactButton = document.getElementById('modal-contact-button');
+  const serviceLink = document.getElementById('modal-service-link');
   const modal = document.getElementById('service-modal');
   const title = document.getElementById('modal-title');
   const summary = document.getElementById('modal-summary');
@@ -714,17 +718,9 @@ function openServiceModal(index) {
     `<p class="leading-relaxed modal-body-paragraph-theme">${t(par, currentLang)}</p>`
   ).join('');
 
-  const contactCta = details.contact_cta || null;
-
-  if (contactCta && contactButton && contactWrap) {
-    contactWrap.classList.remove('hidden');
-    contactButton.textContent = t(contactCta.label, currentLang) || 'צרו קשר';
-    contactButton.href = t(contactCta.href, currentLang) || 'https://wa.me/972547838645';
-  } else if (contactButton && contactWrap) {
-    contactWrap.classList.add('hidden');
-    contactButton.textContent = '';
-    contactButton.href = '#';
-  }
+  // The WhatsApp contact CTA lives on the service page; the modal links there.
+  serviceLink.textContent = t(siteContent.services.learn_more, currentLang);
+  serviceLink.href = servicePath(currentLang, item.slug);
 
   if (details.video) {
     videoWrap.classList.remove('hidden');
@@ -812,11 +808,6 @@ function toggleMobile() {
   const willOpen = menu.classList.contains('hidden');
   menu.classList.toggle('hidden');
   button?.setAttribute('aria-expanded', String(willOpen));
-}
-
-function closeMobile() {
-  document.getElementById('mobile-nav').classList.add('hidden');
-  document.getElementById('mobile-menu-button')?.setAttribute('aria-expanded', 'false');
 }
 
 function initAnimations() {

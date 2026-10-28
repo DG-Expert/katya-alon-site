@@ -4,19 +4,21 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import yaml from 'js-yaml';
-import { buildPages, escapeHtml, LANGUAGES, routeFor, urlFor } from '../scripts/build-pages.mjs';
+import { buildPages, enabledServices, escapeHtml, LANGUAGES, routeFor, urlFor } from '../scripts/build-pages.mjs';
 
 const root = new URL('../', import.meta.url);
 const source = yaml.load(readFileSync(new URL('content/articles.yaml', root), 'utf8'));
 const site = yaml.load(readFileSync(new URL('content/content.yaml', root), 'utf8'));
 const count = (html, pattern) => (html.match(pattern) || []).length;
 const languageTag = { he: 'he-IL', en: 'en-GB', ru: 'ru-RU' };
+const services = enabledServices(site);
 
 function outputPath(stage, lang, page, slug = '') {
   const prefix = lang === 'he' ? '' : lang;
   if (page === 'home') return join(stage, prefix, 'index.html');
   if (page === 'workshops') return join(stage, prefix, 'workshops.html');
   if (page === 'articles') return join(stage, prefix, 'articles', 'index.html');
+  if (page === 'service') return join(stage, prefix, 'services', slug, 'index.html');
   return join(stage, prefix, 'articles', slug, 'index.html');
 }
 
@@ -37,7 +39,7 @@ test('article source has safe unique slugs, complete translations and no invente
   }
 });
 
-test('all 24 pages expose one H1, main and top-level footer with valid local links', () => {
+test('all 39 pages expose one H1, main and top-level footer with valid local links', () => {
   const stage = mkdtempSync(join(tmpdir(), 'katya-articles-'));
   try {
     buildPages(stage);
@@ -49,17 +51,18 @@ test('all 24 pages expose one H1, main and top-level footer with valid local lin
         assert.equal(count(html, /<main\b/g), 1, `${lang}/${page} main`);
         assert.equal(count(html, /<footer\b/g), 1, `${lang}/${page} footer`);
       }
-      for (const article of source.articles) {
-        const html = readFileSync(outputPath(stage, lang, 'article', article.slug), 'utf8');
-        assert.equal(count(html, /<h1\b/g), 1, `${lang}/${article.slug} H1`);
-        assert.equal(count(html, /<main\b/g), 1, `${lang}/${article.slug} main`);
-        assert.equal(count(html, /<footer\b/g), 1, `${lang}/${article.slug} footer`);
+      for (const [page, slug] of [...source.articles.map(article => ['article', article.slug]), ...services.map(service => ['service', service.slug])]) {
+        const html = readFileSync(outputPath(stage, lang, page, slug), 'utf8');
+        assert.equal(count(html, /<h1\b/g), 1, `${lang}/${slug} H1`);
+        assert.equal(count(html, /<main\b/g), 1, `${lang}/${slug} main`);
+        assert.equal(count(html, /<footer\b/g), 1, `${lang}/${slug} footer`);
       }
     }
 
     const social = ['https://www.instagram.com/kate_alon_marketing/', 'https://www.facebook.com/share/1QT8QYg3Gn/'];
     const allPages = lang => [outputPath(stage, lang, 'home'), outputPath(stage, lang, 'workshops'), outputPath(stage, lang, 'articles'),
-      ...source.articles.map(article => outputPath(stage, lang, 'article', article.slug))];
+      ...source.articles.map(article => outputPath(stage, lang, 'article', article.slug)),
+      ...services.map(service => outputPath(stage, lang, 'service', service.slug))];
     for (const lang of LANGUAGES) {
       for (const file of allPages(lang)) {
         const footer = readFileSync(file, 'utf8').match(/<footer\b[\s\S]*<\/footer>/)[0];
@@ -73,11 +76,8 @@ test('all 24 pages expose one H1, main and top-level footer with valid local lin
       }
     }
 
-    const generated = [];
-    for (const lang of LANGUAGES) {
-      generated.push(outputPath(stage, lang, 'home'), outputPath(stage, lang, 'workshops'), outputPath(stage, lang, 'articles'));
-      generated.push(...source.articles.map(article => outputPath(stage, lang, 'article', article.slug)));
-    }
+    const generated = LANGUAGES.flatMap(allPages);
+    assert.equal(generated.length, 39);
     for (const file of generated) {
       const html = readFileSync(file, 'utf8');
       for (const href of [...html.matchAll(/href="(\/[^"?#]*)(?:#[^"]*)?"/g)].map(match => match[1])) {

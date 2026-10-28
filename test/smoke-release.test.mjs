@@ -14,15 +14,15 @@ test('Worker smoke check sends only OPTIONS and verifies both exact CORS origins
   await assert.rejects(() => checkWorker('https://worker.example.test/api/register', async () => new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*' } })), /unexpected/);
 });
 
-test('Pages smoke check requests and validates all 24 canonical paths', async () => {
+test('Pages smoke check requests and validates all 39 canonical paths', async () => {
   const requested = [];
   await checkPages('https://example.test/project/', async url => {
     requested.push(String(url));
     const lang = String(url).includes('/en/') ? 'en' : String(url).includes('/ru/') ? 'ru' : 'he';
     return new Response(`<!doctype html><html lang="${lang}"><head><link rel="canonical" href="https://katya-alon.com/${lang === 'he' ? '' : `${lang}/`}"></head></html>`, { status: 200 });
   });
-  assert.equal(requested.length, 24);
-  for (const path of ['', 'workshops.html', 'articles/', 'articles/organic-instagram-marketing/']) {
+  assert.equal(requested.length, 39);
+  for (const path of ['', 'workshops.html', 'articles/', 'articles/organic-instagram-marketing/', 'services/marketing-strategy/', 'services/social-media-management/']) {
     assert.ok(requested.includes(`https://example.test/project/${path}`));
     assert.ok(requested.includes(`https://example.test/project/en/${path}`));
     assert.ok(requested.includes(`https://example.test/project/ru/${path}`));

@@ -294,8 +294,93 @@ body {
 }
 
 .mobile-nav-theme {
-  background-color: #FAF8F5;
+  background-color: rgba(26, 13, 43, 0.97);
   border-top-color: #C9A3A3;
+}
+
+/* The fixed header must never hide menu items: the open mobile menu scrolls on short screens. */
+#mobile-nav {
+  max-height: calc(100vh - 6.25rem);
+  max-height: calc(100dvh - 6.25rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.nav-link[aria-current="page"],
+.nav-link-current {
+  color: #ffa600;
+}
+
+/* Services disclosure: markup from siteNav in scripts/build-pages.mjs, behaviour in js/nav.js. */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  min-height: 2.75rem;
+}
+
+.nav-dropdown-icon {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.nav-dropdown-toggle[aria-expanded="true"] .nav-dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  inset-inline-start: -0.75rem;
+  z-index: 60;
+  width: max-content;
+  max-width: min(22rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 9rem);
+  max-height: calc(100dvh - 9rem);
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.5rem;
+  list-style: none;
+  white-space: normal;
+  background: #210f2e;
+  border: 1px solid rgba(201, 163, 163, 0.3);
+  border-radius: 1rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.nav-dropdown-menu a {
+  display: block;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.65rem;
+  color: #DFECEB;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.nav-dropdown-menu a:hover,
+.nav-dropdown-menu a[aria-current="page"] {
+  color: #ffa600;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+#mobile-nav .nav-dropdown-menu {
+  position: static;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  margin-top: 0.25rem;
+  padding: 0;
+  padding-inline-start: 0.75rem;
+  background: none;
+  border: 0;
+  border-inline-start: 1px solid rgba(201, 163, 163, 0.35);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 @media (max-width: 768px) {

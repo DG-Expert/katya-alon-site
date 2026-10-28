@@ -138,7 +138,6 @@ function renderContent(lang) {
   setText('footer.articles', t(c.footer.articles, lang));
   setText('footer.privacy_notice', t(c.footer.privacy_notice, lang));
   setText('footer.whatsapp', t(c.footer.whatsapp, lang));
-  setText('footer.email', t(c.footer.email, lang));
   setText('footer.instagram', t(c.footer.instagram, lang));
   setText('footer.facebook', t(c.footer.facebook, lang));
   setText('footer.rights', t(c.footer.rights, lang));

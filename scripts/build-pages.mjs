@@ -1,7 +1,8 @@
 // Prerenders all canonical language variants of the home, workshop, article index, article, and service pages.
 // Source HTML and content/*.yaml stay the only truth; the output is never committed. JS still hydrates/replaces the same nodes.
 // Usage: node scripts/build-pages.mjs <stage-dir>
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -374,6 +375,14 @@ function shellHeader(site, lang, page, slug = '') {
   </header>`;
 }
 
+// Brand icons are inline SVG (no network); the visually hidden text is the accessible name, the glyphs are decorative.
+// index.html carries the same markup (labels filled from data-content), so keep the two in step.
+const SOCIAL = [
+  ['https://www.instagram.com/kate_alon_marketing/', '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>'],
+  ['https://www.facebook.com/share/1QT8QYg3Gn/', '<path d="M14 8.5h2.5V5H14a3.5 3.5 0 0 0-3.5 3.5V11H8v3.5h2.5V21H14v-6.5h2.4l.6-3.5H14V8.9c0-.2.1-.4.4-.4z" fill="currentColor" stroke="none"/>']
+];
+export const socialIcons = (instagramLabel, facebookLabel) => `<div class="footer-social">${SOCIAL.map(([href, glyph], index) => `<a href="${href}" target="_blank" rel="noopener noreferrer" class="footer-social-link"><svg aria-hidden="true" focusable="false" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${glyph}</svg><span class="visually-hidden">${escapeHtml(index ? facebookLabel : instagramLabel)}</span></a>`).join('')}</div>`;
+
 function shellFooter(site, lang) {
   const home = routeFor(lang, 'home');
   const f = site.footer;
@@ -381,7 +390,7 @@ function shellFooter(site, lang) {
     <div class="footer-intro"><p class="footer-brand-name">Katya Alon</p><p>${escapeHtml(localized(f.summary, lang))}</p></div>
     <nav aria-label="${escapeHtml(localized(f.navigation_label, lang))}"><h2>${escapeHtml(localized(f.navigation_label, lang))}</h2><ul><li><a href="${home}">${escapeHtml(localized(f.home, lang))}</a></li><li><a href="${home}#about">${escapeHtml(localized(site.nav.about, lang))}</a></li><li><a href="${home}#process">${escapeHtml(localized(site.nav.process, lang))}</a></li></ul></nav>
     <nav aria-label="${escapeHtml(localized(f.services_label, lang))}"><h2>${escapeHtml(localized(f.services_label, lang))}</h2><ul><li><a href="${home}#services">${escapeHtml(localized(site.nav.services, lang))}</a></li><li><a href="${routeFor(lang, 'workshops')}">${escapeHtml(localized(site.nav.workshops, lang))}</a></li><li><a href="${routeFor(lang, 'articles')}">${escapeHtml(localized(f.articles, lang))}</a></li></ul></nav>
-    <div aria-label="${escapeHtml(localized(f.contact_label, lang))}"><h2>${escapeHtml(localized(f.contact_label, lang))}</h2><ul><li><a href="https://wa.me/972547838645">${escapeHtml(localized(f.whatsapp, lang))}</a></li><li><a href="mailto:katya.shivuk@gmail.com">${escapeHtml(localized(f.email, lang))}: katya.shivuk@gmail.com</a></li><li><a href="https://www.instagram.com/kate_alon_marketing/" target="_blank" rel="noopener noreferrer">${escapeHtml(localized(f.instagram, lang))}</a></li><li><a href="https://www.facebook.com/share/1QT8QYg3Gn/" target="_blank" rel="noopener noreferrer">${escapeHtml(localized(f.facebook, lang))}</a></li><li><a href="${routeFor(lang, 'workshops')}#registration-privacy">${escapeHtml(localized(f.privacy_notice, lang))}</a></li></ul></div>
+    <div aria-label="${escapeHtml(localized(f.contact_label, lang))}"><h2>${escapeHtml(localized(f.contact_label, lang))}</h2><ul><li><a href="https://wa.me/972547838645">${escapeHtml(localized(f.whatsapp, lang))}</a></li><li><a href="mailto:katya.shivuk@gmail.com" class="footer-email">katya.shivuk@gmail.com</a></li><li><a href="${routeFor(lang, 'workshops')}#registration-privacy">${escapeHtml(localized(f.privacy_notice, lang))}</a></li></ul>${socialIcons(localized(f.instagram, lang), localized(f.facebook, lang))}</div>
     </div><div class="footer-bottom"><p>Katya Alon &copy; <span data-current-year></span></p><p>${escapeHtml(localized(f.rights, lang))}</p></div></div></footer>`;
 }
 
@@ -570,7 +579,30 @@ export function buildPages(stageDir) {
   if (result.status !== 0) {
     throw new Error(`build-pages: Tailwind CSS compilation failed: ${result.stderr || result.stdout}`);
   }
+  versionAssets(stageDir);
   return LANGUAGES.length * (3 + slugs.length + serviceSlugs.length);
+}
+
+// Cache-bust local CSS/JS: HTML is revalidated quickly while assets are cached longer, so a new page must never
+// run with an older cached script (that left the service modal CTA empty). The URL changes with the file content.
+export function versionAssets(stageDir) {
+  const pages = [];
+  const walk = dir => readdirSync(dir, { withFileTypes: true }).forEach(entry => {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) walk(path);
+    else if (entry.name.endsWith('.html')) pages.push(path);
+  });
+  walk(stageDir);
+  const hashes = new Map();
+  const stamp = ref => {
+    if (!hashes.has(ref)) hashes.set(ref, createHash('sha256').update(readFileSync(join(stageDir, ref))).digest('hex').slice(0, 10));
+    return `${ref}?v=${hashes.get(ref)}`;
+  };
+  for (const page of pages) {
+    const html = readFileSync(page, 'utf8');
+    const out = html.replace(/\b(href|src)="(\/(?:css|js)\/[\w.-]+\.(?:css|js))"/g, (match, attr, ref) => (existsSync(join(stageDir, ref)) ? `${attr}="${stamp(ref)}"` : match));
+    if (out !== html) writeFileSync(page, out);
+  }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

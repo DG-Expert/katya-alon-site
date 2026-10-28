@@ -188,6 +188,9 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Install pinned smoke-test dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
       - name: Smoke-check deployed Pages site
         env:
           PAGES_URL: ${{ steps.deployment.outputs.page_url }}

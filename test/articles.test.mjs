@@ -66,12 +66,17 @@ test('all 39 pages expose one H1, main and top-level footer with valid local lin
     for (const lang of LANGUAGES) {
       for (const file of allPages(lang)) {
         const footer = readFileSync(file, 'utf8').match(/<footer\b[\s\S]*<\/footer>/)[0];
+        assert.ok(footer.includes('<a href="mailto:katya.shivuk@gmail.com" class="footer-email">katya.shivuk@gmail.com</a>'), `${file}: email shows only the address`);
+        assert.doesNotMatch(footer, /(?:Email|Электронная почта|דוא״ל)\s*:/, `${file}: no email prefix`);
+        const contact = footer.slice(footer.indexOf('https://wa.me'), footer.indexOf('footer-bottom'));
+        const order = [...contact.matchAll(/<a href="([^"]+)"/g)].map(match => match[1]);
+        assert.deepEqual(order.slice(-2), social, `${file}: social icons are last, Instagram then Facebook`);
+        assert.ok(order.findIndex(href => href.includes('registration-privacy')) < order.length - 2, `${file}: privacy link precedes the icons`);
+        assert.equal(count(contact, /footer-social-link/g), 2, `${file}: icons share one row`);
         for (const [index, href] of social.entries()) {
           const label = escapeHtml(site.footer[index ? 'facebook' : 'instagram'][lang]);
-          assert.ok(footer.includes(`<a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>`) ||
-            footer.includes(`<a href="${href}" target="_blank" rel="noopener noreferrer" data-site-copy="footer.${index ? 'facebook' : 'instagram'}">${label}</a>`) ||
-            footer.includes(`<a href="${href}" target="_blank" rel="noopener noreferrer" data-content="footer.${index ? 'facebook' : 'instagram'}">${label}</a>`),
-          `${file}: ${href}`);
+          const link = footer.match(new RegExp(`<a href="${href}" target="_blank" rel="noopener noreferrer" class="footer-social-link"><svg[^>]*aria-hidden="true"[\\s\\S]*?</svg><span class="visually-hidden"[^>]*>([^<]*)</span></a>`));
+          assert.equal(link?.[1], label, `${file}: ${href}`);
         }
       }
     }

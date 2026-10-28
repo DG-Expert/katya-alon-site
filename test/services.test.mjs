@@ -1,9 +1,10 @@
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import vm from 'node:vm';
+import { createHash } from 'node:crypto';
 import yaml from 'js-yaml';
 import { buildPages, enabledServices, escapeHtml, LANGUAGES, routeFor, urlFor } from '../scripts/build-pages.mjs';
 
@@ -276,4 +277,24 @@ test('services disclosure toggles aria-expanded and closes on Escape, outside ta
   assert.ok(isOpen(desktop), 'focus leaving to nothing is handled by pointer events');
   listeners.focusout({ target: desktop.link, relatedTarget: outside });
   assert.ok(!isOpen(desktop), 'tabbing away closes');
+});
+
+test('release HTML references content-hashed CSS/JS so a cached older script can never run with newer markup', () => {
+  const stage = mkdtempSync(join(tmpdir(), 'katya-versioned-'));
+  try {
+    for (const dir of ['css', 'js']) cpSync(new URL(`../${dir}`, import.meta.url), join(stage, dir), { recursive: true });
+    for (const file of ['index.html', 'workshops.html']) cpSync(new URL(`../${file}`, import.meta.url), join(stage, file));
+    buildPages(stage);
+    const html = readFileSync(join(stage, 'index.html'), 'utf8');
+    const hash = file => createHash('sha256').update(readFileSync(join(stage, file))).digest('hex').slice(0, 10);
+    for (const file of ['css/styles.css', 'css/tailwind.css', 'js/main.js', 'js/nav.js']) {
+      assert.ok(html.includes(`"/${file}?v=${hash(file)}"`), file);
+    }
+    for (const lang of LANGUAGES) for (const service of services) {
+      const page = readFileSync(join(stage, lang === 'he' ? '' : lang, 'services', service.slug, 'index.html'), 'utf8');
+      assert.ok(page.includes(`"/js/nav.js?v=${hash('js/nav.js')}"`), `${lang}/${service.slug}`);
+    }
+  } finally {
+    rmSync(stage, { recursive: true, force: true });
+  }
 });

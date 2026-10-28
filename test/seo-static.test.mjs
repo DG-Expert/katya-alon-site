@@ -48,6 +48,9 @@ test('sitemap contains exactly 39 reciprocal multilingual canonical endpoints', 
   assert.match(sitemap, /<\/urlset>\s*$/);
 });
 
+// Release output carries content-hash cache-busting queries (versionAssets); the rendered source does not.
+const unversioned = html => html.replace(/(\.(?:css|js))\?v=[0-9a-f]{10}"/g, '$1"');
+
 test('Pages staging ships prerendered HTML, crawl-control files and nothing private', () => {
   const workflow = readProjectFile('.github/workflows/release.yml');
   const stagingStep = workflow.match(/      - name: Stage only public static files\n        run: \|\n([\s\S]*?)(?=\n      - name:)/)?.[1];
@@ -81,12 +84,12 @@ test('Pages staging ships prerendered HTML, crawl-control files and nothing priv
     assert.deepEqual(readdirSync(join(stage, 'ru')).sort(), ['articles', 'index.html', 'services', 'workshops.html']);
     for (const directory of ['services', 'en/services', 'ru/services']) assert.deepEqual(readdirSync(join(stage, directory)).sort(), [...serviceSlugs].sort());
     assert.deepEqual(readdirSync(join(stage, 'content')).sort(), ['articles.yaml', 'content.yaml', 'workshop.yaml']);
-    assert.equal(readFileSync(join(stage, 'index.html'), 'utf8'), renderHome(readProjectFile('index.html'), readProjectFile('content/content.yaml')));
-    assert.equal(readFileSync(join(stage, 'workshops.html'), 'utf8'), renderWorkshops(readProjectFile('workshops.html'), readProjectFile('content/workshop.yaml')));
+    assert.equal(unversioned(readFileSync(join(stage, 'index.html'), 'utf8')), renderHome(readProjectFile('index.html'), readProjectFile('content/content.yaml')));
+    assert.equal(unversioned(readFileSync(join(stage, 'workshops.html'), 'utf8')), renderWorkshops(readProjectFile('workshops.html'), readProjectFile('content/workshop.yaml')));
     for (const [lang, directory] of [['he', ''], ['en', 'en'], ['ru', 'ru']]) {
       const prefix = directory ? `${directory}/` : '';
-      assert.equal(readFileSync(join(stage, prefix, 'index.html'), 'utf8'), renderHome(readProjectFile('index.html'), readProjectFile('content/content.yaml'), lang));
-      assert.equal(readFileSync(join(stage, prefix, 'workshops.html'), 'utf8'), renderWorkshops(readProjectFile('workshops.html'), readProjectFile('content/workshop.yaml'), lang));
+      assert.equal(unversioned(readFileSync(join(stage, prefix, 'index.html'), 'utf8')), renderHome(readProjectFile('index.html'), readProjectFile('content/content.yaml'), lang));
+      assert.equal(unversioned(readFileSync(join(stage, prefix, 'workshops.html'), 'utf8')), renderWorkshops(readProjectFile('workshops.html'), readProjectFile('content/workshop.yaml'), lang));
     }
     for (const file of ['index.html', 'workshops.html', 'en/index.html', 'en/workshops.html', 'ru/index.html', 'ru/workshops.html']) {
       const html = readFileSync(join(stage, file), 'utf8');

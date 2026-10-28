@@ -101,13 +101,13 @@ html {
   white-space: nowrap;
 }
 
-.workshop-header .workshop-nav-active,
-.workshop-mobile-nav .workshop-nav-active {
+.workshop-header .nav-link[aria-current="page"],
+.workshop-mobile-nav .nav-link[aria-current="page"] {
   color: #ff985d;
   font-weight: 600;
 }
 
-.workshop-header .workshop-nav-active::after {
+.workshop-header .nav-link[aria-current="page"]::after {
   width: 100%;
   background: var(--workshop-orange);
 }

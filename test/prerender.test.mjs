@@ -68,9 +68,11 @@ test('home prerender exposes the Hebrew H1, hero and section text without runnin
     ...content.process.steps.map(step => step.title.he)
   ]) assert.ok(page.includes(escapeHtml(text)), `missing: ${text}`);
 
-  // Each service heading/summary appears once: no hidden duplicate copies, and the modal stays empty until clicked.
+  // Each service heading/summary appears once in the services section (the nav links to the service pages separately):
+  // no hidden duplicate copies, and the modal stays empty until clicked.
+  const servicesSection = page.match(/<section id="services"[\s\S]*?<\/section>/)[0];
   for (const item of content.services.items.filter(item => item.enabled !== false)) {
-    assert.equal(count(page, `>${escapeHtml(item.title.he)}<`), 1);
+    assert.equal(count(servicesSection, `>${escapeHtml(item.title.he)}<`), 1);
     assert.equal(count(page, escapeHtml(item.description.he)), 1);
   }
   assert.match(page, /<h3 id="modal-title"[^>]*><\/h3>/);

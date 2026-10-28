@@ -9,6 +9,10 @@ site:
     ru: Катя Алон, маркетинговый консультант с 20-летним опытом. Консалтинг и маркетинговая стратегия, ведение соцсетей, платная реклама и обучение продвижению в Instagram и Facebook.
 
 nav:
+  home:
+    he: דף הבית
+    en: Home
+    ru: Главная
   about:
     he: אודות
     en: About
@@ -21,18 +25,14 @@ nav:
     he: תהליך
     en: Process
     ru: Процесс
-  contact:
-    he: צור קשר
-    en: Contact
-    ru: Контакты
   workshops:
     he: סדנאות
     en: Workshops
     ru: Мастер-классы
   articles:
-    he: מאמרים וטיפים לשיווק עסקים
-    en: Business Marketing Articles and Tips
-    ru: Статьи и советы по маркетингу бизнеса
+    he: מאמרים וטיפים
+    en: Articles and Tips
+    ru: Статьи и советы
 
 hero:
   name:
@@ -179,6 +179,8 @@ services:
     he: מה אני עושה
     en: What I Do
     ru: Что я делаю
+  # Every enabled service is published at /services/<slug>/ (and /en/, /ru/).
+  # Slugs are public URLs: do not change them after release. Anchors are the home-page card ids.
   items:
   - title:
       he: ייעוץ ואסטרטגיה שיווקית
@@ -186,6 +188,7 @@ services:
       ru: Маркетинговый консалтинг и стратегия
     display_order: 1
     anchor: service-marketing-strategy
+    slug: marketing-strategy
     description:
       he: בניית אסטרטגיה שיווקית מותאמת לעסק, חידוד המסרים ותכנון הפעילות השיווקית ברשתות החברתיות.
       en: Building a marketing strategy tailored to the business, refining the messaging, and planning social media marketing activity.
@@ -246,6 +249,7 @@ services:
       ru: Ведение социальных сетей и создание контента
     display_order: 3
     anchor: service-social-media-content
+    slug: social-media-content
     description:
       he: תכנון, יצירה וניהול תוכן מקצועי לעסקים ברשתות החברתיות.
       en: Planning, creating, and managing professional social media content for businesses.
@@ -289,23 +293,24 @@ services:
         ru: 'Прочная основа для дальнейшей маркетинговой деятельности'
       body:
       - he: רוצים תוכן שמייצר תוצאות ולא רק נראות?
-        en: Want to build a strategy that delivers results?
-        ru: Хотите выстроить стратегию, которая приносит результаты?
+        en: Want content that delivers results, not just visibility?
+        ru: Хотите контент, который приносит результаты, а не только охват?
       contact_cta:
         label:
           he: צרו קשר
           en: Contact me
           ru: Связаться с нами
         href:
-          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
-          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
-          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20ניהול%20סושיאל%20ויצירת%20תוכן."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20social%20media%20management%20and%20content%20creation."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20ведении%20социальных%20сетей%20и%20создании%20контента."
   - title:
       he: פרסום ממומן בפייסבוק ובאינסטגרם
       en: Paid Advertising on Facebook and Instagram
       ru: Платная реклама в Facebook и Instagram
     display_order: 4
     anchor: service-paid-advertising
+    slug: paid-advertising
     description:
       he: בניית קמפיינים, ניהול פרסום ממומן במערכת Meta Ads Manager והדרכות אישיות לבעלי עסקים שרוצים ללמוד לנהל קמפיינים בעצמם.
       en: Building campaigns, managing paid advertising in Meta Ads Manager, and personal training for business owners who want to learn to manage campaigns independently.
@@ -357,22 +362,25 @@ services:
           en: Contact me
           ru: Связаться с нами
         href:
-          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
-          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
-          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20פרסום%20ממומן%20בפייסבוק%20ובאינסטגרם."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20paid%20advertising%20on%20Facebook%20and%20Instagram."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20платной%20рекламе%20в%20Facebook%20и%20Instagram."
+  # Keeps the legacy home-card anchor service-personal-guidance so existing /#service-personal-guidance links still land here.
   - title:
       he: ניהול דפי סושיאל
-      en: Social Media Management
-      ru: Ведение социальных сетей
-    enabled: false
+      en: Social Media Page Management
+      ru: Ведение страниц в социальных сетях
+    display_order: 2
+    anchor: service-personal-guidance
+    slug: social-media-management
     description:
-      he: ניהול סושיאל שמייצר נוכחות ותוצאות
-      en: Social Media Management That Builds Presence and Results
-      ru: Ведение соцсетей, которое создаёт присутствие и приносит результаты
+      he: ניהול שוטף של דפי העסק ברשתות החברתיות, תכנון חודשי של תכנים, כתיבה, התאמת מסרים לקהל ומעקב אחר הביצועים.
+      en: Ongoing management of your business's social media pages, with monthly content planning, writing, messages tailored to your audience, and performance tracking.
+      ru: Регулярное ведение страниц бизнеса в социальных сетях, ежемесячное планирование контента, написание текстов, адаптация сообщений под аудиторию и отслеживание результатов.
     details:
       summary:
-        he: 'ניהול נכון של רשתות חברתיות הוא לא רק פרסום, אלא בניית נוכחות שמביאה קהל, אמון ומכירות..'
-        en: 'Proper social media management is not just posting, it is building a presence that brings audience, trust, and sales..'
+        he: 'ניהול נכון של רשתות חברתיות הוא לא רק פרסום, אלא בניית נוכחות שמביאה קהל, אמון ומכירות.'
+        en: 'Proper social media management is not just posting, it is building a presence that brings audience, trust, and sales.'
         ru: 'Правильное ведение социальных сетей, это не просто публикации, а создание присутствия, которое приносит аудиторию, доверие и продажи.'
       tech_points:
       - he: בניית קו תוכן ברור ואחיד
@@ -416,15 +424,14 @@ services:
           en: Contact me
           ru: Связаться с нами
         href:
-          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
-          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
-          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20ניהול%20דפי%20סושיאל."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20social%20media%20page%20management."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20ведении%20страниц%20в%20социальных%20сетях."
   - title:
       he: ליווי והדרכה אישית לבעלי עסקים
       en: Personal Guidance and Training for Business Owners
       ru: Индивидуальное сопровождение и обучение владельцев бизнеса
-    display_order: 2
-    anchor: service-personal-guidance
+    enabled: false
     description:
       he: לימוד מעשי של שיווק באינסטגרם ובפייסבוק, בניית תוכן וניהול עצמאי של הרשתות החברתיות.
       en: Practical training in Instagram and Facebook marketing, content creation, and independent social media management.
@@ -485,6 +492,7 @@ services:
       ru: Лекции и мастер-классы по цифровому маркетингу
     display_order: 5
     anchor: service-workshops
+    slug: lectures-workshops
     description:
       he: הרצאות והדרכות מקצועיות לחברות, ארגונים וקבוצות בעלי עסקים בנושאי שיווק דיגיטלי, אסטרטגיה שיווקית ורשתות חברתיות.
       en: Professional lectures and training for companies, organisations, and groups of business owners on digital marketing, marketing strategy, and social media.
@@ -543,6 +551,26 @@ services:
           en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20the%20Smart%20Marketing%20course."
           ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20курсе%20«Умный%20маркетинг»."
 
+  learn_more:
+    he: למידע נוסף על השירות
+    en: Learn more about this service
+    ru: Подробнее об этой услуге
+  includes_title:
+    he: מה כולל התהליך
+    en: What the process includes
+    ru: Что включает процесс
+  results_title:
+    he: מה תקבלו בסוף
+    en: What you will get
+    ru: Что вы получите
+  more_title:
+    he: שירותים נוספים
+    en: More services
+    ru: Другие услуги
+  articles_title:
+    he: מאמרים קשורים
+    en: Related articles
+    ru: Статьи по теме
   modal_kicker:
     he: פרטים נוספים על השירות
     en: More details about the service
@@ -787,6 +815,10 @@ footer:
     he: דף הבית
     en: Home
     ru: Главная
+  articles:
+    he: מאמרים וטיפים לשיווק עסקים
+    en: Business Marketing Articles and Tips
+    ru: Статьи и советы по маркетингу бизнеса
   privacy_notice:
     he: מידע על פרטיות ההרשמה לסדנה
     en: Workshop registration privacy information

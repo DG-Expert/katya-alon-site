@@ -11,6 +11,7 @@
   <!-- js-yaml must execute before the deferred application script. -->
   <script defer src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
   <script defer src="/js/main.js"></script>
+  <script defer src="/js/nav.js"></script>
 </head>
 <body class="h-full w-full overflow-auto page-theme">
   <a href="#main-content" class="site-skip-link">דלגו לתוכן הראשי</a>
@@ -29,15 +30,8 @@
         />
       </a>
 
-      <!-- Desktop nav — text filled from content.yaml -->
-      <nav class="hidden lg:flex items-center gap-4 text-sm font-light nav-text-theme site-primary-nav" aria-label="Primary navigation">
-        <a href="#about" class="nav-link" data-content="nav.about"></a>
-        <a href="#services" class="nav-link" data-content="nav.services"></a>
-        <a href="#process" class="nav-link" data-content="nav.process"></a>
-        <a href="#contact" class="nav-link" data-content="nav.contact"></a>
-        <a href="/workshops.html" class="nav-link" data-content="nav.workshops" data-workshops-link></a>
-        <a href="/articles/" class="nav-link" data-content="nav.articles" data-articles-link></a>
-      </nav>
+      <!-- Desktop nav — filled at build time by scripts/build-pages.mjs (siteNav) -->
+      <nav id="site-nav-desktop" class="hidden lg:flex items-center gap-4 text-sm font-light nav-text-theme site-primary-nav" aria-label="Primary navigation"></nav>
 
       <div class="flex items-center gap-4">
         <!-- Language switcher -->
@@ -55,16 +49,9 @@
       </div>
     </div>
 
-    <!-- Mobile nav -->
+    <!-- Mobile nav — filled at build time like the desktop nav -->
     <div id="mobile-nav" class="hidden lg:hidden border-t px-5 pb-4 mobile-nav-theme">
-      <nav class="flex flex-col gap-3 text-sm pt-3 nav-text-theme">
-        <a href="#about" onclick="closeMobile()" class="py-1" data-content="nav.about"></a>
-        <a href="#services" onclick="closeMobile()" class="py-1" data-content="nav.services"></a>
-        <a href="#process" onclick="closeMobile()" class="py-1" data-content="nav.process"></a>
-        <a href="#contact" onclick="closeMobile()" class="py-1" data-content="nav.contact"></a>
-        <a href="/workshops.html" onclick="closeMobile()" class="py-1" data-content="nav.workshops" data-workshops-link></a>
-        <a href="/articles/" onclick="closeMobile()" class="py-1" data-content="nav.articles" data-articles-link></a>
-      </nav>
+      <nav id="site-nav-mobile" class="flex flex-col gap-3 text-sm pt-3 nav-text-theme"></nav>
     </div>
   </header>
 
@@ -212,23 +199,21 @@
       </div>
 
       <div class="mb-6">
-        <h4 class="text-lg font-semibold mb-3 legacy-modal-heading-theme">מה כולל התהליך:</h4>
+        <h4 class="text-lg font-semibold mb-3 legacy-modal-heading-theme" data-content="services.includes_title"></h4>
         <ul id="modal-tech-points" class="list-disc pr-5 space-y-2"></ul>
       </div>
 
       <div class="mb-6">
-        <h4 class="text-lg font-semibold mb-3 legacy-modal-heading-theme">מה תקבלו בסוף:</h4>
+        <h4 class="text-lg font-semibold mb-3 legacy-modal-heading-theme" data-content="services.results_title"></h4>
         <ul id="modal-second-tech-points" class="list-disc pr-5 space-y-2"></ul>
       </div>
 
       <div id="modal-body" class="space-y-4 mb-6"></div>
 
-      <div id="modal-contact-wrap" class="mb-6">
+      <div class="mb-6">
         <a
-          id="modal-contact-button"
+          id="modal-service-link"
           href="#"
-          target="_blank"
-          rel="noopener noreferrer"
           class="cta-secondary cta-image-button text-sm font-medium cursor-pointer"
         ></a>
       </div>
@@ -364,7 +349,7 @@
       <div class="footer-grid">
         <div class="footer-intro"><p class="footer-brand-name">Katya Alon</p><p data-content="footer.summary"></p></div>
         <nav aria-labelledby="footer-nav-title"><h2 id="footer-nav-title" data-content="footer.navigation_label"></h2><ul><li><a href="/" data-home-link data-content="footer.home"></a></li><li><a href="/#about" data-home-anchor="about" data-content="nav.about"></a></li><li><a href="/#process" data-home-anchor="process" data-content="nav.process"></a></li></ul></nav>
-        <nav aria-labelledby="footer-services-title"><h2 id="footer-services-title" data-content="footer.services_label"></h2><ul><li><a href="/#services" data-home-anchor="services" data-content="nav.services"></a></li><li><a href="/workshops.html" data-workshops-link data-content="nav.workshops"></a></li><li><a href="/articles/" data-articles-link data-content="nav.articles"></a></li></ul></nav>
+        <nav aria-labelledby="footer-services-title"><h2 id="footer-services-title" data-content="footer.services_label"></h2><ul><li><a href="/#services" data-home-anchor="services" data-content="nav.services"></a></li><li><a href="/workshops.html" data-workshops-link data-content="nav.workshops"></a></li><li><a href="/articles/" data-articles-link data-content="footer.articles"></a></li></ul></nav>
         <div aria-labelledby="footer-contact-title"><h2 id="footer-contact-title" data-content="footer.contact_label"></h2><ul><li><a href="https://wa.me/972547838645" data-content="footer.whatsapp"></a></li><li><a href="mailto:katya.shivuk@gmail.com"><span data-content="footer.email"></span>: katya.shivuk@gmail.com</a></li><li><a href="https://www.instagram.com/kate_alon_marketing/" target="_blank" rel="noopener noreferrer" data-content="footer.instagram"></a></li><li><a href="https://www.facebook.com/share/1QT8QYg3Gn/" target="_blank" rel="noopener noreferrer" data-content="footer.facebook"></a></li><li><a href="/workshops.html#registration-privacy" data-workshops-link data-privacy-fragment data-content="footer.privacy_notice"></a></li></ul></div>
       </div>
       <div class="footer-bottom"><p><span class="font-medium">Katya Alon</span> &copy; <span id="footer-year">2026</span></p><p data-content="footer.rights"></p></div>

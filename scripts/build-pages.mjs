@@ -1,4 +1,4 @@
-// Prerenders all canonical language variants of the home, workshop, article index, and article pages.
+// Prerenders all canonical language variants of the home, workshop, article index, article, and service pages.
 // Source HTML and content/*.yaml stay the only truth; the output is never committed. JS still hydrates/replaces the same nodes.
 // Usage: node scripts/build-pages.mjs <stage-dir>
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -26,16 +26,21 @@ const SOCIAL_IMAGE = {
 
 export const routeFor = (lang, page, slug = '') => {
   if (!LANGUAGES.includes(lang)) throw new Error(`build-pages: unsupported language ${lang}`);
-  if (!['home', 'workshops', 'articles', 'article'].includes(page)) throw new Error(`build-pages: unsupported page ${page}`);
+  if (!['home', 'workshops', 'articles', 'article', 'service'].includes(page)) throw new Error(`build-pages: unsupported page ${page}`);
   const prefix = lang === 'he' ? '/' : `/${lang}/`;
   if (page === 'home') return prefix;
   if (page === 'workshops') return `${prefix}workshops.html`;
   if (page === 'articles') return `${prefix}articles/`;
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error(`build-pages: unsafe article slug ${slug}`);
-  return `${prefix}articles/${slug}/`;
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error(`build-pages: unsafe ${page} slug ${slug}`);
+  return `${prefix}${page === 'service' ? 'services' : 'articles'}/${slug}/`;
 };
 
 export const urlFor = (lang, page, slug = '') => new URL(routeFor(lang, page, slug), SITE_URL).href;
+
+// Home-page card order; each enabled service also gets its own page.
+export const enabledServices = site => site.services.items
+  .filter(item => item.enabled !== false)
+  .sort((a, b) => a.display_order - b.display_order);
 
 export const escapeHtml = value => String(value)
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
@@ -180,6 +185,7 @@ export function renderHome(html, contentYaml, lang = 'he', mainJs = read('js/mai
   let out = fillByAttr(html, 'data-content', key => node(key).textContent);
   for (const id of containers) out = fillById(out, id, required(node(`#${id}`).innerHTML, `#${id}`));
   out = replaceOnce(out, /<div id="process-list" /, `<div id="process-list" dir="${node('#process-list').attributes.dir}" `, '#process-list');
+  out = fillSiteNav(out, rawContent, lang, 'home');
   out = replaceOnce(out, /<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`, '<html language>');
   out = setPageLinks(out, lang, 'home');
   out = setLanguageLinks(out, lang, 'home');
@@ -283,6 +289,7 @@ export function renderWorkshops(html, workshopYaml, lang = 'he', contentYaml = r
     set('instructor-bio', (instructor.paragraphs || []).map(p => tag('p', '', p)).join(''));
   }
 
+  out = fillSiteNav(out, siteContent, lang, 'workshops');
   setText('form-kicker', at('form.kicker'));
   setText('registration-title', at('form.title'));
   setText('form-intro', at('form.intro'));
@@ -333,30 +340,37 @@ function setPageLinks(html, lang, page) {
 }
 
 const localized = (value, lang) => required(value?.[lang], `translation.${lang}`);
+const BREADCRUMB_LABEL = { he: 'פירורי לחם', en: 'Breadcrumb', ru: 'Навигационная цепочка' };
+const CHEVRON = '<svg class="nav-dropdown-icon" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+// The one top navigation for every page: home, a Services disclosure (js/nav.js) listing every service page, workshops, articles.
+function siteNav(site, lang, page, slug, menuId) {
+  const current = condition => (condition ? ' aria-current="page"' : '');
+  const label = key => escapeHtml(localized(site.nav[key], lang));
+  const services = enabledServices(site).map(service => `<li><a href="${routeFor(lang, 'service', service.slug)}"${current(page === 'service' && service.slug === slug)}>${escapeHtml(localized(service.title, lang))}</a></li>`).join('');
+  return `<a href="${routeFor(lang, 'home')}" class="nav-link" data-home-link${current(page === 'home')}>${label('home')}</a>`
+    + `<div class="nav-dropdown"><button type="button" class="nav-link nav-dropdown-toggle${page === 'service' ? ' nav-link-current' : ''}" aria-expanded="false" aria-controls="${menuId}" data-nav-dropdown>${label('services')}${CHEVRON}</button><ul id="${menuId}" class="nav-dropdown-menu" hidden>${services}</ul></div>`
+    + `<a href="${routeFor(lang, 'workshops')}" class="nav-link" data-workshops-link${current(page === 'workshops')}>${label('workshops')}</a>`
+    + `<a href="${routeFor(lang, 'articles')}" class="nav-link" data-articles-link${current(page === 'articles' || page === 'article')}>${label('articles')}</a>`;
+}
+
+// index.html and workshops.html keep empty desktop/mobile nav containers that only the build fills.
+const fillSiteNav = (html, site, lang, page) => fillById(fillById(html, 'site-nav-desktop', siteNav(site, lang, page, '', 'services-menu-desktop')),
+  'site-nav-mobile', siteNav(site, lang, page, '', 'services-menu-mobile'));
 
 function shellHeader(site, lang, page, slug = '') {
-  const nav = site.nav;
   const menuLabel = lang === 'he' ? 'פתיחת תפריט' : lang === 'ru' ? 'Открыть меню' : 'Open menu';
   const languageLabel = lang === 'he' ? 'בחירת שפה' : lang === 'ru' ? 'Выбор языка' : 'Choose language';
-  const link = (href, label, attrs = '') => `<a href="${href}" class="nav-link"${attrs}>${escapeHtml(localized(label, lang))}</a>`;
-  const articleActive = page === 'articles' || page === 'article' ? ' aria-current="page"' : '';
-  const navLinks = [
-    link(`${routeFor(lang, 'home')}#about`, nav.about),
-    link(`${routeFor(lang, 'home')}#services`, nav.services),
-    link(`${routeFor(lang, 'home')}#process`, nav.process),
-    link(`${routeFor(lang, 'home')}#contact`, nav.contact),
-    link(routeFor(lang, 'workshops'), nav.workshops),
-    link(routeFor(lang, 'articles'), nav.articles, articleActive)
-  ].join('');
+  const navLinks = menuId => siteNav(site, lang, page, slug, menuId);
   const languages = LANGUAGES.map(code => `<a href="${routeFor(code, page, slug)}" class="lang-btn px-2 py-0.5 rounded${code === lang ? ' active' : ''}"${code === lang ? ' aria-current="page"' : ''}>${code.toUpperCase()}</a>`).join('<span class="separator-theme" aria-hidden="true">|</span>');
   return `<a href="#main-content" class="site-skip-link">${lang === 'he' ? 'דלגו לתוכן הראשי' : lang === 'ru' ? 'Перейти к основному содержанию' : 'Skip to main content'}</a>
   <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b site-header-theme">
     <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
       <a href="${routeFor(lang, 'home')}" class="site-logo-link" aria-label="Katya Alon home"><img src="/assets/images/katya-logo-96.webp" srcset="/assets/images/katya-logo-96.webp 1x, /assets/images/katya-logo-192.webp 2x" alt="Katya Alon" class="site-logo" width="500" height="500"></a>
-      <nav class="hidden lg:flex items-center gap-4 text-sm font-light nav-text-theme site-primary-nav" aria-label="${escapeHtml(localized(site.footer.navigation_label, lang))}">${navLinks}</nav>
+      <nav class="hidden lg:flex items-center gap-4 text-sm font-light nav-text-theme site-primary-nav" aria-label="${escapeHtml(localized(site.footer.navigation_label, lang))}">${navLinks('services-menu-desktop')}</nav>
       <div class="flex items-center gap-3"><div class="flex items-center gap-1 text-sm border rounded-full px-2 sm:px-3 py-1.5 lang-switcher-theme" role="group" aria-label="${languageLabel}">${languages}</div><button id="mobile-menu-button" type="button" class="lg:hidden site-menu-button" aria-label="${menuLabel}" aria-controls="mobile-nav" aria-expanded="false" onclick="toggleArticleMenu()"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></div>
     </div>
-    <div id="mobile-nav" class="mobile-nav-theme" hidden><nav class="max-w-6xl mx-auto px-5 pb-5 pt-3 flex flex-col gap-3 text-sm nav-text-theme" aria-label="${escapeHtml(localized(site.footer.navigation_label, lang))}">${navLinks}</nav></div>
+    <div id="mobile-nav" class="mobile-nav-theme" hidden><nav class="max-w-6xl mx-auto px-5 pb-5 pt-3 flex flex-col gap-3 text-sm nav-text-theme" aria-label="${escapeHtml(localized(site.footer.navigation_label, lang))}">${navLinks('services-menu-mobile')}</nav></div>
   </header>`;
 }
 
@@ -366,7 +380,7 @@ function shellFooter(site, lang) {
   return `<footer class="site-footer footer-theme"><div class="max-w-6xl mx-auto px-5"><div class="footer-grid">
     <div class="footer-intro"><p class="footer-brand-name">Katya Alon</p><p>${escapeHtml(localized(f.summary, lang))}</p></div>
     <nav aria-label="${escapeHtml(localized(f.navigation_label, lang))}"><h2>${escapeHtml(localized(f.navigation_label, lang))}</h2><ul><li><a href="${home}">${escapeHtml(localized(f.home, lang))}</a></li><li><a href="${home}#about">${escapeHtml(localized(site.nav.about, lang))}</a></li><li><a href="${home}#process">${escapeHtml(localized(site.nav.process, lang))}</a></li></ul></nav>
-    <nav aria-label="${escapeHtml(localized(f.services_label, lang))}"><h2>${escapeHtml(localized(f.services_label, lang))}</h2><ul><li><a href="${home}#services">${escapeHtml(localized(site.nav.services, lang))}</a></li><li><a href="${routeFor(lang, 'workshops')}">${escapeHtml(localized(site.nav.workshops, lang))}</a></li><li><a href="${routeFor(lang, 'articles')}">${escapeHtml(localized(site.nav.articles, lang))}</a></li></ul></nav>
+    <nav aria-label="${escapeHtml(localized(f.services_label, lang))}"><h2>${escapeHtml(localized(f.services_label, lang))}</h2><ul><li><a href="${home}#services">${escapeHtml(localized(site.nav.services, lang))}</a></li><li><a href="${routeFor(lang, 'workshops')}">${escapeHtml(localized(site.nav.workshops, lang))}</a></li><li><a href="${routeFor(lang, 'articles')}">${escapeHtml(localized(f.articles, lang))}</a></li></ul></nav>
     <div aria-label="${escapeHtml(localized(f.contact_label, lang))}"><h2>${escapeHtml(localized(f.contact_label, lang))}</h2><ul><li><a href="https://wa.me/972547838645">${escapeHtml(localized(f.whatsapp, lang))}</a></li><li><a href="mailto:katya.shivuk@gmail.com">${escapeHtml(localized(f.email, lang))}: katya.shivuk@gmail.com</a></li><li><a href="https://www.instagram.com/kate_alon_marketing/" target="_blank" rel="noopener noreferrer">${escapeHtml(localized(f.instagram, lang))}</a></li><li><a href="https://www.facebook.com/share/1QT8QYg3Gn/" target="_blank" rel="noopener noreferrer">${escapeHtml(localized(f.facebook, lang))}</a></li><li><a href="${routeFor(lang, 'workshops')}#registration-privacy">${escapeHtml(localized(f.privacy_notice, lang))}</a></li></ul></div>
     </div><div class="footer-bottom"><p>Katya Alon &copy; <span data-current-year></span></p><p>${escapeHtml(localized(f.rights, lang))}</p></div></div></footer>`;
 }
@@ -418,14 +432,15 @@ export function renderArticle(template, contentYaml, articlesYaml, slug, lang = 
   const source = yaml.load(articlesYaml);
   const article = source.articles.find(item => item.slug === slug);
   if (!article) throw new Error(`build-pages: unknown article ${slug}`);
+  const service = enabledServices(site).find(item => item.anchor === article.service_anchor);
+  if (!service) throw new Error(`build-pages: article ${slug} needs an enabled service_anchor`);
   const body = article.blocks.map(block => {
     if (block.h2) return `<h2>${escapeHtml(localized(block.h2, lang))}</h2>`;
     const text = escapeHtml(localized(block.p, lang));
     return `<p>${block.link_slug ? `<a href="${routeFor(lang, 'article', block.link_slug)}">${text}</a>` : text}</p>`;
   }).join('');
-  const breadcrumbLabel = lang === 'he' ? 'פירורי לחם' : lang === 'ru' ? 'Навигационная цепочка' : 'Breadcrumb';
-  const breadcrumbs = `<nav class="article-breadcrumbs" aria-label="${breadcrumbLabel}"><ol><li><a href="${routeFor(lang, 'home')}">${escapeHtml(localized(source.ui.breadcrumbs_home, lang))}</a></li><li><a href="${routeFor(lang, 'articles')}">${escapeHtml(localized(source.ui.breadcrumbs_articles, lang))}</a></li><li aria-current="page">${escapeHtml(localized(article.title, lang))}</li></ol></nav>`;
-  const related = `<aside class="article-related" aria-labelledby="related-title"><h2 id="related-title">${escapeHtml(localized(source.ui.related_title, lang))}</h2><ul><li><a href="${routeFor(lang, 'home')}#${article.service_anchor}">${escapeHtml(localized(source.ui.related_service, lang))}</a></li><li><a href="${routeFor(lang, 'articles')}">${escapeHtml(localized(source.ui.all_articles, lang))}</a></li><li><a href="${routeFor(lang, 'home')}#contact">${escapeHtml(localized(source.ui.contact, lang))}</a></li></ul></aside>`;
+  const breadcrumbs = `<nav class="article-breadcrumbs" aria-label="${BREADCRUMB_LABEL[lang]}"><ol><li><a href="${routeFor(lang, 'home')}">${escapeHtml(localized(source.ui.breadcrumbs_home, lang))}</a></li><li><a href="${routeFor(lang, 'articles')}">${escapeHtml(localized(source.ui.breadcrumbs_articles, lang))}</a></li><li aria-current="page">${escapeHtml(localized(article.title, lang))}</li></ol></nav>`;
+  const related = `<aside class="article-related" aria-labelledby="related-title"><h2 id="related-title">${escapeHtml(localized(source.ui.related_title, lang))}</h2><ul><li><a href="${routeFor(lang, 'service', service.slug)}">${escapeHtml(localized(source.ui.related_service, lang))}</a></li><li><a href="${routeFor(lang, 'articles')}">${escapeHtml(localized(source.ui.all_articles, lang))}</a></li><li><a href="${routeFor(lang, 'home')}#contact">${escapeHtml(localized(source.ui.contact, lang))}</a></li></ul></aside>`;
   let out = replaceTemplate(template, {
     HEADER: shellHeader(site, lang, 'article', slug),
     FOOTER: shellFooter(site, lang),
@@ -438,13 +453,67 @@ export function renderArticle(template, contentYaml, articlesYaml, slug, lang = 
   return withHead(out, { title: escapeHtml(localized(article.seo_title, lang)), description: escapeHtml(localized(article.meta_description, lang)), url: urlFor(lang, 'article', slug), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'article', slug, ogType: 'article', extraGraph: articleExtraGraph(article, lang) });
 }
 
-export function renderSitemap(articlesYaml = read('content/articles.yaml')) {
+function serviceExtraGraph(site, service, lang) {
+  const url = urlFor(lang, 'service', service.slug);
+  return [
+    {
+      '@type': 'Service',
+      '@id': `${url}#service`,
+      name: localized(service.title, lang),
+      description: localized(service.description, lang),
+      url,
+      provider: { '@id': PERSON_ID }
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: localized(site.nav.home, lang), item: urlFor(lang, 'home') },
+        { '@type': 'ListItem', position: 2, name: localized(service.title, lang), item: url }
+      ]
+    }
+  ];
+}
+
+// Service detail page: the same YAML item that feeds the home-page card and modal.
+export function renderService(template, contentYaml, articlesYaml, slug, lang = 'he') {
+  const site = yaml.load(contentYaml);
+  const { articles } = yaml.load(articlesYaml);
+  assertLocaleMaps(site);
+  const services = enabledServices(site);
+  const service = services.find(item => item.slug === slug);
+  if (!service) throw new Error(`build-pages: unknown service ${slug}`);
+  const text = value => escapeHtml(localized(value, lang));
+  const { details, details: { contact_cta: cta } } = service;
+  const ui = site.services;
+  const points = items => `<ul class="service-points">${items.map(item => `<li>${text(item)}</li>`).join('')}</ul>`;
+  const related = (id, title, links) => (links.length ? `<aside class="article-related" aria-labelledby="${id}"><h2 id="${id}">${text(title)}</h2><ul>${links.map(([href, label]) => `<li><a href="${href}">${text(label)}</a></li>`).join('')}</ul></aside>` : '');
+  const body = `<p class="service-summary">${text(details.summary)}</p>`
+    + `<section class="service-panel"><h2>${text(ui.includes_title)}</h2>${points(details.tech_points)}</section>`
+    + `<section class="service-panel"><h2>${text(ui.results_title)}</h2>${points(details.second_tech_points)}</section>`
+    + details.body.map(paragraph => `<p>${text(paragraph)}</p>`).join('')
+    + `<p class="service-cta"><a href="${text(cta.href)}" class="cta-primary cta-image-button text-sm font-medium">${text(cta.label)}</a></p>`;
+  const out = replaceTemplate(template, {
+    HEADER: shellHeader(site, lang, 'service', slug),
+    FOOTER: shellFooter(site, lang),
+    BREADCRUMBS: `<nav class="article-breadcrumbs" aria-label="${BREADCRUMB_LABEL[lang]}"><ol><li><a href="${routeFor(lang, 'home')}">${text(site.nav.home)}</a></li><li aria-current="page">${text(service.title)}</li></ol></nav>`,
+    TITLE: text(service.title),
+    DESCRIPTION: text(service.description),
+    BODY: body,
+    RELATED: related('more-services-title', ui.more_title, services.filter(item => item !== service).map(item => [routeFor(lang, 'service', item.slug), item.title]))
+      + related('related-articles-title', ui.articles_title, articles.filter(article => article.service_anchor === service.anchor)
+        .sort((a, b) => a.order - b.order).map(article => [routeFor(lang, 'article', article.slug), article.title]))
+  }).replace(/<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`);
+  return withHead(out, { title: `${text(service.title)} | ${text(site.hero.name)}`, description: text(service.description), url: urlFor(lang, 'service', slug), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'service', slug, extraGraph: serviceExtraGraph(site, service, lang) });
+}
+
+export function renderSitemap(articlesYaml = read('content/articles.yaml'), contentYaml = read('content/content.yaml')) {
   const source = yaml.load(articlesYaml);
   const pages = [
     ['home', ''],
     ['workshops', ''],
     ['articles', ''],
-    ...source.articles.map(article => ['article', article.slug])
+    ...source.articles.map(article => ['article', article.slug]),
+    ...enabledServices(yaml.load(contentYaml)).map(service => ['service', service.slug])
   ];
   const entries = LANGUAGES.flatMap(lang => pages.map(([page, slug]) => {
     const alternates = [...LANGUAGES.map(code => `<xhtml:link rel="alternate" hreflang="${code}" href="${urlFor(code, page, slug)}" />`), `<xhtml:link rel="alternate" hreflang="x-default" href="${urlFor('he', page, slug)}" />`].join('');
@@ -458,13 +527,16 @@ export function buildPages(stageDir) {
   const workshopTemplate = read('workshops.html');
   const articlesTemplate = read('scripts/templates/articles.html');
   const articleTemplate = read('scripts/templates/article.html');
+  const serviceTemplate = read('scripts/templates/service.html');
   const contentYaml = read('content/content.yaml');
   const workshopYaml = read('content/workshop.yaml');
   const articlesYaml = read('content/articles.yaml');
   const articleSource = yaml.load(articlesYaml);
   const slugs = articleSource.articles.map(article => article.slug);
   if (new Set(slugs).size !== slugs.length) throw new Error('build-pages: article slugs must be unique');
-  writeFileSync(join(stageDir, 'sitemap.xml'), renderSitemap(articlesYaml));
+  const serviceSlugs = enabledServices(yaml.load(contentYaml)).map(service => service.slug);
+  if (new Set(serviceSlugs).size !== serviceSlugs.length) throw new Error('build-pages: service slugs must be unique');
+  writeFileSync(join(stageDir, 'sitemap.xml'), renderSitemap(articlesYaml, contentYaml));
   for (const lang of LANGUAGES) {
     const outputDir = lang === 'he' ? stageDir : join(stageDir, lang);
     mkdirSync(outputDir, { recursive: true });
@@ -477,6 +549,11 @@ export function buildPages(stageDir) {
       const articleDir = join(articlesDir, slug);
       mkdirSync(articleDir, { recursive: true });
       writeFileSync(join(articleDir, 'index.html'), renderArticle(articleTemplate, contentYaml, articlesYaml, slug, lang));
+    }
+    for (const slug of serviceSlugs) {
+      const serviceDir = join(outputDir, 'services', slug);
+      mkdirSync(serviceDir, { recursive: true });
+      writeFileSync(join(serviceDir, 'index.html'), renderService(serviceTemplate, contentYaml, articlesYaml, slug, lang));
     }
   }
 
@@ -493,6 +570,7 @@ export function buildPages(stageDir) {
   if (result.status !== 0) {
     throw new Error(`build-pages: Tailwind CSS compilation failed: ${result.stderr || result.stdout}`);
   }
+  return LANGUAGES.length * (3 + slugs.length + serviceSlugs.length);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -506,6 +584,5 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.error('Usage: node scripts/build-pages.mjs <stage-dir>');
     process.exit(2);
   }
-  buildPages(stageDir);
-  console.log(`Prerendered 24 canonical pages into ${stageDir}`);
+  console.log(`Prerendered ${buildPages(stageDir)} canonical pages into ${stageDir}`);
 }

@@ -20,4 +20,8 @@ node scripts/build-pages.mjs /tmp/katya-pages-review
 node --test test/*.test.mjs
 ```
 
+## Service pages
+
+Each enabled item in `services.items` of `content/content.yaml` is published at `/services/<slug>/`, `/en/services/<slug>/` and `/ru/services/<slug>/`, and is listed in the Services menu of the top navigation. The page reuses the card text, modal points and WhatsApp `contact_cta` of that item. A `slug` is a public URL: do not rename it after release. An article's related-service link opens the service page whose `anchor` matches its `service_anchor`. After enabling, disabling or adding a service, regenerate the sitemap and run the same build and tests.
+
 Do not add publication or modification dates unless the owner supplies them. Do not add legal, social-profile, address, result, or certification claims without an approved source.

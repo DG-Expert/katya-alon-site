@@ -24,6 +24,15 @@
 .article-related h2 { color: #ecdfE0; font-size: 1.35rem; font-weight: 700; }
 .article-related ul { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; margin-top: 1rem; padding: 0; list-style: none; }
 .article-related a { color: #d7b8ff; text-decoration: underline; text-underline-offset: .22em; }
+/* Service pages reuse the article shell; css/articles.css is shared by both. */
+.service-lead { margin-top: 1.25rem; max-width: 46rem; font-size: 1.15rem; line-height: 1.8; }
+.service-summary { margin-block: 1.5rem 0; padding-inline-start: 1rem; border-inline-start: 3px solid #d7b8ff; color: #ecdfE0; }
+.service-panel { margin-top: 2rem; padding: 1.5rem; border: 1px solid rgba(215, 184, 255, 0.22); border-radius: 1rem; background: rgba(255, 255, 255, 0.045); }
+.article-body .service-panel h2 { margin: 0 0 1rem; font-size: clamp(1.35rem, 3.5vw, 1.6rem); }
+.service-points { display: grid; gap: 0.6rem; margin: 0; padding-inline-start: 1.25rem; list-style: disc; }
+.service-points li::marker { color: #d7b8ff; }
+.article-body .service-cta { margin-top: 1.75rem; }
+.article-body .service-cta a { color: #dfeceb; text-decoration: none; }
 .article-page #mobile-nav[hidden] { display: none; }
 .article-page #mobile-nav { display: block; }
 @media (min-width: 1024px) { .article-page #mobile-nav { display: none; } }
@@ -31,4 +40,5 @@
   .articles-main, .article-main { padding: 7.5rem 1.1rem 4rem; }
   .articles-index-grid { grid-template-columns: 1fr; }
   .article-body { font-size: 1rem; line-height: 1.8; }
+  .service-panel { padding: 1.15rem; }
 }

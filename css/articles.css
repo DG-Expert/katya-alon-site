@@ -72,3 +72,4 @@
 .article-body .service-contact { margin-top: 3rem; padding: 1.5rem; text-align: center; border-top: 1px solid rgba(215, 184, 255, 0.22); }
 html.viewer-open, html.viewer-open body { overflow: hidden; }
 @media (max-width: 860px) { .service-options, .results-grid { grid-template-columns: 1fr; } .article-body .service-option { padding: 1.4rem; } }
+.articles-recovibes { margin-top: 2rem; max-width: 100%; overflow-x: auto; }

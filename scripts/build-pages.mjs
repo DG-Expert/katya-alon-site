@@ -435,8 +435,8 @@ export function renderArticlesIndex(template, contentYaml, articlesYaml, lang = 
     DESCRIPTION: escapeHtml(localized(source.ui.listing_description, lang)),
     ARTICLES: cards
   }).replace(/<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`);
-  // User-requested third-party widget: Hebrew articles listing only (vendor snippet verbatim, pending vendor approval).
-  if (lang === 'he') out = out
+  // User-requested third-party widget: the three articles listing routes only (he/en/ru; vendor snippet verbatim).
+  out = out
     .replace('</head>', `  ${RECOVIBES_SCRIPT}\n</head>`)
     .replace('</div>\n    </div>\n  </main>', '</div>\n      <div class="articles-recovibes"><div data-recovibes></div></div>\n    </div>\n  </main>');
   return withHead(out, { title: escapeHtml(localized(source.ui.listing_seo_title, lang)), description: escapeHtml(localized(source.ui.listing_description, lang)), url: urlFor(lang, 'articles'), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'articles' });

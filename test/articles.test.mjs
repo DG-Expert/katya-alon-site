@@ -151,7 +151,7 @@ test('article listing and homepage expose the expected editorial order and five 
   }
 });
 
-test('RecoVibes widget exists only on the Hebrew articles listing, after the grid and before the footer', () => {
+test('RecoVibes widget exists only on the three articles listings (he/en/ru), after the cards and before the footer', () => {
   const stage = mkdtempSync(join(tmpdir(), 'recovibes-'));
   try {
     buildPages(stage);
@@ -159,21 +159,24 @@ test('RecoVibes widget exists only on the Hebrew articles listing, after the gri
     const walk = dir => readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(join(dir, e.name)) : e.name.endsWith('.html') ? [join(dir, e.name)] : []);
     const pages = walk(stage);
     assert.ok(pages.length >= 24);
-    const target = join(stage, 'articles', 'index.html');
+    const targets = ['articles', 'en/articles', 'ru/articles'].map(p => join(stage, p, 'index.html'));
     for (const page of pages) {
-      const html = readFileSync(page, 'utf8');
-      if (page === target) continue;
-      assert.doesNotMatch(html, /recovibes|rv_5caee053/i, page);
+      if (targets.includes(page)) continue;
+      assert.doesNotMatch(readFileSync(page, 'utf8'), /recovibes|rv_5caee053/i, page);
     }
-    const html = readFileSync(target, 'utf8');
-    assert.equal(count(html, /api\.recovibes\.com\/loader\.js/g), 1);
-    assert.equal(html.split(tag).length - 1, 1);
-    assert.ok(html.indexOf(tag) < html.indexOf('</head>'));
-    assert.equal(count(html, /<div data-recovibes><\/div>/g), 1);
-    const at = html.indexOf('<div data-recovibes></div>');
-    assert.ok(at > html.indexOf('articles-index-grid'));
-    assert.ok(at > html.lastIndexOf('</article>'));
-    assert.ok(at < html.indexOf('<footer'));
-    assert.equal(count(html, /<article class="article-card"/g), source.articles.length);
+    for (const target of targets) {
+      assert.ok(pages.includes(target), target);
+      const html = readFileSync(target, 'utf8');
+      assert.equal(count(html, /api\.recovibes\.com\/loader\.js/g), 1, target);
+      assert.equal(html.split(tag).length - 1, 1, target);
+      assert.ok(html.indexOf(tag) < html.indexOf('</head>'), target);
+      assert.equal(count(html, /<div data-recovibes><\/div>/g), 1, target);
+      assert.equal(count(html, /<div class="articles-recovibes"><div data-recovibes><\/div><\/div>/g), 1, target);
+      const at = html.indexOf('<div data-recovibes></div>');
+      assert.ok(at > html.indexOf('articles-index-grid'), target);
+      assert.ok(at > html.lastIndexOf('</article>'), target);
+      assert.ok(at < html.indexOf('<footer'), target);
+      assert.equal(count(html, /<article class="article-card"/g), source.articles.length, target);
+    }
   } finally { rmSync(stage, { recursive: true, force: true }); }
 });

@@ -1885,7 +1885,9 @@ body {
 }
 
 @media (min-width: 1200px) {
-  #services.services-layout-radial .service-card-pos-1 { top: 20px; left: 50%; right: auto; transform: translateX(-50%); }
+  /* Keep the top card centred on the vertical connector without replacing the
+     transform that the pointer-effect updates on every service card. */
+  #services.services-layout-radial .service-card-pos-1 { top: 20px; left: 50%; right: auto; translate: -50% 0; }
   #services.services-layout-radial .service-card-pos-2 { top: 270px; left: 0; right: auto; }
   #services.services-layout-radial .service-card-pos-3 { top: 270px; right: 0; left: auto; }
   #services.services-layout-radial .service-card-pos-4 { top: auto; bottom: 25px; left: 80px; right: auto; }

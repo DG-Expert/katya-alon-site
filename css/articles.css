@@ -7,6 +7,21 @@
 .articles-index-header h1 { font-size: clamp(2.25rem, 6vw, 4rem); line-height: 1.1; }
 .articles-index-header p { margin-top: 1.25rem; max-width: 46rem; font-size: 1.1rem; line-height: 1.8; }
 .articles-index-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.articles-podcasts-promo { margin-top: 1.5rem; padding: clamp(1.3rem, 4vw, 2rem); border: 1px solid rgba(215, 184, 255, 0.34); border-radius: 1rem; background: linear-gradient(135deg, rgba(215, 184, 255, 0.13), rgba(255, 255, 255, 0.04)); }
+.articles-podcasts-promo h2 { color: #ecdfE0; font-size: clamp(1.35rem, 3vw, 1.7rem); font-weight: 750; }
+.articles-podcasts-promo h2 a, .articles-podcasts-promo .article-card-link, .podcast-watch-link { color: #d7b8ff; text-decoration: underline; text-underline-offset: .22em; }
+.articles-podcasts-promo p { margin-top: .65rem; line-height: 1.7; }
+.articles-podcasts-kicker { color: #d7b8ff; font-size: .86rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.podcast-intro { margin-top: 1.25rem; font-size: 1.08rem; line-height: 1.8; }
+.podcast-intro p + p { margin-top: 1rem; }
+.podcast-episodes { margin-top: 2.5rem; }
+.podcast-episode { overflow: hidden; border: 1px solid rgba(215, 184, 255, .25); border-radius: 1rem; background: rgba(255,255,255,.04); }
+.podcast-player { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #0b0814; }
+.podcast-player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.podcast-episode-copy { padding: clamp(1.25rem, 4vw, 2rem); }
+.podcast-episode-copy h2 { color: #ecdfE0; font-size: clamp(1.35rem, 3vw, 1.75rem); font-weight: 750; }
+.podcast-episode-copy p { margin-top: .8rem; line-height: 1.75; }
+.podcast-language-note { color: #c9c4ce; }
 .articles-index-grid .article-card h2 { color: #ecdfE0; font-size: 1.35rem; line-height: 1.4; font-weight: 700; }
 .article-breadcrumbs { margin-bottom: 2rem; color: #c9c4ce; font-size: 0.9rem; }
 .article-breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; list-style: none; }
@@ -19,6 +34,8 @@
 .article-body { padding-top: 1rem; font-size: 1.08rem; line-height: 1.85; }
 .article-body h2 { margin: 3rem 0 1rem; color: #ecdfE0; font-size: clamp(1.55rem, 4vw, 2rem); line-height: 1.3; font-weight: 750; text-wrap: balance; }
 .article-body p { margin-block: 1.15rem; }
+.article-body .article-list { display: grid; gap: 0.6rem; margin-block: 1.15rem; padding-inline-start: 1.5rem; list-style: disc; }
+.article-body .article-list li::marker { color: #d7b8ff; }
 .article-body a { color: #d7b8ff; text-decoration: underline; text-underline-offset: 0.22em; }
 .article-related { margin-top: 3.5rem; padding: 1.5rem; border: 1px solid rgba(215, 184, 255, 0.25); border-radius: 1rem; background: rgba(255,255,255,.04); }
 .article-related h2 { color: #ecdfE0; font-size: 1.35rem; font-weight: 700; }
@@ -33,6 +50,18 @@
 .service-points li::marker { color: #d7b8ff; }
 .article-body .service-cta { margin-top: 1.75rem; }
 .article-body .service-cta a { color: #dfeceb; text-decoration: none; }
+/* Marketing-strategy long-form page: a calm editorial reading rhythm with distinct decision points. */
+.service-rich-lead { max-width: 52rem; font-size: clamp(1.2rem, 2.5vw, 1.42rem); color: #ecdfE0; }
+.service-intro { max-width: 52rem; }
+.article-body .service-rich-panel { margin-top: 2.5rem; padding: clamp(1.25rem, 3vw, 2rem); }
+.article-body .service-rich-panel h2, .article-body .service-rich-contact h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
+.service-rich-points { gap: 0.85rem; }
+.service-rich-points li { padding-inline-start: 0.25rem; }
+.service-rich-points strong { color: #ecdfE0; }
+.article-body .service-rich-contact { margin-top: 3.25rem; padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid rgba(215, 184, 255, 0.3); border-radius: 1.25rem; background: linear-gradient(135deg, rgba(215, 184, 255, 0.14), rgba(255, 255, 255, 0.035)); }
+.article-body .service-rich-contact h2 { margin-top: 0; }
+.article-body .service-rich-contact a { color: #dfeceb; text-decoration: none; }
+.article-body .service-divider { margin: 3rem 0; border: 0; border-top: 1px solid rgba(215, 184, 255, 0.32); }
 .article-page #mobile-nav[hidden] { display: none; }
 .article-page #mobile-nav { display: block; }
 @media (min-width: 1024px) { .article-page #mobile-nav { display: none; } }
@@ -41,6 +70,7 @@
   .articles-index-grid { grid-template-columns: 1fr; }
   .article-body { font-size: 1rem; line-height: 1.8; }
   .service-panel { padding: 1.15rem; }
+  .article-body .service-rich-contact { margin-top: 2.5rem; }
 }
 
 /* Paid-advertising page only (service.page in content.yaml): wider shell, option cards, results gallery. */

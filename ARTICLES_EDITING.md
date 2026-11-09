@@ -10,7 +10,7 @@ Each article requires:
 - complete `he`, `en`, and `ru` values for the title, SEO title, description, every heading, and every paragraph;
 - a valid `service_anchor` matching a rendered service on the home page.
 
-Use `h2` blocks for section headings and `p` blocks for paragraphs. Keep the source paragraph order. A paragraph may use `link_slug` to link its full supplied text to another article.
+Use `h2` blocks for section headings, `p` blocks for paragraphs, `strong` blocks for a fully bold paragraph, and `ul` blocks (a list of `{he, en, ru}` items) for bullet lists. Text is always HTML-escaped; never write Markdown or HTML in the YAML. Keep the source paragraph order. A paragraph may use `link_slug` to link its full supplied text to another article.
 
 After editing, regenerate the checked-in sitemap and run the build and tests:
 

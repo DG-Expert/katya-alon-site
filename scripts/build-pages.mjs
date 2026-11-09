@@ -1,4 +1,4 @@
-// Prerenders all canonical language variants of the home, workshop, article index, article, and service pages.
+// Prerenders all canonical language variants of the home, workshop, article index, article, podcast, and service pages.
 // Source HTML and content/*.yaml stay the only truth; the output is never committed. JS still hydrates/replaces the same nodes.
 // Usage: node scripts/build-pages.mjs <stage-dir>
 import { createHash } from 'node:crypto';
@@ -27,21 +27,25 @@ const SOCIAL_IMAGE = {
 
 export const routeFor = (lang, page, slug = '') => {
   if (!LANGUAGES.includes(lang)) throw new Error(`build-pages: unsupported language ${lang}`);
-  if (!['home', 'workshops', 'articles', 'article', 'service'].includes(page)) throw new Error(`build-pages: unsupported page ${page}`);
+  if (!['home', 'workshops', 'articles', 'article', 'podcasts', 'service'].includes(page)) throw new Error(`build-pages: unsupported page ${page}`);
   const prefix = lang === 'he' ? '/' : `/${lang}/`;
   if (page === 'home') return prefix;
   if (page === 'workshops') return `${prefix}workshops.html`;
   if (page === 'articles') return `${prefix}articles/`;
+  if (page === 'podcasts') return `${prefix}podcasts/`;
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error(`build-pages: unsafe ${page} slug ${slug}`);
   return `${prefix}${page === 'service' ? 'services' : 'articles'}/${slug}/`;
 };
 
 export const urlFor = (lang, page, slug = '') => new URL(routeFor(lang, page, slug), SITE_URL).href;
 
-// Home-page card order; each enabled service also gets its own page.
-export const enabledServices = site => site.services.items
+// Home-page card order; each enabled service also gets its own page. Long-form
+// records may retain their original standalone_pages location while becoming active.
+export const enabledServices = site => [...site.services.items, ...(site.services.standalone_pages || [])]
   .filter(item => item.enabled !== false)
   .sort((a, b) => a.display_order - b.display_order);
+
+const serviceCardTitle = service => service.card_title || service.title;
 
 export const escapeHtml = value => String(value)
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
@@ -348,7 +352,7 @@ const CHEVRON = '<svg class="nav-dropdown-icon" aria-hidden="true" width="14" he
 function siteNav(site, lang, page, slug, menuId) {
   const current = condition => (condition ? ' aria-current="page"' : '');
   const label = key => escapeHtml(localized(site.nav[key], lang));
-  const services = enabledServices(site).map(service => `<li><a href="${routeFor(lang, 'service', service.slug)}"${current(page === 'service' && service.slug === slug)}>${escapeHtml(localized(service.title, lang))}</a></li>`).join('');
+  const services = enabledServices(site).map(service => `<li><a href="${routeFor(lang, 'service', service.slug)}"${current(page === 'service' && service.slug === slug)}>${escapeHtml(localized(serviceCardTitle(service), lang))}</a></li>`).join('');
   return `<a href="${routeFor(lang, 'home')}" class="nav-link" data-home-link${current(page === 'home')}>${label('home')}</a>`
     + `<div class="nav-dropdown"><button type="button" class="nav-link nav-dropdown-toggle${page === 'service' ? ' nav-link-current' : ''}" aria-expanded="false" aria-controls="${menuId}" data-nav-dropdown>${label('services')}${CHEVRON}</button><ul id="${menuId}" class="nav-dropdown-menu" hidden>${services}</ul></div>`
     + `<a href="${routeFor(lang, 'workshops')}" class="nav-link" data-workshops-link${current(page === 'workshops')}>${label('workshops')}</a>`
@@ -433,13 +437,46 @@ export function renderArticlesIndex(template, contentYaml, articlesYaml, lang = 
     FOOTER: shellFooter(site, lang),
     TITLE: escapeHtml(localized(source.ui.listing_title, lang)),
     DESCRIPTION: escapeHtml(localized(source.ui.listing_description, lang)),
-    ARTICLES: cards
+    ARTICLES: cards,
+    PODCASTS_PROMO: `<aside class="articles-podcasts-promo" aria-labelledby="podcasts-promo-title"><p class="articles-podcasts-kicker">${escapeHtml(localized(source.ui.podcasts_promo_kicker, lang))}</p><h2 id="podcasts-promo-title"><a href="${routeFor(lang, 'podcasts')}">${escapeHtml(localized(source.ui.podcasts_promo_title, lang))}</a></h2><p>${escapeHtml(localized(source.ui.podcasts_promo_description, lang))}</p><a class="article-card-link" href="${routeFor(lang, 'podcasts')}">${escapeHtml(localized(source.ui.podcasts_promo_link, lang))}</a></aside>`
   }).replace(/<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`);
   // User-requested third-party widget: the three articles listing routes only (he/en/ru; vendor snippet verbatim).
   out = out
     .replace('</head>', `  ${RECOVIBES_SCRIPT}\n</head>`)
-    .replace('</div>\n    </div>\n  </main>', '</div>\n      <div class="articles-recovibes"><div data-recovibes></div></div>\n    </div>\n  </main>');
+    .replace('</aside>\n    </div>\n  </main>', '</aside>\n      <div class="articles-recovibes"><div data-recovibes></div></div>\n    </div>\n  </main>');
   return withHead(out, { title: escapeHtml(localized(source.ui.listing_seo_title, lang)), description: escapeHtml(localized(source.ui.listing_description, lang)), url: urlFor(lang, 'articles'), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'articles' });
+}
+
+function podcastsExtraGraph(source, lang) {
+  const url = urlFor(lang, 'podcasts');
+  return [
+    { '@type': 'CollectionPage', '@id': `${url}#webpage`, name: localized(source.page.title, lang), description: localized(source.page.meta_description, lang), url, inLanguage: LOCALES[lang], isPartOf: { '@id': WEBSITE_ID }, about: { '@id': PERSON_ID } },
+    { '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: localized(source.ui.breadcrumbs_home, lang), item: urlFor(lang, 'home') },
+      { '@type': 'ListItem', position: 2, name: localized(source.page.title, lang), item: url }
+    ] }
+  ];
+}
+
+export function renderPodcasts(template, contentYaml, podcastsYaml, lang = 'he') {
+  const site = yaml.load(contentYaml);
+  const source = yaml.load(podcastsYaml);
+  assertLocaleMaps(site);
+  assertLocaleMaps({ ...source, episodes: source.episodes.map(({ youtube_id, start_seconds, ...episode }) => episode) }, 'podcasts');
+  const text = value => escapeHtml(localized(value, lang));
+  const episodes = source.episodes.map(episode => {
+    if (!/^[\w-]{11}$/.test(episode.youtube_id)) throw new Error('build-pages: invalid YouTube video ID');
+    if (episode.source_url !== `https://www.youtube.com/watch?v=${episode.youtube_id}`) throw new Error('build-pages: invalid podcast source URL');
+    const start = Number(episode.start_seconds?.[lang]);
+    if (!Number.isInteger(start) || start < 0) throw new Error(`build-pages: invalid podcast start time for ${lang}`);
+    const embed = `https://www.youtube-nocookie.com/embed/${episode.youtube_id}?start=${start}`;
+    const watch = `${episode.source_url}${start ? `&t=${start}s` : ''}`;
+    return `<article class="podcast-episode"><div class="podcast-player"><iframe src="${embed}" title="${text(episode.iframe_title)}" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div><div class="podcast-episode-copy"><h2>${text(episode.title)}</h2><p>${text(episode.description)}</p><p class="podcast-language-note"><em>${text(episode.language_note)}</em></p><p><a class="podcast-watch-link" href="${watch}" target="_blank" rel="noopener noreferrer">${text(source.ui.watch_on_youtube)}</a></p></div></article>`;
+  }).join('');
+  const breadcrumbs = `<nav class="article-breadcrumbs" aria-label="${BREADCRUMB_LABEL[lang]}"><ol><li><a href="${routeFor(lang, 'home')}">${text(source.ui.breadcrumbs_home)}</a></li><li aria-current="page">${text(source.page.title)}</li></ol></nav>`;
+  const out = replaceTemplate(template, { HEADER: shellHeader(site, lang, 'podcasts'), FOOTER: shellFooter(site, lang), BREADCRUMBS: breadcrumbs, TITLE: text(source.page.title), INTRO: source.page.intro.map(paragraph => `<p>${text(paragraph)}</p>`).join(''), EPISODES: episodes })
+    .replace(/<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`);
+  return withHead(out, { title: text(source.page.seo_title), description: text(source.page.meta_description), url: urlFor(lang, 'podcasts'), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'podcasts', extraGraph: podcastsExtraGraph(source, lang) });
 }
 
 export function renderArticle(template, contentYaml, articlesYaml, slug, lang = 'he') {
@@ -451,6 +488,8 @@ export function renderArticle(template, contentYaml, articlesYaml, slug, lang = 
   if (!service) throw new Error(`build-pages: article ${slug} needs an enabled service_anchor`);
   const body = article.blocks.map(block => {
     if (block.h2) return `<h2>${escapeHtml(localized(block.h2, lang))}</h2>`;
+    if (block.strong) return `<p><strong>${escapeHtml(localized(block.strong, lang))}</strong></p>`;
+    if (block.ul) return `<ul class="article-list">${block.ul.map(item => `<li>${escapeHtml(localized(item, lang))}</li>`).join('')}</ul>`;
     const text = escapeHtml(localized(block.p, lang));
     return `<p>${block.link_slug ? `<a href="${routeFor(lang, 'article', block.link_slug)}">${text}</a>` : text}</p>`;
   }).join('');
@@ -468,14 +507,16 @@ export function renderArticle(template, contentYaml, articlesYaml, slug, lang = 
   return withHead(out, { title: escapeHtml(localized(article.seo_title, lang)), description: escapeHtml(localized(article.meta_description, lang)), url: urlFor(lang, 'article', slug), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'article', slug, ogType: 'article', extraGraph: articleExtraGraph(article, lang) });
 }
 
-function serviceExtraGraph(site, service, lang) {
+function serviceExtraGraph(site, service, lang, page = null) {
   const url = urlFor(lang, 'service', service.slug);
+  const name = page?.heading ? localized(page.heading, lang) : localized(service.title, lang);
+  const description = page?.meta_description ? localized(page.meta_description, lang) : localized(service.description, lang);
   return [
     {
       '@type': 'Service',
       '@id': `${url}#service`,
-      name: localized(service.title, lang),
-      description: localized(service.description, lang),
+      name,
+      description,
       url,
       provider: { '@id': PERSON_ID }
     },
@@ -483,10 +524,47 @@ function serviceExtraGraph(site, service, lang) {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: localized(site.nav.home, lang), item: urlFor(lang, 'home') },
-        { '@type': 'ListItem', position: 2, name: localized(service.title, lang), item: url }
+        { '@type': 'ListItem', position: 2, name, item: url }
       ]
     }
   ];
+}
+
+// Opt-in long-form layout for the marketing-strategy service. Labels and text stay separate so list labels can be semantic bold text.
+function marketingStrategyPage(page, contact, text) {
+  const labeledPoints = items => `<ul class="service-points service-rich-points">${items.map(item => `<li><strong>${text(item.label)}</strong> ${text(item.text)}</li>`).join('')}</ul>`;
+  const points = items => `<ul class="service-points service-rich-points">${items.map(item => `<li>${text(item)}</li>`).join('')}</ul>`;
+  const introCallout = page.intro_callout ? `<p><strong>${text(page.intro_callout)}</strong></p>` : '';
+  const outcomeCallout = page.outcome_callout ? `<p class="service-statement"><strong>${text(page.outcome_callout)}</strong></p>` : '';
+  const audience = page.audience_title ? `<section class="service-intro service-rich-audience"><h2>${text(page.audience_title)}</h2>${page.audience_paragraphs.map(paragraph => `<p>${text(paragraph)}</p>`).join('')}</section>` : '';
+  return {
+    title: text(page.heading),
+    lead: `<strong>${text(page.lead)}</strong>`,
+    body: `<section class="service-intro">${page.paragraphs.map(paragraph => `<p>${text(paragraph)}</p>`).join('')}${introCallout}</section>`
+      + `<section class="service-panel service-rich-panel"><h2>${text(page.includes_title)}</h2>${labeledPoints(page.includes)}</section>`
+      + `<section class="service-panel service-rich-panel"><h2>${text(page.outcomes_title)}</h2>${points(page.outcomes)}</section>`
+      + outcomeCallout
+      + audience
+      + `<section class="service-contact service-rich-contact"><h2>${text(page.closing_title)}</h2>${page.closing_paragraphs.map(paragraph => `<p>${text(paragraph)}</p>`).join('')}<p><strong>${text(page.callout)}</strong></p><p>${text(page.cta_intro)}</p><p><a href="${text(contact.href)}" class="cta-primary cta-image-button text-sm font-medium">${text(contact.label)}</a></p></section>`
+  };
+}
+
+// The personal-training detail page has a richer, fixed structure while sharing the
+// same enabled service record as its home card and menu entry.
+function standaloneTrainingPage(page, text) {
+  const points = items => `<ul class="service-points service-rich-points">${items.map(item => `<li>${text(item)}</li>`).join('')}</ul>`;
+  const labeledPoints = items => `<ul class="service-points service-rich-points">${items.map(item => `<li><strong>${text(item.label)}</strong> ${text(item.text)}</li>`).join('')}</ul>`;
+  return {
+    title: text(page.title),
+    lead: `<strong>${text(page.lead)}</strong>`,
+    body: `<section class="service-intro"><p>${text(page.intro)}</p></section>`
+      + `<section class="service-panel service-rich-panel"><h2>${text(page.first_title)}</h2>${points(page.first_points)}</section>`
+      + `<p class="service-statement"><strong>${text(page.first_callout)}</strong></p>`
+      + `<section class="service-panel service-rich-panel"><h2>${text(page.second_title)}</h2>${labeledPoints(page.second_points)}</section>`
+      + `<p class="service-statement"><strong>${text(page.second_callout)}</strong></p>`
+      + `<hr class="service-divider">`
+      + `<section class="service-contact service-rich-contact"><p><strong>${text(page.closing_callout)}</strong></p><p>${text(page.closing)}</p><p><a href="${text(page.contact_cta.href)}" class="cta-primary cta-image-button text-sm font-medium">${text(page.contact_cta.label)}</a></p></section>`
+  };
 }
 
 // Opt-in layout for a service with a `page` block (paid-advertising): two option cards, shared statement, optional results gallery, contact CTA.
@@ -516,28 +594,33 @@ export function renderService(template, contentYaml, articlesYaml, slug, lang = 
   const service = services.find(item => item.slug === slug);
   if (!service) throw new Error(`build-pages: unknown service ${slug}`);
   const text = value => escapeHtml(localized(value, lang));
-  const { details, details: { contact_cta: cta } } = service;
+  const details = service.details;
+  const cta = details?.contact_cta;
   const ui = site.services;
   const points = items => `<ul class="service-points">${items.map(item => `<li>${text(item)}</li>`).join('')}</ul>`;
   const related = (id, title, links) => (links.length ? `<aside class="article-related" aria-labelledby="${id}"><h2 id="${id}">${text(title)}</h2><ul>${links.map(([href, label]) => `<li><a href="${href}">${text(label)}</a></li>`).join('')}</ul></aside>` : '');
-  const body = `<p class="service-summary">${text(details.summary)}</p>`
+  const body = details && `<p class="service-summary">${text(details.summary)}</p>`
     + `<section class="service-panel"><h2>${text(ui.includes_title)}</h2>${points(details.tech_points)}</section>`
     + `<section class="service-panel"><h2>${text(ui.results_title)}</h2>${points(details.second_tech_points)}</section>`
     + details.body.map(paragraph => `<p>${text(paragraph)}</p>`).join('')
     + `<p class="service-cta"><a href="${text(cta.href)}" class="cta-primary cta-image-button text-sm font-medium">${text(cta.label)}</a></p>`;
   const rich = service.page ? richServicePage(service.page, details.contact_cta, text, lang) : null;
-  const out = replaceTemplate(rich ? template.replace('article-reading', 'article-wide').replace('\n        <p class="service-lead">{{DESCRIPTION}}</p>', '').replace('<script defer src="/js/nav.js"></script>', '<script defer src="/js/nav.js"></script>\n  <script defer src="/js/gallery.js"></script>') : template, {
+  const marketing = service.marketing_page ? marketingStrategyPage(service.marketing_page, details.contact_cta, text) : null;
+  const training = service.card_title ? standaloneTrainingPage(service, text) : null;
+  const pageContent = rich || marketing || training;
+  const out = replaceTemplate(pageContent ? template.replace('article-reading', 'article-wide').replace('\n        <p class="service-lead">{{DESCRIPTION}}</p>', (marketing || training) ? '\n        <p class="service-lead service-rich-lead">{{DESCRIPTION}}</p>' : '').replace('<script defer src="/js/nav.js"></script>', rich ? '<script defer src="/js/nav.js"></script>\n  <script defer src="/js/gallery.js"></script>' : '<script defer src="/js/nav.js"></script>') : template, {
     HEADER: shellHeader(site, lang, 'service', slug),
     FOOTER: shellFooter(site, lang),
-    BREADCRUMBS: `<nav class="article-breadcrumbs" aria-label="${BREADCRUMB_LABEL[lang]}"><ol><li><a href="${routeFor(lang, 'home')}">${text(site.nav.home)}</a></li><li aria-current="page">${text(service.title)}</li></ol></nav>`,
-    TITLE: rich ? rich.title : text(service.title),
-    DESCRIPTION: text(service.description),
-    BODY: rich ? rich.body : body,
-    RELATED: related('more-services-title', ui.more_title, services.filter(item => item !== service).map(item => [routeFor(lang, 'service', item.slug), item.title]))
+    BREADCRUMBS: `<nav class="article-breadcrumbs" aria-label="${BREADCRUMB_LABEL[lang]}"><ol><li><a href="${routeFor(lang, 'home')}">${text(site.nav.home)}</a></li><li aria-current="page">${(marketing || training) ? pageContent.title : text(serviceCardTitle(service))}</li></ol></nav>`,
+    TITLE: pageContent ? pageContent.title : text(service.title),
+    DESCRIPTION: (marketing || training) ? pageContent.lead : text(service.description),
+    BODY: pageContent ? pageContent.body : body,
+    RELATED: related('more-services-title', ui.more_title, services.filter(item => item !== service).map(item => [routeFor(lang, 'service', item.slug), serviceCardTitle(item)]))
       + related('related-articles-title', ui.articles_title, articles.filter(article => article.service_anchor === service.anchor)
         .sort((a, b) => a.order - b.order).map(article => [routeFor(lang, 'article', article.slug), article.title]))
   }).replace(/<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`);
-  return withHead(out, { title: `${text(service.title)} | ${text(site.hero.name)}`, description: text(service.description), url: urlFor(lang, 'service', slug), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'service', slug, extraGraph: serviceExtraGraph(site, service, lang) });
+  const metadata = service.marketing_page || (training ? service : null);
+  return withHead(out, { title: metadata ? text(metadata.seo_title) : `${text(serviceCardTitle(service))} | ${text(site.hero.name)}`, description: metadata ? text(metadata.meta_description) : text(service.description), url: urlFor(lang, 'service', slug), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'service', slug, extraGraph: serviceExtraGraph(site, service, lang, metadata) });
 }
 
 export function renderSitemap(articlesYaml = read('content/articles.yaml'), contentYaml = read('content/content.yaml')) {
@@ -546,6 +629,7 @@ export function renderSitemap(articlesYaml = read('content/articles.yaml'), cont
     ['home', ''],
     ['workshops', ''],
     ['articles', ''],
+    ['podcasts', ''],
     ...source.articles.map(article => ['article', article.slug]),
     ...enabledServices(yaml.load(contentYaml)).map(service => ['service', service.slug])
   ];
@@ -560,11 +644,13 @@ export function buildPages(stageDir) {
   const homeTemplate = read('index.html');
   const workshopTemplate = read('workshops.html');
   const articlesTemplate = read('scripts/templates/articles.html');
+  const podcastsTemplate = read('scripts/templates/podcasts.html');
   const articleTemplate = read('scripts/templates/article.html');
   const serviceTemplate = read('scripts/templates/service.html');
   const contentYaml = read('content/content.yaml');
   const workshopYaml = read('content/workshop.yaml');
   const articlesYaml = read('content/articles.yaml');
+  const podcastsYaml = read('content/podcasts.yaml');
   const articleSource = yaml.load(articlesYaml);
   const slugs = articleSource.articles.map(article => article.slug);
   if (new Set(slugs).size !== slugs.length) throw new Error('build-pages: article slugs must be unique');
@@ -579,6 +665,9 @@ export function buildPages(stageDir) {
     const articlesDir = join(outputDir, 'articles');
     mkdirSync(articlesDir, { recursive: true });
     writeFileSync(join(articlesDir, 'index.html'), renderArticlesIndex(articlesTemplate, contentYaml, articlesYaml, lang));
+    const podcastsDir = join(outputDir, 'podcasts');
+    mkdirSync(podcastsDir, { recursive: true });
+    writeFileSync(join(podcastsDir, 'index.html'), renderPodcasts(podcastsTemplate, contentYaml, podcastsYaml, lang));
     for (const slug of slugs) {
       const articleDir = join(articlesDir, slug);
       mkdirSync(articleDir, { recursive: true });
@@ -605,7 +694,7 @@ export function buildPages(stageDir) {
     throw new Error(`build-pages: Tailwind CSS compilation failed: ${result.stderr || result.stdout}`);
   }
   versionAssets(stageDir);
-  return LANGUAGES.length * (3 + slugs.length + serviceSlugs.length);
+  return LANGUAGES.length * (4 + slugs.length + serviceSlugs.length);
 }
 
 // Cache-bust local CSS/JS: HTML is revalidated quickly while assets are cached longer, so a new page must never

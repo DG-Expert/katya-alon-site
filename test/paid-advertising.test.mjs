@@ -38,22 +38,36 @@ test('exact Hebrew copy, one H1, no old duplicate panels', () => {
   assert.match(he.match(/<h1>(.*?)<\/h1>/)[1].replace(/<[^>]+>/g, ''), /^פרסום ממומן בפייסבוק ובאינסטגרם$/);
 });
 
-test('only paid-advertising uses the rich layout', () => {
+test('paid-advertising keeps its option-card rich layout; marketing-strategy has its own long-form layout', () => {
   for (const s of services.filter(x => x !== paid)) {
     assert.ok(!s.page);
-    for (const lang of LANGUAGES) assert.match(html(lang, s.slug), /article-reading/);
+    for (const lang of LANGUAGES) {
+      const out = html(lang, s.slug);
+      if (s.marketing_page || s.card_title) {
+        assert.match(out, /article-wide/);
+        assert.match(out, /service-rich-panel/);
+        assert.doesNotMatch(out, /service-option/);
+      } else assert.match(out, /article-reading/);
+    }
   }
 });
 
-test('option CTAs open WhatsApp with a service-specific encoded message in each locale', () => {
+test('option CTAs retain their exact original localized WhatsApp targets', () => {
+  const originalTrainingWhatsApp = {
+    he: 'https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20על%20הדרכה%20אישית%20לפרסום%20ממומן.',
+    en: 'https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20details%20about%20personal%20training%20in%20paid%20advertising.',
+    ru: 'https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20узнать%20подробнее%20об%20индивидуальном%20обучении%20платной%20рекламе.'
+  };
   for (const lang of LANGUAGES) {
     const hrefs = page.options.map(o => o.cta.href[lang]);
-    assert.notEqual(hrefs[0], hrefs[1]);
-    for (const href of hrefs) {
-      assert.match(href, /^https:\/\/wa\.me\/972547838645\?text=/);
-      assert.ok(html(lang).includes(`href="${href}"`));
-      assert.ok(!/\s/.test(href));
-    }
+    assert.match(hrefs[0], /^https:\/\/wa\.me\/972547838645\?text=/);
+    assert.equal(hrefs[1], originalTrainingWhatsApp[lang]);
+    assert.ok(html(lang).includes(`href="${hrefs[0]}"`));
+    assert.ok(html(lang).includes(`href="${hrefs[1]}"`));
+    const main = html(lang).match(/<main\b[\s\S]*?<\/main>/)[0];
+    assert.equal((main.match(/href="https:\/\/wa\.me\//g) || []).length, 3);
+    const optionCards = main.match(/<div class="service-options">[\s\S]*?<\/div><p class="service-statement">/)[0];
+    assert.ok(!optionCards.includes(routeFor(lang, 'service', 'personal-social-media-training')));
   }
 });
 

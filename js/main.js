@@ -104,7 +104,7 @@ function renderContent(lang) {
   setText('services.title', t(c.services.title, lang));
   setText('services.includes_title', t(c.services.includes_title, lang));
   setText('services.results_title', t(c.services.results_title, lang));
-  renderServices(c.services.items, lang);
+  renderServices([...c.services.items, ...(c.services.standalone_pages || [])], lang);
 
   setText('audience.title', t(c.audience.title, lang));
   setText('audience.subtitle', t(c.audience.subtitle, lang));
@@ -270,7 +270,7 @@ function renderServices(items, lang) {
           <span class="service-card-holo-lines" aria-hidden="true"></span>
 
           <span class="service-card-content">
-            <span class="service-card-title service-card-title-theme">${t(item.title, lang)}</span>
+            <span class="service-card-title service-card-title-theme">${t(item.card_title || item.title, lang)}</span>
             <span class="service-card-description service-card-description-theme">${t(item.description, lang)}</span>
           </span>
         </span>
@@ -364,7 +364,10 @@ function handleServicesDiagramPointerMove(event) {
   const hoveredCard = event.target.closest('.service-row');
 
   if (hoveredCard && list.contains(hoveredCard)) {
-    servicesSceneState.activeIndex = Number(hoveredCard.dataset.serviceIndex);
+    // data-service-index addresses the source content for the modal. The scene,
+    // however, is indexed by the rendered cards; disabled source entries may
+    // otherwise leave a gap and prevent a later card from ever becoming active.
+    servicesSceneState.activeIndex = cards.indexOf(hoveredCard);
 
     const rect = hoveredCard.getBoundingClientRect();
     const halfWidth = rect.width / 2;
@@ -681,10 +684,11 @@ function renderProcess(steps, lang) {
 }
 
 function openServiceModal(index) {
-  if (!siteContent || !siteContent.services || !siteContent.services.items[index]) return;
+  const items = siteContent?.services ? [...siteContent.services.items, ...(siteContent.services.standalone_pages || [])] : [];
+  if (!items[index]) return;
 
   activeServiceIndex = index;
-  const item = siteContent.services.items[index];
+  const item = items[index];
   const details = item.details || {};
 
   const serviceLink = document.getElementById('modal-service-link');
@@ -699,7 +703,7 @@ function openServiceModal(index) {
   const videoFrame = document.getElementById('modal-video-frame');
   const videoLink = document.getElementById('modal-video-link');
 
-  title.textContent = t(item.title, currentLang);
+  title.textContent = t(item.card_title || item.title, currentLang);
   summary.textContent = t(details.summary, currentLang);
 
   const techItems = details.tech_points || [];

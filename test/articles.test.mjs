@@ -12,7 +12,6 @@ const site = yaml.load(readFileSync(new URL('content/content.yaml', root), 'utf8
 const count = (html, pattern) => (html.match(pattern) || []).length;
 const languageTag = { he: 'he-IL', en: 'en-GB', ru: 'ru-RU' };
 const services = enabledServices(site);
-const standalonePages = site.services.standalone_pages;
 
 function outputPath(stage, lang, page, slug = '') {
   const prefix = lang === 'he' ? '' : lang;
@@ -55,7 +54,7 @@ test('all 51 pages expose one H1, main and top-level footer with valid local lin
         assert.equal(count(html, /<main\b/g), 1, `${lang}/${page} main`);
         assert.equal(count(html, /<footer\b/g), 1, `${lang}/${page} footer`);
       }
-      for (const [page, slug] of [...source.articles.map(article => ['article', article.slug]), ...services.map(service => ['service', service.slug]), ...standalonePages.map(page => ['service', page.slug])]) {
+      for (const [page, slug] of [...source.articles.map(article => ['article', article.slug]), ...services.map(service => ['service', service.slug])]) {
         const html = readFileSync(outputPath(stage, lang, page, slug), 'utf8');
         assert.equal(count(html, /<h1\b/g), 1, `${lang}/${slug} H1`);
         assert.equal(count(html, /<main\b/g), 1, `${lang}/${slug} main`);
@@ -66,8 +65,7 @@ test('all 51 pages expose one H1, main and top-level footer with valid local lin
     const social = ['https://www.instagram.com/kate_alon_marketing/', 'https://www.facebook.com/share/1QT8QYg3Gn/'];
     const allPages = lang => [outputPath(stage, lang, 'home'), outputPath(stage, lang, 'workshops'), outputPath(stage, lang, 'articles'), outputPath(stage, lang, 'podcasts'),
       ...source.articles.map(article => outputPath(stage, lang, 'article', article.slug)),
-      ...services.map(service => outputPath(stage, lang, 'service', service.slug)),
-      ...standalonePages.map(page => outputPath(stage, lang, 'service', page.slug))];
+      ...services.map(service => outputPath(stage, lang, 'service', service.slug))];
     for (const lang of LANGUAGES) {
       for (const file of allPages(lang)) {
         const footer = readFileSync(file, 'utf8').match(/<footer\b[\s\S]*<\/footer>/)[0];
@@ -163,7 +161,7 @@ test('every article retains its complete language body and SEO graph', () => {
   }
 });
 
-test('article listing and homepage expose the expected editorial order and four services', () => {
+test('article listing and homepage expose the expected editorial order and five services', () => {
   const stage = mkdtempSync(join(tmpdir(), 'katya-article-list-'));
   try {
     buildPages(stage);
@@ -174,7 +172,7 @@ test('article listing and homepage expose the expected editorial order and four 
       const positions = source.articles.map(article => listing.indexOf(routeFor(lang, 'article', article.slug)));
       assert.deepEqual([...positions].sort((a, b) => a - b), positions);
       const home = readFileSync(outputPath(stage, lang, 'home'), 'utf8');
-      assert.equal(count(home, /class="service-row /g), 4);
+      assert.equal(count(home, /class="service-row /g), 5);
       assert.equal(count(home, /class="article-card"/g), 3);
       assert.ok(home.includes(escapeHtml(site.site.description[lang])));
     }

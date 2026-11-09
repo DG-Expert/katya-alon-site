@@ -39,10 +39,13 @@ export const routeFor = (lang, page, slug = '') => {
 
 export const urlFor = (lang, page, slug = '') => new URL(routeFor(lang, page, slug), SITE_URL).href;
 
-// Home-page card order; each enabled service also gets its own page.
-export const enabledServices = site => site.services.items
+// Home-page card order; each enabled service also gets its own page. Long-form
+// records may retain their original standalone_pages location while becoming active.
+export const enabledServices = site => [...site.services.items, ...(site.services.standalone_pages || [])]
   .filter(item => item.enabled !== false)
   .sort((a, b) => a.display_order - b.display_order);
+
+const serviceCardTitle = service => service.card_title || service.title;
 
 export const escapeHtml = value => String(value)
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
@@ -349,7 +352,7 @@ const CHEVRON = '<svg class="nav-dropdown-icon" aria-hidden="true" width="14" he
 function siteNav(site, lang, page, slug, menuId) {
   const current = condition => (condition ? ' aria-current="page"' : '');
   const label = key => escapeHtml(localized(site.nav[key], lang));
-  const services = enabledServices(site).map(service => `<li><a href="${routeFor(lang, 'service', service.slug)}"${current(page === 'service' && service.slug === slug)}>${escapeHtml(localized(service.title, lang))}</a></li>`).join('');
+  const services = enabledServices(site).map(service => `<li><a href="${routeFor(lang, 'service', service.slug)}"${current(page === 'service' && service.slug === slug)}>${escapeHtml(localized(serviceCardTitle(service), lang))}</a></li>`).join('');
   return `<a href="${routeFor(lang, 'home')}" class="nav-link" data-home-link${current(page === 'home')}>${label('home')}</a>`
     + `<div class="nav-dropdown"><button type="button" class="nav-link nav-dropdown-toggle${page === 'service' ? ' nav-link-current' : ''}" aria-expanded="false" aria-controls="${menuId}" data-nav-dropdown>${label('services')}${CHEVRON}</button><ul id="${menuId}" class="nav-dropdown-menu" hidden>${services}</ul></div>`
     + `<a href="${routeFor(lang, 'workshops')}" class="nav-link" data-workshops-link${current(page === 'workshops')}>${label('workshops')}</a>`
@@ -546,8 +549,8 @@ function marketingStrategyPage(page, contact, text) {
   };
 }
 
-// Standalone service detail pages intentionally stay out of enabledServices: they are
-// reachable from a parent service CTA and the sitemap, but are not home cards or menu items.
+// The personal-training detail page has a richer, fixed structure while sharing the
+// same enabled service record as its home card and menu entry.
 function standaloneTrainingPage(page, text) {
   const points = items => `<ul class="service-points service-rich-points">${items.map(item => `<li>${text(item)}</li>`).join('')}</ul>`;
   const labeledPoints = items => `<ul class="service-points service-rich-points">${items.map(item => `<li><strong>${text(item.label)}</strong> ${text(item.text)}</li>`).join('')}</ul>`;
@@ -588,12 +591,11 @@ export function renderService(template, contentYaml, articlesYaml, slug, lang = 
   const { articles } = yaml.load(articlesYaml);
   assertLocaleMaps(site);
   const services = enabledServices(site);
-  const standalone = (site.services.standalone_pages || []).find(item => item.slug === slug);
-  const service = services.find(item => item.slug === slug) || standalone;
+  const service = services.find(item => item.slug === slug);
   if (!service) throw new Error(`build-pages: unknown service ${slug}`);
   const text = value => escapeHtml(localized(value, lang));
   const details = service.details;
-  const cta = details?.contact_cta || standalone?.contact_cta;
+  const cta = details?.contact_cta;
   const ui = site.services;
   const points = items => `<ul class="service-points">${items.map(item => `<li>${text(item)}</li>`).join('')}</ul>`;
   const related = (id, title, links) => (links.length ? `<aside class="article-related" aria-labelledby="${id}"><h2 id="${id}">${text(title)}</h2><ul>${links.map(([href, label]) => `<li><a href="${href}">${text(label)}</a></li>`).join('')}</ul></aside>` : '');
@@ -604,21 +606,21 @@ export function renderService(template, contentYaml, articlesYaml, slug, lang = 
     + `<p class="service-cta"><a href="${text(cta.href)}" class="cta-primary cta-image-button text-sm font-medium">${text(cta.label)}</a></p>`;
   const rich = service.page ? richServicePage(service.page, details.contact_cta, text, lang) : null;
   const marketing = service.marketing_page ? marketingStrategyPage(service.marketing_page, details.contact_cta, text) : null;
-  const training = standalone ? standaloneTrainingPage(standalone, text) : null;
+  const training = service.card_title ? standaloneTrainingPage(service, text) : null;
   const pageContent = rich || marketing || training;
   const out = replaceTemplate(pageContent ? template.replace('article-reading', 'article-wide').replace('\n        <p class="service-lead">{{DESCRIPTION}}</p>', (marketing || training) ? '\n        <p class="service-lead service-rich-lead">{{DESCRIPTION}}</p>' : '').replace('<script defer src="/js/nav.js"></script>', rich ? '<script defer src="/js/nav.js"></script>\n  <script defer src="/js/gallery.js"></script>' : '<script defer src="/js/nav.js"></script>') : template, {
     HEADER: shellHeader(site, lang, 'service', slug),
     FOOTER: shellFooter(site, lang),
-    BREADCRUMBS: `<nav class="article-breadcrumbs" aria-label="${BREADCRUMB_LABEL[lang]}"><ol><li><a href="${routeFor(lang, 'home')}">${text(site.nav.home)}</a></li>${standalone ? `<li><a href="${routeFor(lang, 'service', 'paid-advertising')}">${text(services.find(item => item.slug === 'paid-advertising').title)}</a></li>` : ''}<li aria-current="page">${(marketing || training) ? pageContent.title : text(service.title)}</li></ol></nav>`,
+    BREADCRUMBS: `<nav class="article-breadcrumbs" aria-label="${BREADCRUMB_LABEL[lang]}"><ol><li><a href="${routeFor(lang, 'home')}">${text(site.nav.home)}</a></li><li aria-current="page">${(marketing || training) ? pageContent.title : text(serviceCardTitle(service))}</li></ol></nav>`,
     TITLE: pageContent ? pageContent.title : text(service.title),
     DESCRIPTION: (marketing || training) ? pageContent.lead : text(service.description),
     BODY: pageContent ? pageContent.body : body,
-    RELATED: related('more-services-title', ui.more_title, standalone ? [] : services.filter(item => item !== service).map(item => [routeFor(lang, 'service', item.slug), item.title]))
+    RELATED: related('more-services-title', ui.more_title, services.filter(item => item !== service).map(item => [routeFor(lang, 'service', item.slug), serviceCardTitle(item)]))
       + related('related-articles-title', ui.articles_title, articles.filter(article => article.service_anchor === service.anchor)
         .sort((a, b) => a.order - b.order).map(article => [routeFor(lang, 'article', article.slug), article.title]))
   }).replace(/<html lang="he" dir="rtl"/, `<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`);
-  const metadata = service.marketing_page || standalone || null;
-  return withHead(out, { title: metadata ? text(metadata.seo_title) : `${text(service.title)} | ${text(site.hero.name)}`, description: metadata ? text(metadata.meta_description) : text(service.description), url: urlFor(lang, 'service', slug), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'service', slug, extraGraph: serviceExtraGraph(site, service, lang, metadata) });
+  const metadata = service.marketing_page || (training ? service : null);
+  return withHead(out, { title: metadata ? text(metadata.seo_title) : `${text(serviceCardTitle(service))} | ${text(site.hero.name)}`, description: metadata ? text(metadata.meta_description) : text(service.description), url: urlFor(lang, 'service', slug), lang, siteName: localized(site.site.title, lang), imageAlt: localized(site.hero.portrait_placeholder, lang), page: 'service', slug, extraGraph: serviceExtraGraph(site, service, lang, metadata) });
 }
 
 export function renderSitemap(articlesYaml = read('content/articles.yaml'), contentYaml = read('content/content.yaml')) {
@@ -629,8 +631,7 @@ export function renderSitemap(articlesYaml = read('content/articles.yaml'), cont
     ['articles', ''],
     ['podcasts', ''],
     ...source.articles.map(article => ['article', article.slug]),
-    ...enabledServices(yaml.load(contentYaml)).map(service => ['service', service.slug]),
-    ...(yaml.load(contentYaml).services.standalone_pages || []).map(page => ['service', page.slug])
+    ...enabledServices(yaml.load(contentYaml)).map(service => ['service', service.slug])
   ];
   const entries = LANGUAGES.flatMap(lang => pages.map(([page, slug]) => {
     const alternates = [...LANGUAGES.map(code => `<xhtml:link rel="alternate" hreflang="${code}" href="${urlFor(code, page, slug)}" />`), `<xhtml:link rel="alternate" hreflang="x-default" href="${urlFor('he', page, slug)}" />`].join('');
@@ -654,8 +655,7 @@ export function buildPages(stageDir) {
   const slugs = articleSource.articles.map(article => article.slug);
   if (new Set(slugs).size !== slugs.length) throw new Error('build-pages: article slugs must be unique');
   const serviceSlugs = enabledServices(yaml.load(contentYaml)).map(service => service.slug);
-  const standaloneSlugs = (yaml.load(contentYaml).services.standalone_pages || []).map(page => page.slug);
-  if (new Set([...serviceSlugs, ...standaloneSlugs]).size !== serviceSlugs.length + standaloneSlugs.length) throw new Error('build-pages: service slugs must be unique');
+  if (new Set(serviceSlugs).size !== serviceSlugs.length) throw new Error('build-pages: service slugs must be unique');
   writeFileSync(join(stageDir, 'sitemap.xml'), renderSitemap(articlesYaml, contentYaml));
   for (const lang of LANGUAGES) {
     const outputDir = lang === 'he' ? stageDir : join(stageDir, lang);
@@ -673,7 +673,7 @@ export function buildPages(stageDir) {
       mkdirSync(articleDir, { recursive: true });
       writeFileSync(join(articleDir, 'index.html'), renderArticle(articleTemplate, contentYaml, articlesYaml, slug, lang));
     }
-    for (const slug of [...serviceSlugs, ...standaloneSlugs]) {
+    for (const slug of serviceSlugs) {
       const serviceDir = join(outputDir, 'services', slug);
       mkdirSync(serviceDir, { recursive: true });
       writeFileSync(join(serviceDir, 'index.html'), renderService(serviceTemplate, contentYaml, articlesYaml, slug, lang));
@@ -694,7 +694,7 @@ export function buildPages(stageDir) {
     throw new Error(`build-pages: Tailwind CSS compilation failed: ${result.stderr || result.stdout}`);
   }
   versionAssets(stageDir);
-  return LANGUAGES.length * (4 + slugs.length + serviceSlugs.length + standaloneSlugs.length);
+  return LANGUAGES.length * (4 + slugs.length + serviceSlugs.length);
 }
 
 // Cache-bust local CSS/JS: HTML is revalidated quickly while assets are cached longer, so a new page must never

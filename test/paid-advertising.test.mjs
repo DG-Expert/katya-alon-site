@@ -43,7 +43,7 @@ test('paid-advertising keeps its option-card rich layout; marketing-strategy has
     assert.ok(!s.page);
     for (const lang of LANGUAGES) {
       const out = html(lang, s.slug);
-      if (s.marketing_page) {
+      if (s.marketing_page || s.card_title) {
         assert.match(out, /article-wide/);
         assert.match(out, /service-rich-panel/);
         assert.doesNotMatch(out, /service-option/);
@@ -52,14 +52,22 @@ test('paid-advertising keeps its option-card rich layout; marketing-strategy has
   }
 });
 
-test('option CTAs retain campaign-management WhatsApp and route personal training to its localized detail page', () => {
+test('option CTAs retain their exact original localized WhatsApp targets', () => {
+  const originalTrainingWhatsApp = {
+    he: 'https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20על%20הדרכה%20אישית%20לפרסום%20ממומן.',
+    en: 'https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20details%20about%20personal%20training%20in%20paid%20advertising.',
+    ru: 'https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20узнать%20подробнее%20об%20индивидуальном%20обучении%20платной%20рекламе.'
+  };
   for (const lang of LANGUAGES) {
     const hrefs = page.options.map(o => o.cta.href[lang]);
     assert.match(hrefs[0], /^https:\/\/wa\.me\/972547838645\?text=/);
-    assert.equal(hrefs[1], routeFor(lang, 'service', 'personal-social-media-training'));
+    assert.equal(hrefs[1], originalTrainingWhatsApp[lang]);
     assert.ok(html(lang).includes(`href="${hrefs[0]}"`));
     assert.ok(html(lang).includes(`href="${hrefs[1]}"`));
-    assert.equal((html(lang).match(/<main\b[\s\S]*?<\/main>/)[0].match(/href="https:\/\/wa\.me\//g) || []).length, 2);
+    const main = html(lang).match(/<main\b[\s\S]*?<\/main>/)[0];
+    assert.equal((main.match(/href="https:\/\/wa\.me\//g) || []).length, 3);
+    const optionCards = main.match(/<div class="service-options">[\s\S]*?<\/div><p class="service-statement">/)[0];
+    assert.ok(!optionCards.includes(routeFor(lang, 'service', 'personal-social-media-training')));
   }
 });
 

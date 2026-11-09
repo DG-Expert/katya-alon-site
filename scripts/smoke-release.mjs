@@ -38,7 +38,6 @@ export async function checkPages(baseUrl, fetchImpl = fetch) {
   const articles = yaml.load(readFileSync(new URL('../content/articles.yaml', import.meta.url), 'utf8')).articles;
   const content = yaml.load(readFileSync(new URL('../content/content.yaml', import.meta.url), 'utf8'));
   const services = enabledServices(content);
-  const standalonePages = content.services.standalone_pages || [];
   const pages = ['he', 'en', 'ru'].flatMap(lang => {
     const prefix = lang === 'he' ? '' : `${lang}/`;
     return [
@@ -47,8 +46,7 @@ export async function checkPages(baseUrl, fetchImpl = fetch) {
       [`${prefix}articles/`, lang],
       [`${prefix}podcasts/`, lang],
       ...articles.map(article => [`${prefix}articles/${article.slug}/`, lang]),
-      ...services.map(service => [`${prefix}services/${service.slug}/`, lang]),
-      ...standalonePages.map(page => [`${prefix}services/${page.slug}/`, lang])
+      ...services.map(service => [`${prefix}services/${service.slug}/`, lang])
     ];
   });
   for (const [path, lang] of pages) {

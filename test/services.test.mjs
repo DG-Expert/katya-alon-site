@@ -20,14 +20,14 @@ const EXPECTED = [
   ['ייעוץ ואסטרטגיה שיווקית', 'marketing-strategy', 'service-marketing-strategy'],
   ['ניהול סושיאל ויצירת תוכן', 'social-media-content', 'service-social-media-content'],
   ['פרסום ממומן בפייסבוק ובאינסטגרם', 'paid-advertising', 'service-paid-advertising'],
-  ['הרצאות וסדנאות בשיווק דיגיטלי', 'lectures-workshops', 'service-workshops']
+  ['הרצאות וסדנאות בשיווק דיגיטלי', 'lectures-workshops', 'service-workshops'],
+  ['הדרכה אישית לשיווק ברשתות החברתיות לבעלי עסקים', 'personal-social-media-training', 'service-personal-social-media-training']
 ];
 
 const pages = LANGUAGES.flatMap(lang => [
   [lang, 'home', ''], [lang, 'workshops', ''], [lang, 'articles', ''], [lang, 'podcasts', ''],
   ...articles.map(article => [lang, 'article', article.slug]),
-  ...services.map(service => [lang, 'service', service.slug]),
-  ...standalonePages.map(page => [lang, 'service', page.slug])
+  ...services.map(service => [lang, 'service', service.slug])
 ]);
 const fileFor = (lang, page, slug) => {
   const route = routeFor(lang, page, slug).slice(1);
@@ -41,12 +41,12 @@ before(() => {
 });
 after(() => rmSync(stage, { recursive: true, force: true }));
 
-test('four distinct enabled services keep stable slugs and the disabled guidance item remains unpublished', () => {
+test('five distinct enabled services keep stable slugs and the disabled guidance item remains unpublished', () => {
   assert.deepEqual(services.map(service => [service.title.he, service.slug, service.anchor]), EXPECTED);
-  assert.deepEqual(services.map(service => service.display_order), [1, 2, 3, 4]);
+  assert.deepEqual(services.map(service => service.display_order), [1, 2, 3, 4, 5]);
   for (const lang of LANGUAGES) {
     for (const field of ['title', 'description']) {
-      assert.equal(new Set(services.map(service => service[field][lang])).size, 4, `${field}.${lang} must be distinct`);
+      assert.equal(new Set(services.map(service => service[field][lang])).size, 5, `${field}.${lang} must be distinct`);
     }
   }
   for (const service of services) {
@@ -63,7 +63,7 @@ test('four distinct enabled services keep stable slugs and the disabled guidance
   assert.ok(!personal.anchor && !personal.slug, 'the disabled card must not keep the legacy anchor');
 });
 
-test('12 service pages are prerendered with unique localized SEO, schema, links and the WhatsApp CTA', () => {
+test('15 service pages are prerendered with unique localized SEO, schema, links and the WhatsApp CTA', () => {
   const titles = new Set();
   const descriptions = new Set();
   for (const lang of LANGUAGES) {
@@ -72,9 +72,10 @@ test('12 service pages are prerendered with unique localized SEO, schema, links 
       const url = urlFor(lang, 'service', service.slug);
       const t = value => escapeHtml(value[lang]);
       const marketing = service.marketing_page;
-      const pageTitle = marketing ? t(marketing.heading) : service.page ? `${t(service.page.heading)} ${t(service.page.heading_accent)}` : t(service.title);
-      const seoTitle = marketing ? t(marketing.seo_title) : `${t(service.title)} | ${t(site.hero.name)}`;
-      const seoDescription = marketing ? t(marketing.meta_description) : t(service.description);
+      const training = service.card_title ? service : null;
+      const pageTitle = training ? t(training.title) : marketing ? t(marketing.heading) : service.page ? `${t(service.page.heading)} ${t(service.page.heading_accent)}` : t(service.title);
+      const seoTitle = training ? t(training.seo_title) : marketing ? t(marketing.seo_title) : `${t(service.title)} | ${t(site.hero.name)}`;
+      const seoDescription = training ? t(training.meta_description) : marketing ? t(marketing.meta_description) : t(service.description);
       assert.match(html, new RegExp(`^<!doctype html>\\n<html lang="${lang}" dir="${lang === 'he' ? 'rtl' : 'ltr'}"`));
       assert.equal(count(html, '<h1'), 1);
       // The opt-in paid-advertising layout splits the H1 around an emphasis span; the plain text must still equal the title.
@@ -99,27 +100,27 @@ test('12 service pages are prerendered with unique localized SEO, schema, links 
 
       const graph = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])['@graph'];
       assert.deepEqual(graph.map(entry => entry['@type']), ['Person', 'WebSite', 'Service', 'BreadcrumbList']);
-      assert.deepEqual(graph[2], { '@type': 'Service', '@id': `${url}#service`, name: marketing ? marketing.heading[lang] : service.title[lang], description: marketing ? marketing.meta_description[lang] : service.description[lang], url, provider: { '@id': 'https://katya-alon.com/#person' } });
+      assert.deepEqual(graph[2], { '@type': 'Service', '@id': `${url}#service`, name: training ? training.title[lang] : marketing ? marketing.heading[lang] : service.title[lang], description: training ? training.meta_description[lang] : marketing ? marketing.meta_description[lang] : service.description[lang], url, provider: { '@id': 'https://katya-alon.com/#person' } });
       assert.deepEqual(graph[3].itemListElement.map(item => item.item), [urlFor(lang, 'home'), url]);
 
       const main = html.match(/<main\b[\s\S]*<\/main>/)[0];
-      for (const value of service.page || marketing ? [] : [service.details.summary, ...service.details.tech_points, ...service.details.second_tech_points, ...service.details.body]) {
+      for (const value of service.page || marketing || training ? [] : [service.details.summary, ...service.details.tech_points, ...service.details.second_tech_points, ...service.details.body]) {
         assert.ok(main.includes(t(value)), `${lang}/${service.slug}: missing ${value[lang]}`);
       }
-      assert.equal(main.includes(`<h2>${t(site.services.includes_title)}</h2>`) && main.includes(`<h2>${t(site.services.results_title)}</h2>`), !service.page && !marketing);
-      assert.equal(count(main, 'href="https://wa.me/'), service.page ? 2 : 1);
+      assert.equal(main.includes(`<h2>${t(site.services.includes_title)}</h2>`) && main.includes(`<h2>${t(site.services.results_title)}</h2>`), !service.page && !marketing && !training);
+      assert.equal(count(main, 'href="https://wa.me/'), service.page ? 3 : 1);
       assert.ok(main.includes(`<a href="${t(service.details.contact_cta.href)}" class="cta-primary cta-image-button text-sm font-medium">${t(service.details.contact_cta.label)}</a>`));
-      assert.ok(main.includes(`<li><a href="${routeFor(lang, 'home')}">${t(site.nav.home)}</a></li><li aria-current="page">${marketing ? t(marketing.heading) : t(service.title)}</li>`), 'breadcrumbs');
+      assert.ok(main.includes(`<li><a href="${routeFor(lang, 'home')}">${t(site.nav.home)}</a></li><li aria-current="page">${training ? t(training.title) : marketing ? t(marketing.heading) : t(service.title)}</li>`), 'breadcrumbs');
       for (const other of services.filter(item => item !== service)) {
-        assert.ok(main.includes(`<a href="${routeFor(lang, 'service', other.slug)}">${t(other.title)}</a>`), `${lang}/${service.slug} -> ${other.slug}`);
+        assert.ok(main.includes(`<a href="${routeFor(lang, 'service', other.slug)}">${t(other.card_title || other.title)}</a>`), `${lang}/${service.slug} -> ${other.slug}`);
       }
       for (const article of articles.filter(item => item.service_anchor === service.anchor)) {
         assert.ok(main.includes(`<a href="${routeFor(lang, 'article', article.slug)}">${t(article.title)}</a>`));
       }
     }
   }
-  assert.equal(titles.size, 12);
-  assert.equal(descriptions.size, 12);
+  assert.equal(titles.size, 15);
+  assert.equal(descriptions.size, 15);
 });
 
 test('marketing-strategy has the approved long-form copy, localized SEO, semantic labels, and escaped rendering', () => {
@@ -213,10 +214,10 @@ test('lectures-workshops has the approved localized long-form page, semantic sec
   assert.ok(!escaped.includes('<h1><script>'));
 });
 
-test('personal social media training is a standalone, safely escaped localized detail page with its original WhatsApp inquiry', () => {
+test('personal social media training is an enabled fifth service with its original localized detail content and WhatsApp inquiry', () => {
   const page = standalonePages.find(item => item.slug === 'personal-social-media-training');
   assert.ok(page);
-  assert.ok(!services.some(service => service.slug === page.slug), 'standalone page is not an enabled service');
+  assert.ok(services.some(service => service.slug === page.slug), 'training is an enabled service');
   for (const lang of LANGUAGES) {
     const html = readFileSync(fileFor(lang, 'service', page.slug), 'utf8');
     const t = value => escapeHtml(value[lang]);
@@ -234,7 +235,8 @@ test('personal social media training is a standalone, safely escaped localized d
     for (const callout of [page.first_callout, page.second_callout, page.closing_callout]) assert.ok(html.includes(`<strong>${t(callout)}</strong>`));
     assert.ok(html.includes('<hr class="service-divider">'));
     assert.ok(html.includes(`<a href="${t(page.contact_cta.href)}" class="cta-primary cta-image-button text-sm font-medium">${t(page.contact_cta.label)}</a>`));
-    assert.ok(html.includes(`<a href="${routeFor(lang, 'service', 'paid-advertising')}">`), 'parent breadcrumb');
+    const breadcrumbs = html.match(/<nav class="article-breadcrumbs"[\s\S]*?<\/nav>/)[0];
+    assert.ok(!breadcrumbs.includes(routeFor(lang, 'service', 'paid-advertising')), 'no false parent breadcrumb');
     for (const code of LANGUAGES) assert.ok(html.includes(`<link rel="alternate" hreflang="${code}" href="${urlFor(code, 'service', page.slug)}">`));
     const graph = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])['@graph'];
     assert.deepEqual(graph.map(entry => entry['@type']), ['Person', 'WebSite', 'Service', 'BreadcrumbList']);
@@ -263,10 +265,10 @@ test('all 51 pages share the accessible top navigation and keep the old footer l
       assert.match(nav, new RegExp(`<button type="button" class="nav-link nav-dropdown-toggle(?: nav-link-current)?" aria-expanded="false" aria-controls="${menuId}" data-nav-dropdown>${escapeHtml(site.nav.services[lang])}<svg class="nav-dropdown-icon" aria-hidden="true"`));
       const menu = nav.match(new RegExp(`<ul id="${menuId}" class="nav-dropdown-menu" hidden>([\\s\\S]*?)</ul>`))?.[1];
       assert.deepEqual([...menu.matchAll(/<a href="([^"]+)"/g)].map(match => match[1]), services.map(service => routeFor(lang, 'service', service.slug)), `${label}: all service pages`);
-      for (const service of services) assert.ok(menu.includes(`>${escapeHtml(service.title[lang])}</a>`));
+      for (const service of services) assert.ok(menu.includes(`>${escapeHtml((service.card_title || service.title)[lang])}</a>`));
       assert.ok(nav.includes(`<a href="${routeFor(lang, 'workshops')}" class="nav-link" data-workshops-link`));
       assert.ok(nav.includes(`>${escapeHtml(site.nav.articles[lang])}</a>`), `${label}: short articles label`);
-      assert.deepEqual([...nav.matchAll(/<a href="([^"]+)"[^>]*aria-current="page"/g)].map(match => match[1]), standalonePages.some(item => item.slug === slug) || page === 'podcasts' ? [] : [expectedCurrent], `${label}: current page`);
+      assert.deepEqual([...nav.matchAll(/<a href="([^"]+)"[^>]*aria-current="page"/g)].map(match => match[1]), page === 'podcasts' ? [] : [expectedCurrent], `${label}: current page`);
     }
     assert.doesNotMatch(header, /href="[^"]*#(?:about|services|process|contact)"/, `${label}: no section anchors in the top nav`);
     assert.ok(!header.includes(escapeHtml(site.footer.articles[lang])), `${label}: long articles label stays out of the header`);
@@ -303,8 +305,9 @@ test('each home card keeps its modal, whose CTA links to that service page in ev
   for (const lang of LANGUAGES) {
     const home = readFileSync(fileFor(lang, 'home', ''), 'utf8');
     for (const service of services) {
-      const index = site.services.items.indexOf(service);
-      assert.match(home, new RegExp(`<button\\s+id="${service.anchor}"[^>]*data-service-index="${index}"\\s+onclick="openServiceModal\\(${index}\\)"[\\s\\S]*?service-card-title-theme">${escapeHtml(service.title[lang])}<`), `${lang}: card ${service.anchor}`);
+      const index = [...site.services.items, ...standalonePages].indexOf(service);
+      const cardTitle = service.card_title || service.title;
+      assert.match(home, new RegExp(`<button\\s+id="${service.anchor}"[^>]*data-service-index="${index}"\\s+onclick="openServiceModal\\(${index}\\)"[\\s\\S]*?service-card-title-theme">${escapeHtml(cardTitle[lang])}<`), `${lang}: card ${service.anchor}`);
     }
   }
 
@@ -321,11 +324,65 @@ test('each home card keeps its modal, whose CTA links to that service page in ev
   for (const lang of LANGUAGES) {
     vm.runInContext(`currentLang = "${lang}";`, context);
     for (const service of services) {
-      vm.runInContext(`openServiceModal(${site.services.items.indexOf(service)});`, context);
-      assert.equal(element('modal-title').textContent, service.title[lang]);
+      vm.runInContext(`openServiceModal(${[...site.services.items, ...standalonePages].indexOf(service)});`, context);
+      assert.equal(element('modal-title').textContent, (service.card_title || service.title)[lang]);
       assert.equal(element('modal-service-link').href, routeFor(lang, 'service', service.slug), `${lang}: ${service.slug}`);
       assert.equal(element('modal-service-link').textContent, site.services.learn_more[lang]);
     }
+  }
+});
+
+test('radial service effects use the rendered card position, including the fifth enabled card', () => {
+  const styles = () => {
+    const values = new Map();
+    return { values, setProperty: (name, value) => values.set(name, value) };
+  };
+  const cards = [
+    [0, { left: 465, top: 55, width: 270, height: 150 }],
+    [1, { left: 150, top: 280, width: 270, height: 150 }],
+    [2, { left: 780, top: 280, width: 270, height: 150 }],
+    [3, { left: 220, top: 620, width: 270, height: 150 }],
+    // The fifth rendered card has source index 5 because index 4 is disabled.
+    [5, { left: 710, top: 620, width: 270, height: 150 }]
+  ].map(([sourceIndex, rect]) => {
+    const node = { dataset: { serviceIndex: String(sourceIndex) }, style: styles(), getBoundingClientRect: () => rect };
+    node.closest = selector => selector === '.service-row' ? node : null;
+    return node;
+  });
+  const lines = Array.from({ length: 5 }, () => ({ style: styles() }));
+  const section = { classList: { contains: name => name === 'services-layout-radial' } };
+  const list = { contains: node => cards.includes(node), querySelectorAll: selector => selector === '.service-row' ? cards : [] };
+  const diagram = {
+    style: styles(),
+    getBoundingClientRect: () => ({ left: 0, top: 0, width: 1200, height: 900 }),
+    querySelectorAll: selector => selector === '.services-lines-path' ? lines : []
+  };
+  const document = {
+    getElementById: id => ({ services: section, 'services-diagram': diagram, 'services-list': list })[id] || null,
+    querySelectorAll: selector => selector === '#services-list .service-row' ? cards : selector === '#services-diagram .services-lines-path' ? lines : [],
+    addEventListener() {}
+  };
+  const window = { innerWidth: 1440, matchMedia: () => ({ matches: true }), addEventListener() {} };
+  const context = vm.createContext({ document, window, console });
+  vm.runInContext(read('js/main.js'), context);
+  context.event = { target: cards[4], clientX: 845, clientY: 695 };
+  vm.runInContext('handleServicesDiagramPointerMove(event);', context);
+
+  assert.equal(cards[4].style.values.get('--service-hover'), '1.000');
+  assert.equal(cards[4].style.values.get('--service-group-z'), '4');
+  assert.equal(lines[4].style.values.get('--line-active'), '1.000');
+});
+
+test('the top radial card stays centered on the vertical connector at both desktop width rules', () => {
+  const css = read('css/styles.css');
+  const finalTopCardRule = [...css.matchAll(/\.service-card-pos-1\s*\{([^}]*)\}/g)].at(-1)?.[1];
+  assert.match(finalTopCardRule, /left:\s*50%/);
+  assert.match(finalTopCardRule, /translate:\s*-50% 0/);
+  assert.doesNotMatch(finalTopCardRule, /transform:/);
+
+  for (const [viewport, cardWidth] of [[1200, 270], [1440, 310]]) {
+    const cardLeft = (viewport * 0.5) - (cardWidth * 0.5);
+    assert.equal(cardLeft + (cardWidth * 0.5), viewport * 0.5, `${viewport}px connector alignment`);
   }
 });
 

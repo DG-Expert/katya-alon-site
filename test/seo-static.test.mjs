@@ -10,7 +10,6 @@ import { join } from 'node:path';
 const projectRoot = new URL('../', import.meta.url);
 const readProjectFile = path => readFileSync(new URL(path, projectRoot), 'utf8');
 const serviceSlugs = enabledServices(yaml.load(readProjectFile('content/content.yaml'))).map(service => service.slug);
-const standaloneSlugs = yaml.load(readProjectFile('content/content.yaml')).services.standalone_pages.map(page => page.slug);
 
 test('robots.txt allows Googlebot and advertises the canonical sitemap', () => {
   const robots = readProjectFile('robots.txt');
@@ -30,7 +29,6 @@ test('sitemap contains exactly 51 reciprocal multilingual canonical endpoints', 
   assert.equal(new Set(locations).size, 51);
   for (const lang of LANGUAGES) {
     for (const slug of serviceSlugs) assert.ok(locations.includes(urlFor(lang, 'service', slug)), `${lang}/${slug} missing from sitemap`);
-    for (const slug of standaloneSlugs) assert.ok(locations.includes(urlFor(lang, 'service', slug)), `${lang}/${slug} missing from sitemap`);
   }
   assert.equal(sitemap, renderSitemap(readProjectFile('content/articles.yaml')));
   assert.ok(locations.every(location => !location.includes('?')));
@@ -84,7 +82,7 @@ test('Pages staging ships prerendered HTML, crawl-control files and nothing priv
     assert.deepEqual(readdirSync(stage).sort(), ['articles', 'assets', 'content', 'css', 'en', 'index.html', 'js', 'podcasts', 'robots.txt', 'ru', 'services', 'sitemap.xml', 'workshops.html']);
     assert.deepEqual(readdirSync(join(stage, 'en')).sort(), ['articles', 'index.html', 'podcasts', 'services', 'workshops.html']);
     assert.deepEqual(readdirSync(join(stage, 'ru')).sort(), ['articles', 'index.html', 'podcasts', 'services', 'workshops.html']);
-    for (const directory of ['services', 'en/services', 'ru/services']) assert.deepEqual(readdirSync(join(stage, directory)).sort(), [...serviceSlugs, ...standaloneSlugs].sort());
+    for (const directory of ['services', 'en/services', 'ru/services']) assert.deepEqual(readdirSync(join(stage, directory)).sort(), serviceSlugs.sort());
     assert.deepEqual(readdirSync(join(stage, 'content')).sort(), ['articles.yaml', 'content.yaml', 'podcasts.yaml', 'workshop.yaml']);
     assert.equal(unversioned(readFileSync(join(stage, 'index.html'), 'utf8')), renderHome(readProjectFile('index.html'), readProjectFile('content/content.yaml')));
     assert.equal(unversioned(readFileSync(join(stage, 'workshops.html'), 'utf8')), renderWorkshops(readProjectFile('workshops.html'), readProjectFile('content/workshop.yaml')));
@@ -118,7 +116,7 @@ test('51-page generation is deterministic', () => {
   const paths = LANGUAGES.flatMap(lang => {
     const prefix = lang === 'he' ? '' : `${lang}/`;
     return [`${prefix}index.html`, `${prefix}workshops.html`, `${prefix}articles/index.html`, `${prefix}podcasts/index.html`, ...slugs.map(slug => `${prefix}articles/${slug}/index.html`),
-      ...[...serviceSlugs, ...standaloneSlugs].map(slug => `${prefix}services/${slug}/index.html`)];
+      ...serviceSlugs.map(slug => `${prefix}services/${slug}/index.html`)];
   });
   assert.equal(paths.length, 51);
   try {

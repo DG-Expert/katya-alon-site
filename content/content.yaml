@@ -521,9 +521,9 @@ services:
             en: Details about personal training
             ru: Подробнее об индивидуальном обучении
           href:
-            he: /services/personal-social-media-training/
-            en: /en/services/personal-social-media-training/
-            ru: /ru/services/personal-social-media-training/
+            he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20על%20הדרכה%20אישית%20לפרסום%20ממומן."
+            en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20details%20about%20personal%20training%20in%20paid%20advertising."
+            ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20узнать%20подробнее%20об%20индивидуальном%20обучении%20платной%20рекламе."
       statement:
         he: "אתם בוחרים: אני מנהלת עבורכם את הפרסום, או מלמדת אתכם לעשות את זה בעצמכם."
         en: "You choose: I manage the advertising for you, or I teach you to do it yourselves."
@@ -892,10 +892,50 @@ services:
         en: You are welcome to contact me to arrange a lecture, workshop, or professional training tailored to your group.
         ru: Свяжитесь со мной, чтобы согласовать лекцию, мастер-класс или профессиональное обучение, адаптированные для вашей группы.
 
-  # Standalone detail pages are published and indexed, but deliberately excluded from
-  # enabled service cards, the service modal, and the Services disclosure.
+  # This existing page is an enabled fifth service. Its long-form content remains in
+  # this record, while card_title keeps the concise home/menu label distinct from H1.
   standalone_pages:
   - slug: personal-social-media-training
+    enabled: true
+    display_order: 5
+    anchor: service-personal-social-media-training
+    card_title:
+      he: הדרכה אישית לשיווק ברשתות החברתיות
+      en: Personal Social Media Marketing Training
+      ru: Индивидуальное обучение маркетингу в социальных сетях
+    description:
+      he: הדרכה אישית אחד על אחד לשיווק באינסטגרם ובפייסבוק, יצירת תוכן, קידום אורגני וניהול עצמאי של הרשתות החברתיות.
+      en: One-on-one training in Instagram and Facebook marketing, content creation, organic promotion, and independent social media management.
+      ru: Индивидуальное обучение продвижению в Instagram и Facebook, созданию контента, органическому продвижению и самостоятельному ведению соцсетей.
+    details:
+      summary:
+        he: למה לשלם בכל חודש על ניהול סושיאל, אם אפשר ללמוד לשווק את העסק בעצמכם?
+        en: Why pay every month for social media management if you can learn to market your business yourself?
+        ru: Зачем каждый месяц платить за ведение соцсетей, если можно научиться продвигать свой бизнес самостоятельно?
+      tech_points:
+      - {he: "בניית אסטרטגיה שיווקית המותאמת לעסק שלכם.", en: "Building a marketing strategy tailored to your business.", ru: "Созданию маркетинговой стратегии, адаптированной к вашему бизнесу."}
+      - {he: "קידום אורגני באינסטגרם ובפייסבוק.", en: "Organic promotion on Instagram and Facebook.", ru: "Органическому продвижению в Instagram и Facebook."}
+      - {he: "יצירת תוכן שיווקי שמושך תשומת לב ובונה אמון.", en: "Creating marketing content that attracts attention and builds trust.", ru: "Созданию маркетингового контента, который привлекает внимание и формирует доверие."}
+      - {he: "שימוש נכון ברילסים, סטוריז ופוסטים.", en: "Using reels, stories, and posts effectively.", ru: "Грамотному использованию reels, сториз и постов."}
+      - {he: "תכנון תוכן שמטרתו לעורר פניות ולהגדיל מכירות.", en: "Planning content designed to generate inquiries and increase sales.", ru: "Планированию контента, цель которого — вызывать обращения и увеличивать продажи."}
+      - {he: "כלים מעשיים לניהול עצמאי של הרשתות החברתיות.", en: "Practical tools for independently managing social media.", ru: "Практическим инструментам для самостоятельного ведения социальных сетей."}
+      second_tech_points:
+      - {he: "הדרכה מותאמת אישית לעסק שלכם.", en: "Training tailored to your business.", ru: "Обучение, адаптированное к вашему бизнесу."}
+      - {he: "למידה ממוקדת במה שאתם צריכים.", en: "Focused learning around what you need.", ru: "Обучение, сфокусированное на ваших задачах."}
+      - {he: "עבודה מעשית על העמודים העסקיים שלכם.", en: "Practical work on your business pages.", ru: "Практическая работа с вашими бизнес-страницами."}
+      - {he: "מענה אישי ומשוב בקצב שלכם.", en: "Personal support and feedback at your pace.", ru: "Персональная поддержка и обратная связь в вашем темпе."}
+      - {he: "ידע שיכול לצמצם תלות בניהול סושיאל חודשי.", en: "Knowledge that can reduce reliance on monthly social media management.", ru: "Знания, которые могут сократить зависимость от ежемесячного ведения соцсетей."}
+      - {he: "כלים לעצמאות שיווקית.", en: "Tools for marketing independence.", ru: "Инструменты для маркетинговой самостоятельности."}
+      body:
+      - he: רוצים ללמוד איך להפוך את האינסטגרם והפייסבוק לכלי שמביא לקוחות?
+        en: Want to learn how to turn Instagram and Facebook into a tool that brings clients?
+        ru: Хотите научиться превращать Instagram и Facebook в инструмент, который приводит клиентов?
+      contact_cta: &personal_training_contact
+        label: {he: "לפרטים על הדרכה אישית", en: "Details about personal training", ru: "Подробнее об индивидуальном обучении"}
+        href:
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20על%20הדרכה%20אישית%20לפרסום%20ממומן."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20details%20about%20personal%20training%20in%20paid%20advertising."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20узнать%20подробнее%20об%20индивидуальном%20обучении%20платной%20рекламе."
     title:
       he: הדרכה אישית לשיווק ברשתות החברתיות לבעלי עסקים
       en: Personal Social Media Marketing Training for Business Owners
@@ -960,12 +1000,7 @@ services:
       he: בואו נבנה יחד את הדרך שבה תוכלו לשווק את העסק שלכם בעצמכם.
       en: Let’s build together the way you can market your business yourself.
       ru: Давайте вместе выстроим путь, который позволит вам самостоятельно продвигать свой бизнес.
-    contact_cta:
-      label: {he: "לפרטים על הדרכה אישית", en: "Details about personal training", ru: "Подробнее об индивидуальном обучении"}
-      href:
-        he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20על%20הדרכה%20אישית%20לפרסום%20ממומן."
-        en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20details%20about%20personal%20training%20in%20paid%20advertising."
-        ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20узнать%20подробнее%20об%20индивидуальном%20обучении%20платной%20рекламе."
+    contact_cta: *personal_training_contact
 
   learn_more:
     he: למידע נוסף על השירות

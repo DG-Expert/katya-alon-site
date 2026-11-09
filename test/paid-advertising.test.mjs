@@ -38,22 +38,28 @@ test('exact Hebrew copy, one H1, no old duplicate panels', () => {
   assert.match(he.match(/<h1>(.*?)<\/h1>/)[1].replace(/<[^>]+>/g, ''), /^פרסום ממומן בפייסבוק ובאינסטגרם$/);
 });
 
-test('only paid-advertising uses the rich layout', () => {
+test('paid-advertising keeps its option-card rich layout; marketing-strategy has its own long-form layout', () => {
   for (const s of services.filter(x => x !== paid)) {
     assert.ok(!s.page);
-    for (const lang of LANGUAGES) assert.match(html(lang, s.slug), /article-reading/);
+    for (const lang of LANGUAGES) {
+      const out = html(lang, s.slug);
+      if (s.marketing_page) {
+        assert.match(out, /article-wide/);
+        assert.match(out, /service-rich-panel/);
+        assert.doesNotMatch(out, /service-option/);
+      } else assert.match(out, /article-reading/);
+    }
   }
 });
 
-test('option CTAs open WhatsApp with a service-specific encoded message in each locale', () => {
+test('option CTAs retain campaign-management WhatsApp and route personal training to its localized detail page', () => {
   for (const lang of LANGUAGES) {
     const hrefs = page.options.map(o => o.cta.href[lang]);
-    assert.notEqual(hrefs[0], hrefs[1]);
-    for (const href of hrefs) {
-      assert.match(href, /^https:\/\/wa\.me\/972547838645\?text=/);
-      assert.ok(html(lang).includes(`href="${href}"`));
-      assert.ok(!/\s/.test(href));
-    }
+    assert.match(hrefs[0], /^https:\/\/wa\.me\/972547838645\?text=/);
+    assert.equal(hrefs[1], routeFor(lang, 'service', 'personal-social-media-training'));
+    assert.ok(html(lang).includes(`href="${hrefs[0]}"`));
+    assert.ok(html(lang).includes(`href="${hrefs[1]}"`));
+    assert.equal((html(lang).match(/<main\b[\s\S]*?<\/main>/)[0].match(/href="https:\/\/wa\.me\//g) || []).length, 2);
   }
 });
 

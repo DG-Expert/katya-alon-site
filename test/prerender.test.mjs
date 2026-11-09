@@ -79,7 +79,7 @@ test('home prerender exposes the Hebrew H1, hero and section text without runnin
   assert.match(page, /<div id="process-list" dir="rtl" /);
   assert.doesNotMatch(page, /data-content="[^"]+"[^>]*>\s*</, 'every data-content node must be prerendered');
   // Interactive hooks used by hydration stay intact.
-  assert.equal(count(page, 'onclick="openServiceModal('), 5);
+  assert.equal(count(page, 'onclick="openServiceModal('), 4);
   assert.match(page, /<div id="clients-strip"><\/div>/);
   assert.match(page, /<div id="recommendations-strip"><\/div>/);
 });

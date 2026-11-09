@@ -1,0 +1,21 @@
+# Add future episodes to `episodes`. Keep only author-provided facts; omit unknown dates and video metadata.
+page:
+  title: {he: "פודקאסטים וראיונות", en: "Podcasts and Interviews", ru: "Подкасты и интервью"}
+  seo_title: {he: "פודקאסטים וראיונות | קטיה אלון", en: "Podcasts and Interviews | Katya Alon", ru: "Подкасты и интервью | Катя Алон"}
+  meta_description: {he: "פודקאסטים וראיונות שבהם השתתפה קטיה אלון, עם שיחות ורעיונות מתוך הדרך המקצועית שלה.", en: "Podcasts and interviews featuring Katya Alon, with conversations and ideas from her professional journey.", ru: "Подкасты и интервью с участием Кати Алон: беседы и идеи из её профессионального пути."}
+  intro:
+    - {he: "יש דברים שהכי מעניין לשמוע דווקא בשיחה.", en: "Some things are most interesting to hear in conversation.", ru: "Некоторые вещи интереснее всего услышать именно в разговоре."}
+    - {he: "כאן תוכלו לצפות בפודקאסטים ובראיונות שבהם השתתפתי, להכיר אותי קצת יותר ולשמוע שיחות, רעיונות ונקודות מבט מתוך הדרך המקצועית שלי.", en: "Here you can watch podcasts and interviews in which I have taken part, get to know me a little better, and hear conversations, ideas, and perspectives from my professional journey.", ru: "Здесь вы можете посмотреть подкасты и интервью, в которых я принимала участие, узнать меня немного лучше и услышать беседы, идеи и взгляды из моего профессионального пути."}
+    - {he: "אני מזמינה אתכם לצפות, להקשיב ולהכיר גם את הצד שמאחורי העבודה היומיומית.", en: "I invite you to watch, listen, and get to know the side behind the day-to-day work as well.", ru: "Я приглашаю вас посмотреть, послушать и познакомиться также со стороной, которая стоит за повседневной работой."}
+    - {he: "בהמשך יתווספו לכאן שיחות וסרטונים נוספים.", en: "More conversations and videos will be added here over time.", ru: "Со временем здесь появятся новые беседы и видео."}
+ui:
+  breadcrumbs_home: {he: "דף הבית", en: "Home", ru: "Главная"}
+  watch_on_youtube: {he: "לצפייה ב-YouTube", en: "Watch on YouTube", ru: "Смотреть на YouTube"}
+episodes:
+  - youtube_id: mqJPD6FFGIk
+    source_url: https://www.youtube.com/watch?v=mqJPD6FFGIk
+    start_seconds: {he: 28, en: 28, ru: 0}
+    title: {he: "קטיה אלון מתארחת בפודקאסט", en: "Katya Alon on a Podcast", ru: "Катя Алон в подкасте"}
+    description: {he: "צפו בשיחה המצולמת שבה השתתפתי.", en: "Watch the filmed conversation in which I took part.", ru: "Посмотрите записанную беседу, в которой я приняла участие."}
+    language_note: {he: "השיחה מתקיימת בעברית, עם הקדמה קצרה ברוסית בתחילת הסרטון.", en: "The conversation is in Hebrew, with a short Russian introduction at the beginning of the video.", ru: "Беседа проходит на иврите, с коротким вступлением на русском языке в начале видео."}
+    iframe_title: {he: "סרטון YouTube: קטיה אלון מתארחת בפודקאסט", en: "YouTube video: Katya Alon on a Podcast", ru: "Видео YouTube: Катя Алон в подкасте"}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="he" dir="rtl" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Podcasts</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/articles.css">
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <script defer src="/js/nav.js"></script>
+</head>
+<body class="min-h-full page-theme article-page podcasts-page">
+  {{HEADER}}
+  <main id="main-content" class="article-main">
+    <div class="article-shell article-reading">
+      {{BREADCRUMBS}}
+      <header class="article-header podcast-header"><h1>{{TITLE}}</h1><div class="podcast-intro">{{INTRO}}</div></header>
+      <section class="podcast-episodes" aria-label="Podcast episodes">{{EPISODES}}</section>
+    </div>
+  </main>
+  {{FOOTER}}
+</body>
+</html>

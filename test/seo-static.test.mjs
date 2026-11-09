@@ -10,6 +10,7 @@ import { join } from 'node:path';
 const projectRoot = new URL('../', import.meta.url);
 const readProjectFile = path => readFileSync(new URL(path, projectRoot), 'utf8');
 const serviceSlugs = enabledServices(yaml.load(readProjectFile('content/content.yaml'))).map(service => service.slug);
+const standaloneSlugs = yaml.load(readProjectFile('content/content.yaml')).services.standalone_pages.map(page => page.slug);
 
 test('robots.txt allows Googlebot and advertises the canonical sitemap', () => {
   const robots = readProjectFile('robots.txt');
@@ -19,16 +20,17 @@ test('robots.txt allows Googlebot and advertises the canonical sitemap', () => {
   assert.doesNotMatch(robots, /^Disallow:/m);
 });
 
-test('sitemap contains exactly 39 reciprocal multilingual canonical endpoints', () => {
+test('sitemap contains exactly 51 reciprocal multilingual canonical endpoints', () => {
   const sitemap = readProjectFile('sitemap.xml');
   assert.match(sitemap, /^<\?xml version="1\.0" encoding="UTF-8"\?>/);
   assert.match(sitemap, /<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9" xmlns:xhtml="http:\/\/www\.w3\.org\/1999\/xhtml">/);
 
   const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
-  assert.equal(locations.length, 39);
-  assert.equal(new Set(locations).size, 39);
+  assert.equal(locations.length, 51);
+  assert.equal(new Set(locations).size, 51);
   for (const lang of LANGUAGES) {
     for (const slug of serviceSlugs) assert.ok(locations.includes(urlFor(lang, 'service', slug)), `${lang}/${slug} missing from sitemap`);
+    for (const slug of standaloneSlugs) assert.ok(locations.includes(urlFor(lang, 'service', slug)), `${lang}/${slug} missing from sitemap`);
   }
   assert.equal(sitemap, renderSitemap(readProjectFile('content/articles.yaml')));
   assert.ok(locations.every(location => !location.includes('?')));
@@ -39,7 +41,7 @@ test('sitemap contains exactly 39 reciprocal multilingual canonical endpoints', 
     const location = entry.match(/<loc>([^<]+)<\/loc>/)[1];
     const path = new URL(location).pathname;
     const [, section, slug = ''] = path.match(/\/(articles|services)\/([^/]+)\/$/) || [];
-    const page = section === 'services' ? 'service' : slug ? 'article' : path.endsWith('/articles/') ? 'articles' : path.endsWith('workshops.html') ? 'workshops' : 'home';
+    const page = section === 'services' ? 'service' : slug ? 'article' : path.endsWith('/articles/') ? 'articles' : path.endsWith('/podcasts/') ? 'podcasts' : path.endsWith('workshops.html') ? 'workshops' : 'home';
     for (const lang of LANGUAGES) assert.ok(entry.includes(`hreflang="${lang}" href="${urlFor(lang, page, slug)}"`));
     assert.ok(entry.includes(`hreflang="x-default" href="${urlFor('he', page, slug)}"`));
     assert.equal((entry.match(/<xhtml:link /g) || []).length, 4);
@@ -79,11 +81,11 @@ test('Pages staging ships prerendered HTML, crawl-control files and nothing priv
     }
 
     const stage = join(runnerTemp, 'pages');
-    assert.deepEqual(readdirSync(stage).sort(), ['articles', 'assets', 'content', 'css', 'en', 'index.html', 'js', 'robots.txt', 'ru', 'services', 'sitemap.xml', 'workshops.html']);
-    assert.deepEqual(readdirSync(join(stage, 'en')).sort(), ['articles', 'index.html', 'services', 'workshops.html']);
-    assert.deepEqual(readdirSync(join(stage, 'ru')).sort(), ['articles', 'index.html', 'services', 'workshops.html']);
-    for (const directory of ['services', 'en/services', 'ru/services']) assert.deepEqual(readdirSync(join(stage, directory)).sort(), [...serviceSlugs].sort());
-    assert.deepEqual(readdirSync(join(stage, 'content')).sort(), ['articles.yaml', 'content.yaml', 'workshop.yaml']);
+    assert.deepEqual(readdirSync(stage).sort(), ['articles', 'assets', 'content', 'css', 'en', 'index.html', 'js', 'podcasts', 'robots.txt', 'ru', 'services', 'sitemap.xml', 'workshops.html']);
+    assert.deepEqual(readdirSync(join(stage, 'en')).sort(), ['articles', 'index.html', 'podcasts', 'services', 'workshops.html']);
+    assert.deepEqual(readdirSync(join(stage, 'ru')).sort(), ['articles', 'index.html', 'podcasts', 'services', 'workshops.html']);
+    for (const directory of ['services', 'en/services', 'ru/services']) assert.deepEqual(readdirSync(join(stage, directory)).sort(), [...serviceSlugs, ...standaloneSlugs].sort());
+    assert.deepEqual(readdirSync(join(stage, 'content')).sort(), ['articles.yaml', 'content.yaml', 'podcasts.yaml', 'workshop.yaml']);
     assert.equal(unversioned(readFileSync(join(stage, 'index.html'), 'utf8')), renderHome(readProjectFile('index.html'), readProjectFile('content/content.yaml')));
     assert.equal(unversioned(readFileSync(join(stage, 'workshops.html'), 'utf8')), renderWorkshops(readProjectFile('workshops.html'), readProjectFile('content/workshop.yaml')));
     for (const [lang, directory] of [['he', ''], ['en', 'en'], ['ru', 'ru']]) {
@@ -109,16 +111,16 @@ test('Pages staging ships prerendered HTML, crawl-control files and nothing priv
   }
 });
 
-test('39-page generation is deterministic', () => {
+test('51-page generation is deterministic', () => {
   const first = mkdtempSync(join(tmpdir(), 'katya-pages-first-'));
   const second = mkdtempSync(join(tmpdir(), 'katya-pages-second-'));
-  const slugs = ['organic-instagram-marketing', 'instagram-facebook-paid-advertising', 'instagram-followers-no-customers', 'social-media-marketing-yourself', 'marketing-consultant-small-business'];
+  const slugs = ['organic-instagram-marketing', 'instagram-facebook-paid-advertising', 'instagram-followers-no-customers', 'social-media-marketing-yourself', 'marketing-consultant-small-business', 'instagram-marketing-myths-2026', 'instagram-marketing-funnel', 'instagram-posting-frequency-2026'];
   const paths = LANGUAGES.flatMap(lang => {
     const prefix = lang === 'he' ? '' : `${lang}/`;
-    return [`${prefix}index.html`, `${prefix}workshops.html`, `${prefix}articles/index.html`, ...slugs.map(slug => `${prefix}articles/${slug}/index.html`),
-      ...serviceSlugs.map(slug => `${prefix}services/${slug}/index.html`)];
+    return [`${prefix}index.html`, `${prefix}workshops.html`, `${prefix}articles/index.html`, `${prefix}podcasts/index.html`, ...slugs.map(slug => `${prefix}articles/${slug}/index.html`),
+      ...[...serviceSlugs, ...standaloneSlugs].map(slug => `${prefix}services/${slug}/index.html`)];
   });
-  assert.equal(paths.length, 39);
+  assert.equal(paths.length, 51);
   try {
     buildPages(first);
     buildPages(second);

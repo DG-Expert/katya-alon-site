@@ -243,11 +243,91 @@ services:
           he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20האסטרטגיה%20השיווקית."
           en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20your%20marketing%20strategy."
           ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20вашей%20маркетинговой%20стратегии."
+    # Opt-in long-form page. `details` above remains the source for the home card and modal.
+    marketing_page:
+      heading:
+        he: ייעוץ שיווקי ואסטרטגיה שיווקית לעסקים
+        en: Marketing Consulting and Strategy for Businesses
+        ru: Маркетинговый консалтинг и стратегия для бизнеса
+      seo_title:
+        he: ייעוץ שיווקי לעסקים | אסטרטגיה שיווקית - קטיה אלון
+        en: Marketing Consulting for Businesses | Marketing Strategy - Katya Alon
+        ru: Маркетинговый консалтинг для бизнеса | Маркетинговая стратегия — Катя Алон
+      meta_description:
+        he: ייעוץ שיווקי ואסטרטגיה שיווקית לעסקים עם קטיה אלון. ניתוח הפעילות השיווקית, בניית תוכנית פעולה, קידום באינסטגרם ובפייסבוק והגדלת פניות מלקוחות.
+        en: Marketing consulting and strategy for businesses with Katya Alon. Review your marketing activity, build an action plan, promote on Instagram and Facebook, and increase client inquiries.
+        ru: Маркетинговый консалтинг и стратегия для бизнеса с Катей Алон. Анализ маркетинговой деятельности, план действий, продвижение в Instagram и Facebook и рост обращений клиентов.
+      lead:
+        he: משקיעים זמן וכסף בשיווק העסק, אבל לא רואים מספיק לקוחות ותוצאות?
+        en: Are you investing time and money in marketing your business but not seeing enough clients and results?
+        ru: Вкладываете время и деньги в маркетинг бизнеса, но не видите достаточно клиентов и результатов?
+      paragraphs:
+      - he: מעלים פוסטים, מצלמים רילסים, פעילים באינסטגרם ובפייסבוק, אבל לא באמת יודעים מה עובד ומה צריך לשנות?
+        en: You post, film reels, and stay active on Instagram and Facebook, but do not really know what works or what needs to change?
+        ru: Публикуете посты, снимаете reels, активны в Instagram и Facebook, но не знаете, что работает и что нужно изменить?
+      - he: ייעוץ שיווקי מקצועי נועד לעשות סדר, לזהות הזדמנויות ולבנות אסטרטגיה שיווקית שמתאימה לעסק שלכם.
+        en: Professional marketing consulting brings clarity, identifies opportunities, and builds a marketing strategy that suits your business.
+        ru: Профессиональный маркетинговый консалтинг помогает навести порядок, увидеть возможности и выстроить стратегию, подходящую вашему бизнесу.
+      - he: עם 20 שנות ניסיון בשיווק ו-10 שנות ניסיון ברשתות החברתיות, אני עוזרת לבעלי עסקים להבין איך להשתמש בשיווק דיגיטלי כדי למשוך לקוחות, להגדיל הכנסות ולפתח את העסק.
+        en: With 20 years of marketing experience and 10 years in social media, I help business owners understand how to use digital marketing to attract clients, increase revenue, and develop their business.
+        ru: Имея 20 лет опыта в маркетинге и 10 лет опыта в социальных сетях, я помогаю владельцам бизнеса понять, как использовать цифровой маркетинг для привлечения клиентов, роста доходов и развития бизнеса.
+      includes_title:
+        he: מה כולל הייעוץ השיווקי?
+        en: What Does Marketing Consulting Include?
+        ru: Что включает маркетинговый консалтинг?
+      includes:
+      - label: {he: "ניתוח העסק והפעילות השיווקית הקיימת:", en: "Analysis of your business and current marketing activity:", ru: "Анализ бизнеса и текущей маркетинговой деятельности:"}
+        text: {he: "נבין מה עובד, מה פחות ואיפה נמצאות ההזדמנויות לשיפור.", en: "We will understand what works, what works less well, and where opportunities to improve lie.", ru: "Мы разберём, что работает, что работает хуже и где есть возможности для улучшения."}
+      - label: {he: "בניית אסטרטגיה שיווקית:", en: "Building a marketing strategy:", ru: "Разработка маркетинговой стратегии:"}
+        text: {he: "נתכנן איך להגיע לקהל רחב ורלוונטי ולהפוך חשיפה להתעניינות ולפניות.", en: "We will plan how to reach a broad, relevant audience and turn exposure into interest and inquiries.", ru: "Мы спланируем, как охватить широкую релевантную аудиторию и превратить охват в интерес и обращения."}
+      - label: {he: "חידוד המסרים השיווקיים:", en: "Refining marketing messages:", ru: "Уточнение маркетинговых сообщений:"}
+        text: {he: "נבין איך להציג את היתרונות של העסק בצורה שמדברת ללקוחות.", en: "We will understand how to present your business's advantages in a way that speaks to clients.", ru: "Мы разберём, как представить преимущества бизнеса так, чтобы это находило отклик у клиентов."}
+      - label: {he: "תכנון תוכן לאינסטגרם ולפייסבוק:", en: "Planning content for Instagram and Facebook:", ru: "Планирование контента для Instagram и Facebook:"}
+        text: {he: "נבנה כיוון ברור ליצירת תוכן שמושך תשומת לב, מחזק אמון ומעודד מכירות.", en: "We will build a clear direction for content that attracts attention, strengthens trust, and encourages sales.", ru: "Мы выстроим понятное направление для контента, который привлекает внимание, укрепляет доверие и стимулирует продажи."}
+      - label: {he: "המלצות לקידום אורגני ופרסום ממומן:", en: "Recommendations for organic promotion and paid advertising:", ru: "Рекомендации по органическому продвижению и платной рекламе:"}
+        text: {he: "נבחן אילו פעולות שיווקיות מתאימות לעסק שלכם ובמה כדאי להשקיע.", en: "We will consider which marketing actions suit your business and what is worth investing in.", ru: "Мы рассмотрим, какие маркетинговые действия подходят вашему бизнесу и во что стоит вкладываться."}
+      outcomes_title:
+        he: מה תקבלו בסיום הייעוץ?
+        en: What Will You Receive at the End of the Consultation?
+        ru: Что вы получите по итогам консультации?
+      outcomes:
+      - he: אסטרטגיה שיווקית המותאמת לעסק ולמטרות שלכם.
+        en: A marketing strategy tailored to your business and goals.
+        ru: Маркетинговую стратегию, адаптированную под ваш бизнес и цели.
+      - he: תוכנית פעולה ברורה שתעזור לכם לדעת מה לעשות ואיך להתקדם.
+        en: A clear action plan to help you know what to do and how to move forward.
+        ru: Понятный план действий, который поможет понять, что делать и как двигаться дальше.
+      - he: כיוון לתוכן שיווקי באינסטגרם ובפייסבוק.
+        en: Direction for marketing content on Instagram and Facebook.
+        ru: Направление для маркетингового контента в Instagram и Facebook.
+      - he: הבנה טובה יותר של הפעולות שכדאי להמשיך, לשפר או לשנות.
+        en: A better understanding of the actions worth continuing, improving, or changing.
+        ru: Лучшее понимание действий, которые стоит продолжать, улучшать или менять.
+      outcome_callout:
+        he: המטרה היא לא רק שתדעו מה לפרסם מחר, אלא שתבינו איך להשתמש ברשתות החברתיות כדי לפתח את העסק לאורך זמן.
+        en: The goal is not only to know what to publish tomorrow, but to understand how to use social media to develop your business over time.
+        ru: Цель не только в том, чтобы вы знали, что публиковать завтра, а в том, чтобы понимали, как использовать социальные сети для долгосрочного развития бизнеса.
+      closing_title:
+        he: רוצים שהשיווק שלכם יתחיל לעבוד בשביל העסק?
+        en: Want Your Marketing to Start Working for Your Business?
+        ru: Хотите, чтобы маркетинг начал работать на ваш бизнес?
+      closing_paragraphs:
+      - he: אני קטיה אלון, יועצת ואסטרטגית שיווקית. אני עוזרת לבעלי עסקים לבנות שיווק נכון, להבין איך למשוך לקוחות ולהפסיק לבזבז זמן וכסף על פעולות שלא מקדמות את המטרות שלהם.
+        en: I am Katya Alon, a marketing consultant and strategist. I help business owners build effective marketing, understand how to attract clients, and stop wasting time and money on actions that do not advance their goals.
+        ru: Я Катя Алон, маркетинговый консультант и стратег. Я помогаю владельцам бизнеса выстроить правильный маркетинг, понять, как привлекать клиентов, и перестать тратить время и деньги на действия, которые не приближают их к целям.
+      callout:
+        he: בואו נבנה אסטרטגיה שיווקית שמתאימה לעסק שלכם.
+        en: Let’s build a marketing strategy that suits your business.
+        ru: Давайте построим маркетинговую стратегию, подходящую вашему бизнесу.
+      cta_intro:
+        he: מוזמנים ליצור איתי קשר לתיאום ייעוץ שיווקי אישי.
+        en: You are welcome to contact me to arrange a personal marketing consultation.
+        ru: Свяжитесь со мной, чтобы договориться о персональной маркетинговой консультации.
   - title:
       he: ניהול סושיאל ויצירת תוכן
       en: Social Media Management and Content Creation
       ru: Ведение социальных сетей и создание контента
-    display_order: 3
+    display_order: 2
     anchor: service-social-media-content
     slug: social-media-content
     description:
@@ -304,11 +384,88 @@ services:
           he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20ניהול%20סושיאל%20ויצירת%20תוכן."
           en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20social%20media%20management%20and%20content%20creation."
           ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20ведении%20социальных%20сетей%20и%20создании%20контента."
+    marketing_page:
+      heading:
+        he: ניהול סושיאל לעסקים | ניהול אינסטגרם, פייסבוק ופרסום ממומן
+        en: Social Media Management for Businesses | Instagram, Facebook and Paid Advertising
+        ru: Ведение соцсетей для бизнеса | Instagram, Facebook и платная реклама
+      seo_title:
+        he: ניהול סושיאל ופרסום ממומן לעסקים | קטיה אלון
+        en: Social Media Management and Paid Advertising for Businesses | Katya Alon
+        ru: Ведение соцсетей и платная реклама для бизнеса | Катя Алон
+      meta_description:
+        he: ניהול סושיאל מקצועי עם קטיה אלון. ניהול אינסטגרם ופייסבוק, יצירת תוכן, קידום אורגני, פרסום ממומן במטא ובניית אסטרטגיה שיווקית לעסקים.
+        en: Professional social media management with Katya Alon. Instagram and Facebook management, content creation, organic promotion, paid advertising on Meta, and marketing strategy for businesses.
+        ru: Профессиональное ведение соцсетей с Катей Алон. Ведение Instagram и Facebook, создание контента, органическое продвижение, платная реклама в Meta и маркетинговая стратегия для бизнеса.
+      lead:
+        he: משקיעים זמן וכסף ברשתות החברתיות, אבל לא רואים מספיק לקוחות ותוצאות?
+        en: Investing time and money in social media but not seeing enough clients and results?
+        ru: Вкладываете время и деньги в социальные сети, но не видите достаточно клиентов и результатов?
+      paragraphs:
+      - he: ניהול סושיאל מקצועי הוא הרבה מעבר להעלאת פוסטים וסטוריז. הוא דורש חשיבה שיווקית, תכנון תוכן, הבנה של העסק ויכולת להפוך את הנוכחות באינסטגרם ובפייסבוק לכלי שמושך לקוחות ומחזק את המותג.
+        en: Professional social media management is much more than posting posts and stories. It requires marketing thinking, content planning, an understanding of the business, and the ability to turn your presence on Instagram and Facebook into a tool that attracts clients and strengthens the brand.
+        ru: Профессиональное ведение соцсетей — это гораздо больше, чем публикация постов и сториз. Оно требует маркетингового мышления, планирования контента, понимания бизнеса и умения превратить присутствие в Instagram и Facebook в инструмент, который привлекает клиентов и укрепляет бренд.
+      - he: אני מציעה שירותי ניהול רשתות חברתיות לעסקים, המשלבים אסטרטגיה שיווקית, יצירת תוכן, קידום אורגני ופרסום ממומן בפייסבוק ובאינסטגרם.
+        en: I offer social media management services for businesses that combine marketing strategy, content creation, organic promotion, and paid advertising on Facebook and Instagram.
+        ru: Я предлагаю услуги ведения социальных сетей для бизнеса, сочетающие маркетинговую стратегию, создание контента, органическое продвижение и платную рекламу в Facebook и Instagram.
+      includes_title:
+        he: מה כולל שירות ניהול הסושיאל?
+        en: What Does Social Media Management Include?
+        ru: Что включает услуга ведения соцсетей?
+      includes:
+      - label: {he: "בניית אסטרטגיה שיווקית:", en: "Building a marketing strategy:", ru: "Разработка маркетинговой стратегии:"}
+        text: {he: "תכנון הפעילות בהתאם למטרות העסק ולמוצרים או לשירותים שהוא מציע.", en: "Planning activity in line with business goals and the products or services it offers.", ru: "Планирование деятельности в соответствии с целями бизнеса и предлагаемыми им продуктами или услугами."}
+      - label: {he: "ניהול אינסטגרם ופייסבוק עסקי:", en: "Business Instagram and Facebook management:", ru: "Ведение бизнес-страниц в Instagram и Facebook:"}
+        text: {he: "תכנון, יצירה ופרסום תכנים באופן שוטף.", en: "Ongoing planning, creation, and publication of content.", ru: "Регулярное планирование, создание и публикация контента."}
+      - label: {he: "יצירת תוכן לרשתות החברתיות:", en: "Social media content creation:", ru: "Создание контента для социальных сетей:"}
+        text: {he: "כתיבה שיווקית, רעיונות ותסריטים לרילסים, פוסטים וסטוריז.", en: "Marketing copy, ideas, and scripts for reels, posts, and stories.", ru: "Маркетинговые тексты, идеи и сценарии для reels, постов и сториз."}
+      - label: {he: "קידום אורגני:", en: "Organic promotion:", ru: "Органическое продвижение:"}
+        text: {he: "יצירת תוכן שמטרתו להגדיל חשיפה ולהגיע לקהל רחב ורלוונטי.", en: "Creating content intended to increase reach and connect with a broad, relevant audience.", ru: "Создание контента, цель которого — увеличить охват и привлечь широкую релевантную аудиторию."}
+      - label: {he: "פרסום ממומן בפייסבוק ובאינסטגרם:", en: "Paid advertising on Facebook and Instagram:", ru: "Платная реклама в Facebook и Instagram:"}
+        text: {he: "תכנון, הקמה וניהול קמפיינים באמצעות Meta Ads Manager, בהתאם למטרות העסק ולתקציב הפרסום.", en: "Planning, setting up, and managing campaigns through Meta Ads Manager, in line with business goals and the advertising budget.", ru: "Планирование, запуск и ведение кампаний через Meta Ads Manager в соответствии с целями бизнеса и рекламным бюджетом."}
+      - label: {he: "חיזוק המותג ובניית אמון:", en: "Strengthening the brand and building trust:", ru: "Укрепление бренда и формирование доверия:"}
+        text: {he: "הצגת העסק בצורה מקצועית שמעוררת עניין וביטחון.", en: "Presenting the business professionally in a way that inspires interest and confidence.", ru: "Профессиональная подача бизнеса, вызывающая интерес и доверие."}
+      - label: {he: "מעקב ואופטימיזציה:", en: "Monitoring and optimization:", ru: "Мониторинг и оптимизация:"}
+        text: {he: "ניתוח ביצועי התוכן והקמפיינים, ביצוע התאמות ושיפור הפעילות השיווקית.", en: "Analyzing content and campaign performance, making adjustments, and improving marketing activity.", ru: "Анализ эффективности контента и кампаний, внесение изменений и улучшение маркетинговой деятельности."}
+      outcomes_title:
+        he: מה תקבלו במסגרת השירות?
+        en: What Will You Receive as Part of the Service?
+        ru: Что вы получите в рамках услуги?
+      outcomes:
+      - {he: "נוכחות מקצועית ועקבית באינסטגרם ובפייסבוק.", en: "A professional and consistent presence on Instagram and Facebook.", ru: "Профессиональное и последовательное присутствие в Instagram и Facebook."}
+      - {he: "תוכן שיווקי שמציג את היתרונות של העסק שלכם.", en: "Marketing content that presents your business's advantages.", ru: "Маркетинговый контент, который показывает преимущества вашего бизнеса."}
+      - {he: "מסרים ברורים שמדברים ללקוחות פוטנציאליים.", en: "Clear messages that speak to potential clients.", ru: "Понятные сообщения, обращённые к потенциальным клиентам."}
+      - {he: "שילוב בין קידום אורגני לפרסום ממומן בהתאם לצורכי העסק.", en: "A combination of organic promotion and paid advertising according to business needs.", ru: "Сочетание органического продвижения и платной рекламы в соответствии с потребностями бизнеса."}
+      - {he: "פעילות שיווקית מתוכננת שמטרתה להגדיל חשיפה, לייצר פניות ולתמוך במכירות.", en: "Planned marketing activity aimed at increasing reach, generating inquiries, and supporting sales.", ru: "Спланированная маркетинговая активность, направленная на увеличение охвата, получение обращений и поддержку продаж."}
+      - {he: "יותר זמן להתמקד בניהול העסק, בזמן שאני מטפלת בשיווק שלכם ברשתות החברתיות.", en: "More time to focus on running your business while I handle your social media marketing.", ru: "Больше времени, чтобы сосредоточиться на управлении бизнесом, пока я занимаюсь вашим маркетингом в социальных сетях."}
+      outcome_callout:
+        he: המטרה שלי היא לא רק שהעמוד שלכם ייראה טוב, אלא שהוא יעבוד בשביל העסק שלכם.
+        en: My goal is not only for your page to look good, but for it to work for your business.
+        ru: Моя цель — не только сделать вашу страницу красивой, но и заставить её работать на ваш бизнес.
+      closing_title:
+        he: רוצים שהרשתות החברתיות יעבדו בשבילכם?
+        en: Want Social Media to Work for You?
+        ru: Хотите, чтобы социальные сети работали на вас?
+      closing_paragraphs:
+      - he: אני קטיה אלון, אסטרטגית שיווקית עם 20 שנות ניסיון בשיווק ו-10 שנות ניסיון ברשתות החברתיות.
+        en: I am Katya Alon, a marketing strategist with 20 years of marketing experience and 10 years of social media experience.
+        ru: Я Катя Алон, маркетинговый стратег с 20-летним опытом в маркетинге и 10-летним опытом работы в социальных сетях.
+      - he: אני משלבת ניסיון שיווקי, חשיבה אסטרטגית, יצירת תוכן ופרסום ממומן כדי לבנות נוכחות דיגיטלית שמשרתת את המטרות העסקיות שלכם.
+        en: I combine marketing experience, strategic thinking, content creation, and paid advertising to build a digital presence that serves your business goals.
+        ru: Я сочетаю маркетинговый опыт, стратегическое мышление, создание контента и платную рекламу, чтобы выстроить цифровое присутствие, которое служит вашим бизнес-целям.
+      callout:
+        he: אתם מתמקדים בניהול העסק. אני דואגת לשיווק שלכם ברשתות החברתיות.
+        en: You focus on running the business. I take care of your social media marketing.
+        ru: Вы сосредотачиваетесь на управлении бизнесом. Я забочусь о вашем маркетинге в социальных сетях.
+      cta_intro:
+        he: מוזמנים ליצור איתי קשר ולבדוק איך אפשר לקדם את העסק שלכם באינסטגרם ובפייסבוק.
+        en: Contact me to explore how we can promote your business on Instagram and Facebook.
+        ru: Свяжитесь со мной, чтобы узнать, как можно продвигать ваш бизнес в Instagram и Facebook.
   - title:
       he: פרסום ממומן בפייסבוק ובאינסטגרם
       en: Paid Advertising on Facebook and Instagram
       ru: Платная реклама в Facebook и Instagram
-    display_order: 4
+    display_order: 3
     anchor: service-paid-advertising
     slug: paid-advertising
     description:
@@ -364,9 +521,9 @@ services:
             en: Details about personal training
             ru: Подробнее об индивидуальном обучении
           href:
-            he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20על%20הדרכה%20אישית%20לפרסום%20ממומן."
-            en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20details%20about%20personal%20training%20in%20paid%20advertising."
-            ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20узнать%20подробнее%20об%20индивидуальном%20обучении%20платной%20рекламе."
+            he: /services/personal-social-media-training/
+            en: /en/services/personal-social-media-training/
+            ru: /ru/services/personal-social-media-training/
       statement:
         he: "אתם בוחרים: אני מנהלת עבורכם את הפרסום, או מלמדת אתכם לעשות את זה בעצמכם."
         en: "You choose: I manage the advertising for you, or I teach you to do it yourselves."
@@ -512,68 +669,6 @@ services:
           he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20פרסום%20ממומן%20בפייסבוק%20ובאינסטגרם."
           en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20paid%20advertising%20on%20Facebook%20and%20Instagram."
           ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20платной%20рекламе%20в%20Facebook%20и%20Instagram."
-  # Keeps the legacy home-card anchor service-personal-guidance so existing /#service-personal-guidance links still land here.
-  - title:
-      he: ניהול דפי סושיאל
-      en: Social Media Page Management
-      ru: Ведение страниц в социальных сетях
-    display_order: 2
-    anchor: service-personal-guidance
-    slug: social-media-management
-    description:
-      he: ניהול שוטף של דפי העסק ברשתות החברתיות, תכנון חודשי של תכנים, כתיבה, התאמת מסרים לקהל ומעקב אחר הביצועים.
-      en: Ongoing management of your business's social media pages, with monthly content planning, writing, messages tailored to your audience, and performance tracking.
-      ru: Регулярное ведение страниц бизнеса в социальных сетях, ежемесячное планирование контента, написание текстов, адаптация сообщений под аудиторию и отслеживание результатов.
-    details:
-      summary:
-        he: 'ניהול נכון של רשתות חברתיות הוא לא רק פרסום, אלא בניית נוכחות שמביאה קהל, אמון ומכירות.'
-        en: 'Proper social media management is not just posting, it is building a presence that brings audience, trust, and sales.'
-        ru: 'Правильное ведение социальных сетей, это не просто публикации, а создание присутствия, которое приносит аудиторию, доверие и продажи.'
-      tech_points:
-      - he: בניית קו תוכן ברור ואחיד
-        en: Building a clear and consistent content direction
-        ru: Построение чёткой и единой контент-линии
-      - he: תכנון חודשי של פוסטים ותכנים
-        en: Monthly planning of posts and content
-        ru: Ежемесячное планирование постов и контента
-      - he: כתיבה וניהול שוטף של התוכן
-        en: Writing and ongoing management of content
-        ru: Написание и регулярное ведение контента
-      - he: התאמת המסרים לקהל היעד
-        en: Adjusting messages to the target audience
-        ru: Адаптация сообщений под целевую аудиторию
-      - he: שילוב בין תוכן לערך שיווקי
-        en: Combining content with marketing value
-        ru: Сочетание контента с маркетинговой ценностью
-      - he: מעקב ושיפור ביצועים לאורך זמן
-        en: Monitoring and improving performance over time
-        ru: Отслеживание и улучшение результатов со временем
-      second_tech_points:
-      - he: 'נוכחות עקבית ומדויקת ברשתות'
-        en: 'A consistent and precise presence on social media'
-        ru: 'Последовательное и точное присутствие в социальных сетях'
-      - he: 'תוכן שמחזק את המותג'
-        en: 'Content that strengthens the brand'
-        ru: 'Контент, который усиливает бренд'
-      - he: 'חיבור נכון עם הקהל'
-        en: 'The right connection with the audience'
-        ru: 'Правильную связь с аудиторией'
-      - he: 'בסיס יציב לצמיחה ומכירות'
-        en: 'A solid foundation for growth and sales'
-        ru: 'Прочную основу для роста и продаж'
-      body:
-      - he: רוצים לבנות אסטרטגיה שמביאה תוצאות?
-        en: Want to build a strategy that delivers results?
-        ru: Хотите выстроить стратегию, которая приносит результаты?
-      contact_cta:
-        label:
-          he: צרו קשר
-          en: Contact me
-          ru: Связаться с нами
-        href:
-          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20ניהול%20דפי%20סושיאל."
-          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20social%20media%20page%20management."
-          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20ведении%20страниц%20в%20социальных%20сетях."
   - title:
       he: ליווי והדרכה אישית לבעלי עסקים
       en: Personal Guidance and Training for Business Owners
@@ -637,7 +732,7 @@ services:
       he: הרצאות וסדנאות בשיווק דיגיטלי
       en: Digital Marketing Lectures and Workshops
       ru: Лекции и мастер-классы по цифровому маркетингу
-    display_order: 5
+    display_order: 4
     anchor: service-workshops
     slug: lectures-workshops
     description:
@@ -691,12 +786,186 @@ services:
       contact_cta:
         label:
           he: צרו קשר
-          en: Contact me
+          en: Get in Touch
           ru: Связаться со мной
         href:
-          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20קורס%20שיווק%20חכם."
-          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20the%20Smart%20Marketing%20course."
-          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20курсе%20«Умный%20маркетинг»."
+          he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20נוספים%20על%20הרצאה%20או%20סדנה%20בשיווק%20דיגיטלי."
+          en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20more%20details%20about%20a%20digital%20marketing%20lecture%20or%20workshop."
+          ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20получить%20больше%20информации%20о%20лекции%20или%20мастер-классе%20по%20цифровому%20маркетингу."
+    # Opt-in long-form page. The home card and modal continue to use `details` above.
+    marketing_page:
+      heading:
+        he: הרצאות וסדנאות בשיווק דיגיטלי וברשתות החברתיות
+        en: Digital Marketing and Social Media Lectures and Workshops
+        ru: Лекции и мастер-классы по цифровому маркетингу и социальным сетям
+      seo_title:
+        he: הרצאות וסדנאות בשיווק דיגיטלי לעסקים | קטיה אלון
+        en: Digital Marketing Lectures and Workshops for Businesses | Katya Alon
+        ru: Лекции и мастер-классы по цифровому маркетингу для бизнеса | Катя Алон
+      meta_description:
+        he: הרצאות וסדנאות בשיווק דיגיטלי עם קטיה אלון. הדרכות אינסטגרם ופייסבוק, אסטרטגיה שיווקית, יצירת תוכן ופרסום ממומן לחברות, ארגונים ובעלי עסקים.
+        en: Digital marketing lectures and workshops with Katya Alon. Instagram and Facebook training, marketing strategy, content creation, and paid advertising for companies, organisations, and business owners.
+        ru: Лекции и мастер-классы по цифровому маркетингу с Катей Алон. Обучение Instagram и Facebook, маркетинговая стратегия, создание контента и платная реклама для компаний, организаций и владельцев бизнеса.
+      lead:
+        he: נמאס לכם לשמוע בהרצאות שיווק רק על אלגוריתמים, טרנדים וכמה רילסים צריך להעלות בשבוע?
+        en: Tired of hearing marketing lectures that only talk about algorithms, trends, and how many reels you need to post each week?
+        ru: Надоело слушать на лекциях по маркетингу только об алгоритмах, трендах и о том, сколько reels нужно публиковать в неделю?
+      paragraphs:
+      - he: שיווק נכון מתחיל הרבה לפני שלוחצים על כפתור הפרסום.
+        en: Effective marketing begins long before you press the publish button.
+        ru: Грамотный маркетинг начинается задолго до того, как вы нажмёте кнопку публикации.
+      - he: אני מציעה הרצאות וסדנאות מקצועיות בשיווק דיגיטלי, אסטרטגיה שיווקית, קידום אורגני ופרסום ממומן באינסטגרם ובפייסבוק.
+        en: I offer professional lectures and workshops on digital marketing, marketing strategy, organic promotion, and paid advertising on Instagram and Facebook.
+        ru: Я провожу профессиональные лекции и мастер-классы по цифровому маркетингу, маркетинговой стратегии, органическому продвижению и платной рекламе в Instagram и Facebook.
+      - he: ההרצאות והסדנאות מיועדות לחברות, ארגונים, קבוצות מקצועיות ובעלי עסקים שרוצים להבין איך להשתמש ברשתות החברתיות כדי למשוך לקוחות, להגדיל הכנסות ולפתח את העסק.
+        en: The lectures and workshops are for companies, organisations, professional groups, and business owners who want to understand how to use social media to attract clients, increase revenue, and grow their business.
+        ru: Лекции и мастер-классы предназначены для компаний, организаций, профессиональных групп и владельцев бизнеса, которые хотят понять, как использовать социальные сети для привлечения клиентов, увеличения дохода и развития бизнеса.
+      - he: עם 20 שנות ניסיון בשיווק ו-10 שנות ניסיון ברשתות החברתיות, אני משלבת ידע מקצועי, דוגמאות מהשטח וכלים שאפשר ליישם בעסק.
+        en: With 20 years of marketing experience and 10 years of social media experience, I combine professional knowledge, real-world examples, and tools you can apply in your business.
+        ru: Имея 20 лет опыта в маркетинге и 10 лет опыта в социальных сетях, я сочетаю профессиональные знания, примеры из практики и инструменты, которые можно применить в бизнесе.
+      intro_callout:
+        he: המטרה שלי היא לא ללמד אתכם רק איך להעלות תוכן, אלא איך לחשוב שיווקית.
+        en: My goal is not only to teach you how to post content, but how to think strategically about marketing.
+        ru: Моя цель — не только научить вас публиковать контент, но и мыслить стратегически в маркетинге.
+      includes_title:
+        he: מה כוללות ההרצאות והסדנאות?
+        en: What Do the Lectures and Workshops Include?
+        ru: Что включают лекции и мастер-классы?
+      includes:
+      - label: {he: "אסטרטגיה שיווקית לעסקים:", en: "Marketing strategy for businesses:", ru: "Маркетинговая стратегия для бизнеса:"}
+        text: {he: "איך בונים תוכנית שיווקית שמשרתת את המטרות העסקיות.", en: "How to build a marketing plan that serves business goals.", ru: "Как построить маркетинговый план, который служит бизнес-целям."}
+      - label: {he: "קידום אורגני באינסטגרם ובפייסבוק:", en: "Organic promotion on Instagram and Facebook:", ru: "Органическое продвижение в Instagram и Facebook:"}
+        text: {he: "איך מגיעים לקהל רחב ורלוונטי ומעוררים עניין בעסק.", en: "How to reach a broad, relevant audience and spark interest in your business.", ru: "Как охватить широкую релевантную аудиторию и вызвать интерес к бизнесу."}
+      - label: {he: "יצירת תוכן שיווקי:", en: "Marketing content creation:", ru: "Создание маркетингового контента:"}
+        text: {he: "איך יוצרים רילסים, פוסטים וסטוריז שמושכים תשומת לב ומחזקים אמון.", en: "How to create reels, posts, and stories that attract attention and build trust.", ru: "Как создавать reels, посты и сториз, которые привлекают внимание и укрепляют доверие."}
+      - label: {he: "הפיכת חשיפה ללקוחות:", en: "Turning exposure into clients:", ru: "Превращение охвата в клиентов:"}
+        text: {he: "איך משתמשים בתוכן כדי לעורר פניות ולתמוך במכירות.", en: "How to use content to generate inquiries and support sales.", ru: "Как использовать контент, чтобы стимулировать обращения и поддерживать продажи."}
+      - label: {he: "פרסום ממומן במטא:", en: "Paid advertising on Meta:", ru: "Платная реклама в Meta:"}
+        text: {he: "מתי כדאי להתחיל להשקיע בפרסום ממומן ואיך הוא משתלב באסטרטגיה השיווקית.", en: "When it is worth starting to invest in paid advertising and how it fits into the marketing strategy.", ru: "Когда стоит начать инвестировать в платную рекламу и как она вписывается в маркетинговую стратегию."}
+      - label: {he: "למידה מעשית:", en: "Practical learning:", ru: "Практическое обучение:"}
+        text: {he: "דוגמאות אמיתיות, ניתוח מקרים וכלים ליישום עצמאי.", en: "Real examples, case analysis, and tools for independent implementation.", ru: "Реальные примеры, разбор кейсов и инструменты для самостоятельного применения."}
+      outcomes_title:
+        he: מה תקבלו בסיום?
+        en: What Will You Receive at the End?
+        ru: Что вы получите в итоге?
+      outcomes:
+      - he: הבנה ברורה יותר של שיווק דיגיטלי ברשתות החברתיות.
+        en: A clearer understanding of digital marketing on social media.
+        ru: Более ясное понимание цифрового маркетинга в социальных сетях.
+      - he: ידע שיעזור לכם לקבל החלטות שיווקיות נכונות יותר.
+        en: Knowledge that will help you make better marketing decisions.
+        ru: Знания, которые помогут вам принимать более верные маркетинговые решения.
+      - he: רעיונות וכיוונים ליצירת תוכן לעסק.
+        en: Ideas and directions for creating content for your business.
+        ru: Идеи и направления для создания контента для бизнеса.
+      - he: כלים מעשיים שתוכלו להתחיל ליישם בעצמכם.
+        en: Practical tools you can begin applying on your own.
+        ru: Практические инструменты, которые вы сможете начать применять самостоятельно.
+      audience_title:
+        he: למי מתאימות ההרצאות והסדנאות?
+        en: Who Are the Lectures and Workshops Suitable For?
+        ru: Для кого подходят лекции и мастер-классы?
+      audience_paragraphs:
+      - he: לחברות, ארגונים, קהילות עסקיות, קבוצות מקצועיות ובעלי עסקים שרוצים לשפר את הידע שלהם בשיווק.
+        en: For companies, organisations, business communities, professional groups, and business owners who want to improve their marketing knowledge.
+        ru: Для компаний, организаций, деловых сообществ, профессиональных групп и владельцев бизнеса, которые хотят улучшить свои знания в маркетинге.
+      - he: ניתן להתאים את נושאי ההרצאה, התכנים והתרגול לצרכים של הקבוצה, לרמת הידע של המשתתפים ולמטרות הארגון.
+        en: The lecture topics, content, and practical exercises can be adapted to the group’s needs, participants’ level of knowledge, and the organisation’s goals.
+        ru: Темы лекции, содержание и практические упражнения можно адаптировать к потребностям группы, уровню знаний участников и целям организации.
+      - he: ההרצאות והסדנאות מתקיימות בקבוצות קטנות או גדולות, במפגשים פרונטליים או אונליין, בהתאם לתוכנית שנקבעה.
+        en: The lectures and workshops take place in small or large groups, in person or online, according to the agreed programme.
+        ru: Лекции и мастер-классы проводятся в малых или больших группах, очно или онлайн, в соответствии с согласованной программой.
+      closing_title:
+        he: רוצים להזמין הרצאה או סדנה בשיווק דיגיטלי?
+        en: Would You Like to Book a Digital Marketing Lecture or Workshop?
+        ru: Хотите заказать лекцию или мастер-класс по цифровому маркетингу?
+      closing_paragraphs:
+      - he: אני קטיה אלון, יועצת ואסטרטגית שיווקית, מרצה ומנחה סדנאות מקצועיות בתחום השיווק הדיגיטלי.
+        en: I am Katya Alon, a marketing consultant and strategist, lecturer, and facilitator of professional workshops in digital marketing.
+        ru: Я Катя Алон, маркетинговый консультант и стратег, лектор и ведущая профессиональных мастер-классов в сфере цифрового маркетинга.
+      callout:
+        he: בואו נהפוך את הידע השיווקי לכלי מעשי לפיתוח העסק.
+        en: Let’s turn marketing knowledge into a practical tool for business growth.
+        ru: Давайте превратим маркетинговые знания в практический инструмент для развития бизнеса.
+      cta_intro:
+        he: מוזמנים ליצור איתי קשר לתיאום הרצאה, סדנה או הדרכה מקצועית המותאמת לקבוצה שלכם.
+        en: You are welcome to contact me to arrange a lecture, workshop, or professional training tailored to your group.
+        ru: Свяжитесь со мной, чтобы согласовать лекцию, мастер-класс или профессиональное обучение, адаптированные для вашей группы.
+
+  # Standalone detail pages are published and indexed, but deliberately excluded from
+  # enabled service cards, the service modal, and the Services disclosure.
+  standalone_pages:
+  - slug: personal-social-media-training
+    title:
+      he: הדרכה אישית לשיווק ברשתות החברתיות לבעלי עסקים
+      en: Personal Social Media Marketing Training for Business Owners
+      ru: Индивидуальное обучение маркетингу в социальных сетях для владельцев бизнеса
+    seo_title:
+      he: הדרכה אישית לשיווק ברשתות החברתיות לעסקים | קטיה אלון
+      en: Personal Social Media Marketing Training for Businesses | Katya Alon
+      ru: Индивидуальное обучение маркетингу в социальных сетях для бизнеса | Катя Алон
+    meta_description:
+      he: הדרכה אישית אחד על אחד לשיווק באינסטגרם ובפייסבוק לבעלי עסקים. אסטרטגיה שיווקית, יצירת תוכן, קידום אורגני וכלים לניהול עצמאי של הרשתות החברתיות.
+      en: One-on-one social media marketing training for business owners on Instagram and Facebook. Marketing strategy, content creation, organic promotion, and tools for independently managing social media.
+      ru: "Индивидуальное обучение маркетингу в Instagram и Facebook для владельцев бизнеса: маркетинговая стратегия, создание контента, органическое продвижение и инструменты для самостоятельного ведения соцсетей."
+    lead:
+      he: למה לשלם בכל חודש על ניהול סושיאל, אם אפשר ללמוד לשווק את העסק בעצמכם?
+      en: Why pay every month for social media management if you can learn to market your business yourself?
+      ru: Зачем каждый месяц платить за ведение соцсетей, если можно научиться продвигать свой бизнес самостоятельно?
+    intro:
+      he: אני מציעה הדרכות אישיות אחד על אחד לבעלי עסקים שרוצים ללמוד איך לקדם את העסק באינסטגרם ובפייסבוק, ליצור תוכן שיווקי, למשוך לקוחות ולנהל את הרשתות החברתיות באופן עצמאי.
+      en: I offer one-on-one personal training for business owners who want to learn how to promote their business on Instagram and Facebook, create marketing content, attract clients, and manage social media independently.
+      ru: Я предлагаю индивидуальное обучение один на один для владельцев бизнеса, которые хотят научиться продвигать своё дело в Instagram и Facebook, создавать маркетинговый контент, привлекать клиентов и самостоятельно вести социальные сети.
+    first_title:
+      he: מה לומדים בהדרכה אישית?
+      en: What Do You Learn in Personal Training?
+      ru: Чему вы научитесь на индивидуальном обучении?
+    first_points:
+    - {he: "בניית אסטרטגיה שיווקית המותאמת לעסק שלכם.", en: "Building a marketing strategy tailored to your business.", ru: "Созданию маркетинговой стратегии, адаптированной к вашему бизнесу."}
+    - {he: "קידום אורגני באינסטגרם ובפייסבוק.", en: "Organic promotion on Instagram and Facebook.", ru: "Органическому продвижению в Instagram и Facebook."}
+    - {he: "יצירת תוכן שיווקי שמושך תשומת לב ובונה אמון.", en: "Creating marketing content that attracts attention and builds trust.", ru: "Созданию маркетингового контента, который привлекает внимание и формирует доверие."}
+    - {he: "שימוש נכון ברילסים, סטוריז ופוסטים.", en: "Using reels, stories, and posts effectively.", ru: "Грамотному использованию reels, сториз и постов."}
+    - {he: "תכנון תוכן שמטרתו לעורר פניות ולהגדיל מכירות.", en: "Planning content designed to generate inquiries and increase sales.", ru: "Планированию контента, цель которого — вызывать обращения и увеличивать продажи."}
+    - {he: "כלים מעשיים לניהול עצמאי של הרשתות החברתיות.", en: "Practical tools for independently managing social media.", ru: "Практическим инструментам для самостоятельного ведения социальных сетей."}
+    first_callout:
+      he: לא רק לומדים שיווק, אלא עובדים על השיווק של העסק שלכם.
+      en: You do not just learn marketing; you work on your business’s marketing.
+      ru: Вы не просто изучаете маркетинг — вы работаете над маркетингом своего бизнеса.
+    second_title:
+      he: למה כדאי ללמוד שיווק אחד על אחד?
+      en: Why Learn Marketing One-on-One?
+      ru: Почему стоит изучать маркетинг один на один?
+    second_points:
+    - label: {he: "הדרכה מותאמת אישית:", en: "Personalised training:", ru: "Индивидуальное обучение:"}
+      text: {he: "מתמקדים בעסק שלכם, ולא בדוגמאות כלליות שלא תמיד רלוונטיות.", en: "We focus on your business, not general examples that are not always relevant.", ru: "Мы сосредотачиваемся на вашем бизнесе, а не на общих примерах, которые не всегда актуальны."}
+    - label: {he: "חיסכון בזמן:", en: "Saving time:", ru: "Экономия времени:"}
+      text: {he: "לומדים בדיוק את מה שאתם צריכים, בלי לבזבז שעות על נושאים מיותרים.", en: "You learn exactly what you need, without spending hours on unnecessary topics.", ru: "Вы изучаете именно то, что вам нужно, не тратя часы на лишние темы."}
+    - label: {he: "עבודה מעשית:", en: "Practical work:", ru: "Практическая работа:"}
+      text: {he: "מיישמים את הידע ישירות על העמודים העסקיים שלכם.", en: "You apply the knowledge directly to your business pages.", ru: "Вы применяете знания непосредственно к своим бизнес-страницам."}
+    - label: {he: "מענה אישי:", en: "Personal support:", ru: "Персональная поддержка:"}
+      text: {he: "אפשר לשאול שאלות, לקבל משוב ולהתקדם בקצב שלכם.", en: "You can ask questions, receive feedback, and progress at your own pace.", ru: "Вы можете задавать вопросы, получать обратную связь и двигаться в своём темпе."}
+    - label: {he: "חיסכון בעלויות:", en: "Saving costs:", ru: "Сокращение расходов:"}
+      text: {he: "רוכשים ידע שיכול לצמצם את התלות בשירותי ניהול סושיאל חודשיים.", en: "You gain knowledge that can reduce reliance on monthly social media management services.", ru: "Вы приобретаете знания, которые могут сократить зависимость от ежемесячных услуг по ведению соцсетей."}
+    - label: {he: "עצמאות שיווקית:", en: "Marketing independence:", ru: "Маркетинговая самостоятельность:"}
+      text: {he: "לומדים לקבל החלטות ולנהל את הפעילות ברשתות החברתיות בעצמכם.", en: "You learn to make decisions and manage social media activity yourself.", ru: "Вы учитесь принимать решения и самостоятельно управлять активностью в социальных сетях."}
+    second_callout:
+      he: במקום לקבל עוד קורס כללי, אתם מקבלים ידע וכלים שמותאמים בדיוק לעסק שלכם.
+      en: Instead of another general course, you get knowledge and tools tailored precisely to your business.
+      ru: Вместо ещё одного общего курса вы получаете знания и инструменты, точно адаптированные к вашему бизнесу.
+    closing_callout:
+      he: רוצים ללמוד איך להפוך את האינסטגרם והפייסבוק לכלי שמביא לקוחות?
+      en: Want to learn how to turn Instagram and Facebook into a tool that brings clients?
+      ru: Хотите научиться превращать Instagram и Facebook в инструмент, который приводит клиентов?
+    closing:
+      he: בואו נבנה יחד את הדרך שבה תוכלו לשווק את העסק שלכם בעצמכם.
+      en: Let’s build together the way you can market your business yourself.
+      ru: Давайте вместе выстроим путь, который позволит вам самостоятельно продвигать свой бизнес.
+    contact_cta:
+      label: {he: "לפרטים על הדרכה אישית", en: "Details about personal training", ru: "Подробнее об индивидуальном обучении"}
+      href:
+        he: "https://wa.me/972547838645?text=שלום%20קטיה%2C%20אני%20מעוניין%20לקבל%20פרטים%20על%20הדרכה%20אישית%20לפרסום%20ממומן."
+        en: "https://wa.me/972547838645?text=Hello%20Katya%2C%20I%20would%20like%20to%20get%20details%20about%20personal%20training%20in%20paid%20advertising."
+        ru: "https://wa.me/972547838645?text=Здравствуйте%20Катя%2C%20я%20хочу%20узнать%20подробнее%20об%20индивидуальном%20обучении%20платной%20рекламе."
 
   learn_more:
     he: למידע נוסף על השירות

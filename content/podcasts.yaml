@@ -14,7 +14,7 @@ ui:
 episodes:
   - youtube_id: mqJPD6FFGIk
     source_url: https://www.youtube.com/watch?v=mqJPD6FFGIk
-    start_seconds: {he: 28, en: 28, ru: 0}
+    start_seconds: {he: 29, en: 29, ru: 0}
     title: {he: "קטיה אלון מתארחת בפודקאסט", en: "Katya Alon on a Podcast", ru: "Катя Алон в подкасте"}
     description: {he: "צפו בשיחה המצולמת שבה השתתפתי.", en: "Watch the filmed conversation in which I took part.", ru: "Посмотрите записанную беседу, в которой я приняла участие."}
     language_note: {he: "השיחה מתקיימת בעברית, עם הקדמה קצרה ברוסית בתחילת הסרטון.", en: "The conversation is in Hebrew, with a short Russian introduction at the beginning of the video.", ru: "Беседа проходит на иврите, с коротким вступлением на русском языке в начале видео."}

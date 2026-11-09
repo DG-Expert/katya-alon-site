@@ -112,12 +112,12 @@ test('podcast hubs have localized SEO, safe responsive embeds, language starts a
   const contentYaml = readFileSync(new URL('../content/content.yaml', import.meta.url), 'utf8');
   for (const lang of LANGUAGES) {
     const html = renderPodcasts(template, contentYaml, podcastsYaml, lang);
-    const start = lang === 'ru' ? 0 : 28;
+    const start = lang === 'ru' ? 0 : 29;
     assert.ok(html.includes(`<title>${escapeHtml(podcasts.page.seo_title[lang])}</title>`));
     assert.ok(html.includes(`<link rel="canonical" href="${urlFor(lang, 'podcasts')}">`));
     for (const code of LANGUAGES) assert.ok(html.includes(`hreflang="${code}" href="${urlFor(code, 'podcasts')}`));
     assert.ok(html.includes(`https://www.youtube-nocookie.com/embed/mqJPD6FFGIk?start=${start}`));
-    assert.ok(html.includes(`https://www.youtube.com/watch?v=mqJPD6FFGIk${start ? '&t=28s' : ''}`));
+    assert.ok(html.includes(`https://www.youtube.com/watch?v=mqJPD6FFGIk${start ? `&t=${start}s` : ''}`));
     assert.match(html, /<iframe [^>]*title="[^"]+"[^>]*loading="lazy"[^>]*allowfullscreen/);
     assert.doesNotMatch(html, /autoplay/i);
     const graph = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])['@graph'];
